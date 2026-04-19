@@ -29,13 +29,20 @@ body{background:#141e30;color:#fff}
   width:280px;
 }
 
+/* INPUTS */
 input,button{
   width:100%;
   padding:10px;
   margin-top:10px;
+  border:none;
+  border-radius:6px;
 }
 
-button{background:#00c6ff;border:none;cursor:pointer}
+button{
+  background:#00c6ff;
+  cursor:pointer;
+  font-weight:bold;
+}
 
 /* MENU */
 .menu-btn{
@@ -44,8 +51,10 @@ button{background:#00c6ff;border:none;cursor:pointer}
   left:15px;
   font-size:24px;
   z-index:2000;
+  cursor:pointer;
 }
 
+/* SIDEBAR */
 .sidebar{
   position:fixed;
   top:0;
@@ -67,6 +76,7 @@ button{background:#00c6ff;border:none;cursor:pointer}
 
 .sidebar a:hover{background:#00c6ff;color:#000}
 
+/* OVERLAY */
 .overlay{
   position:fixed;
   width:100%;
@@ -76,8 +86,15 @@ button{background:#00c6ff;border:none;cursor:pointer}
 }
 
 /* HEADER */
-header{text-align:center;padding:15px}
-.logo{width:60px;border-radius:50%}
+header{
+  text-align:center;
+  padding:15px;
+}
+
+.logo{
+  width:60px;
+  border-radius:50%;
+}
 
 /* FORM */
 .container{
@@ -91,10 +108,12 @@ header{text-align:center;padding:15px}
 /* TABLE */
 .table-page{display:none;padding:10px}
 
+/* DASHBOARD */
 .dashboard{
   display:flex;
+  gap:8px;
   flex-wrap:wrap;
-  gap:5px;
+  margin-top:10px;
 }
 
 .card{
@@ -106,13 +125,35 @@ header{text-align:center;padding:15px}
   text-align:center;
 }
 
+/* TOP BAR */
 .top-bar{
   display:flex;
-  flex-wrap:wrap;
   gap:5px;
   margin-top:10px;
 }
 
+.top-bar input{
+  flex:1;
+}
+
+.top-actions{
+  display:flex;
+  gap:5px;
+}
+
+.top-actions button{
+  padding:6px 10px;
+  font-size:11px;
+  width:auto;
+}
+
+/* CHART */
+.chart-box{
+  max-width:220px;
+  margin:10px auto;
+}
+
+/* TABLE */
 table{
   width:100%;
   background:#fff;
@@ -130,8 +171,6 @@ th,td{
 }
 
 td[contenteditable]{background:#f9f9f9}
-
-canvas{background:#fff;margin-top:10px;border-radius:10px}
 </style>
 </head>
 
@@ -162,42 +201,60 @@ canvas{background:#fff;margin-top:10px;border-radius:10px}
 <div class="overlay" id="overlay" onclick="closeMenu()"></div>
 
 <header>
-  <img src="akura.png" class="logo">
+  <img src="logo.png" class="logo">
   <h3>AKURA GENERAL ENTERPRISES</h3>
 </header>
 
 <!-- FORM -->
 <div class="container" id="formPage">
   <input id="name" placeholder="Name">
-  <input id="product" placeholder="Product">
-  <input id="amount" type="number" placeholder="Amount ₦">
-  <input id="paid" type="number" placeholder="Paid ₦">
+  <input id="product" placeholder="Product / Service">
+  <input id="amount" type="number" placeholder="Amount (₦)">
+  <input id="paid" type="number" placeholder="Paid (₦)">
   <button onclick="saveData()">Save</button>
 </div>
 
 <!-- TABLE -->
 <div class="table-page" id="tablePage">
 
+<!-- DASHBOARD -->
 <div class="dashboard">
   <div class="card">Total Paid<br><b id="tPaid">₦0</b></div>
   <div class="card">Total Debt<br><b id="tDebt">₦0</b></div>
 </div>
 
-<canvas id="chart"></canvas>
-
-<div class="top-bar">
-  <input id="search" placeholder="Search..." onkeyup="searchTable()">
-  <button onclick="sortAZ()">A-Z</button>
-  <button onclick="loadData()">Reset</button>
+<!-- CHART -->
+<div class="chart-box">
+  <canvas id="chart"></canvas>
 </div>
 
+<!-- SEARCH + SORT -->
+<div class="top-bar">
+  <input id="search" placeholder="Search..." onkeyup="searchTable()">
+
+  <div class="top-actions">
+    <button onclick="sortAZ()">A-Z</button>
+    <button onclick="loadData()">Reset</button>
+  </div>
+</div>
+
+<!-- TABLE -->
 <div style="overflow-x:auto">
 <table>
 <thead>
 <tr>
-<th>SN</th><th>Name</th><th>Product</th><th>Amount</th><th>Paid</th><th>Remaining</th><th>Total</th><th>Date</th><th>Action</th>
+<th>SN</th>
+<th>Name</th>
+<th>Product</th>
+<th>Amount</th>
+<th>Paid</th>
+<th>Remaining</th>
+<th>Total</th>
+<th>Date</th>
+<th>Action</th>
 </tr>
 </thead>
+
 <tbody id="tbody"></tbody>
 </table>
 </div>
@@ -233,25 +290,45 @@ function showApp(){
 }
 
 /* MENU */
-function openMenu(){sidebar.style.left="0";overlay.style.display="block";}
-function closeMenu(){sidebar.style.left="-260px";overlay.style.display="none";}
+function openMenu(){
+  sidebar.style.left="0";
+  overlay.style.display="block";
+}
+
+function closeMenu(){
+  sidebar.style.left="-260px";
+  overlay.style.display="none";
+}
 
 /* NAV */
-function showForm(){formPage.style.display="block";tablePage.style.display="none";closeMenu();}
-function showTable(){formPage.style.display="none";tablePage.style.display="block";loadData();closeMenu();}
+function showForm(){
+  formPage.style.display="block";
+  tablePage.style.display="none";
+  closeMenu();
+}
+
+function showTable(){
+  formPage.style.display="none";
+  tablePage.style.display="block";
+  loadData();
+  closeMenu();
+}
 
 /* SAVE */
 function saveData(){
   let now=new Date();
-  let remaining=amount.value-paid.value;
+
+  let amountVal=Number(amount.value);
+  let paidVal=Number(paid.value);
+  let remainingVal=amountVal-paidVal;
 
   let data={
-    name:name.value,
-    product:product.value,
-    amount:Number(amount.value),
-    paid:Number(paid.value),
-    remaining:remaining>0?remaining:0,
-    total:Number(paid.value),
+    name:name.value.trim(),
+    product:product.value.trim(),
+    amount:amountVal,
+    paid:paidVal,
+    remaining:remainingVal>0?remainingVal:0,
+    total:paidVal,
     date:now.toLocaleDateString()
   };
 
@@ -265,26 +342,28 @@ function updateAll(){
   loadData();
 }
 
-/* LOAD */
+/* LOAD TABLE */
 function loadData(){
   tbody.innerHTML="";
   let paidT=0,debtT=0;
 
   records.forEach((r,i)=>{
-    paidT+=r.paid;
-    debtT+=r.remaining;
+    paidT+=Number(r.paid||0);
+    debtT+=Number(r.remaining||0);
 
     tbody.innerHTML+=`
     <tr>
-    <td>${i+1}</td>
-    <td>${r.name}</td>
-    <td>${r.product}</td>
-    <td>₦${r.amount}</td>
-    <td>₦${r.paid}</td>
-    <td contenteditable onblur="editRemain(${i},this)">${r.remaining}</td>
-    <td>₦${r.total}</td>
-    <td>${r.date}</td>
-    <td><button onclick="del(${i})">Del</button></td>
+      <td>${i+1}</td>
+      <td>${r.name||""}</td>
+      <td>${r.product||""}</td>
+      <td>₦${r.amount}</td>
+      <td>₦${r.paid}</td>
+      <td contenteditable onblur="editRemain(${i},this)">
+        ${r.remaining ? "₦"+r.remaining : ""}
+      </td>
+      <td>₦${r.total}</td>
+      <td>${r.date||""}</td>
+      <td><button onclick="del(${i})">Del</button></td>
     </tr>`;
   });
 
@@ -296,10 +375,12 @@ function loadData(){
 
 /* EDIT REMAINING */
 function editRemain(i,el){
-  let val=Number(el.innerText);
+  let val=Number(el.innerText.replace(/₦/g,""));
   if(isNaN(val))return;
+
   records[i].remaining=val;
   records[i].total=records[i].paid+val;
+
   updateAll();
 }
 
@@ -328,18 +409,19 @@ function downloadPDF(){
   let w=window.open("");
   let html=`<h2 style="text-align:center;">AKURA GENERAL ENTERPRISES</h2>
   <table border="1" style="width:100%;border-collapse:collapse;text-align:center;">
-  <tr><th>SN</th><th>NAME</th><th>PRODUCT</th><th>AMOUNT</th><th>PAID</th><th>REMAINING</th><th>TOTAL</th><th>DATE</th></tr>`;
+  <tr><th>SN</th><th>Name</th><th>Product</th><th>Amount</th><th>Paid</th><th>Remaining</th><th>Total</th><th>Date</th></tr>`;
 
   records.forEach((r,i)=>{
-    html+=`<tr>
-    <td>${i+1}</td>
-    <td>${r.name}</td>
-    <td>${r.product}</td>
-    <td>₦${r.amount}</td>
-    <td>₦${r.paid}</td>
-    <td>${r.remaining}</td>
-    <td>₦${r.total}</td>
-    <td>${r.date}</td>
+    html+=`
+    <tr>
+      <td>${i+1}</td>
+      <td>${r.name}</td>
+      <td>${r.product}</td>
+      <td>₦${r.amount}</td>
+      <td>₦${r.paid}</td>
+      <td>${r.remaining?"₦"+r.remaining:""}</td>
+      <td>₦${r.total}</td>
+      <td>${r.date}</td>
     </tr>`;
   });
 
@@ -357,6 +439,10 @@ function drawChart(paid,debt){
     data:{
       labels:["Income","Debt"],
       datasets:[{data:[paid,debt],backgroundColor:["green","red"]}]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false
     }
   });
 }
