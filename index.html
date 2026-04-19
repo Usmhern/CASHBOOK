@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AKURA GENERAL ENTERPRISES</title>
+<link rel="icon" href="logo.png">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{font-family:Arial;background:#141e30;color:#fff;margin:0}
+
+/* LOGIN */
+#loginPage{
+  display:flex;
+  height:100vh;
+  justify-content:center;
+  align-items:center;
+}
+
+.login-box{
+  background:#243b55;
+  padding:30px;
+  border-radius:10px;
+  width:300px;
+}
+
+input,button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+}
+
+button{background:#00c6ff;border:none;cursor:pointer}
+
+/* APP */
+#app{display:none;padding:10px}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.card{
+  background:#fff;color:#000;padding:10px;border-radius:8px;margin:5px;flex:1;text-align:center;
+}
+
+.dashboard{display:flex;flex-wrap:wrap}
+
+table{
+  width:100%;
+  background:#fff;
+  color:#000;
+  margin-top:10px;
+  border-collapse:collapse;
+}
+
+th,td{padding:6px;border:1px solid #ccc;text-align:center}
+
+td[contenteditable]{background:#f9f9f9}
+
+button.small{padding:5px}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage">
+  <div class="login-box">
+    <h3>Admin Login</h3>
+    <input type="text" id="user" placeholder="Username">
+    <input type="password" id="pass" placeholder="Password">
+    <button onclick="login()">Login</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+<div class="top">
+  <h3>AKURA GENERAL ENTERPRISES</h3>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard">
+  <div class="card">Total Paid<br><b id="paidTotal">₦0</b></div>
+  <div class="card">Total Debt<br><b id="debtTotal">₦0</b></div>
+</div>
+
+<canvas id="chart" height="100"></canvas>
+
+<br>
+
+<input type="text" id="name" placeholder="Name">
+<input type="text" id="product" placeholder="Product">
+<input type="number" id="amount" placeholder="Amount">
+<input type="number" id="paid" placeholder="Paid">
+<button onclick="save()">Save</button>
+
+<input type="text" id="search" placeholder="Search..." onkeyup="search()">
+
+<table>
+<thead>
+<tr>
+<th>SN</th><th>Name</th><th>Product</th><th>Amount</th><th>Paid</th><th>Remaining</th><th>Total</th><th>Action</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+
+</div>
+
+<script>
+let records = JSON.parse(localStorage.getItem("records"))||[];
+
+/* LOGIN */
+const ADMIN_USER="admin";
+const ADMIN_PASS="1234";
+
+if(localStorage.getItem("login")==="true"){
+  showApp();
+}
+
+function login(){
+  if(user.value===ADMIN_USER && pass.value===ADMIN_PASS){
+    localStorage.setItem("login","true");
+    showApp();
+  }else{
+    alert("Wrong login");
+  }
+}
+
+function logout(){
+  localStorage.removeItem("login");
+  location.reload();
+}
+
+function showApp(){
+  loginPage.style.display="none";
+  app.style.display="block";
+  load();
+}
+
+/* SAVE */
+function save(){
+  let remaining=amount.value - paid.value;
+
+  let data={
+    name:name.value,
+    product:product.value,
+    amount:Number(amount.value),
+    paid:Number(paid.value),
+    remaining:remaining>0?remaining:0,
+    total:Number(paid.value)
+  };
+
+  records.push(data);
+  update();
+}
+
+/* UPDATE */
+function update(){
+  localStorage.setItem("records",JSON.stringify(records));
+  load();
+}
+
+/* LOAD */
+let chart;
+
+function load(){
+  tbody.innerHTML="";
+
+  let paidT=0, debtT=0;
+
+  records.forEach((r,i)=>{
+    paidT+=r.paid;
+    debtT+=r.remaining;
+
+    tbody.innerHTML+=`
+    <tr>
+      <td>${i+1}</td>
+      <td>${r.name}</td>
+      <td>${r.product}</td>
+      <td>₦${r.amount}</td>
+      <td>₦${r.paid}</td>
+      <td contenteditable onblur="editRemain(${i},this)">${r.remaining}</td>
+      <td>₦${r.total}</td>
+      <td>
+        <button class="small" onclick="del(${i})">Del</button>
+      </td>
+    </tr>`;
+  });
+
+  paidTotal.innerText="₦"+paidT;
+  debtTotal.innerText="₦"+debtT;
+
+  drawChart(paidT, debtT);
+}
+
+/* EDIT REMAINING */
+function editRemain(i, el){
+  let val=Number(el.innerText);
+  if(isNaN(val)) return;
+
+  records[i].remaining=val;
+  records[i].total=records[i].paid+val;
+
+  update();
+}
+
+/* DELETE */
+function del(i){
+  records.splice(i,1);
+  update();
+}
+
+/* SEARCH */
+function search(){
+  let v=search.value.toLowerCase();
+  document.querySelectorAll("tbody tr").forEach(r=>{
+    r.style.display=r.innerText.toLowerCase().includes(v)?"":"none";
+  });
+}
+
+/* CHART */
+function drawChart(paid, debt){
+  if(chart) chart.destroy();
+
+  chart=new Chart(document.getElementById("chart"),{
+    type:"doughnut",
+    data:{
+      labels:["Income","Debt"],
+      datasets:[{
+        data:[paid,debt],
+        backgroundColor:["green","red"]
+      }]
+    }
+  });
+}
+</script>
+
+</body>
+</html>
