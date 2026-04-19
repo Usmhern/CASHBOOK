@@ -3,15 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>AKURA GENERAL ENTERPRISES</title>
 <link rel="icon" href="logo.png">
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-
 body{background:#141e30;color:#fff}
 
 /* LOGIN */
@@ -21,20 +18,17 @@ body{background:#141e30;color:#fff}
   justify-content:center;
   align-items:center;
 }
-
 .login-box{
   background:#243b55;
   padding:25px;
   border-radius:10px;
   width:280px;
 }
-
 input,button{
   width:100%;
   padding:10px;
   margin-top:10px;
 }
-
 button{background:#00c6ff;border:none;cursor:pointer}
 
 /* MENU */
@@ -45,7 +39,6 @@ button{background:#00c6ff;border:none;cursor:pointer}
   font-size:24px;
   z-index:2000;
 }
-
 .sidebar{
   position:fixed;
   top:0;
@@ -57,16 +50,13 @@ button{background:#00c6ff;border:none;cursor:pointer}
   transition:0.3s;
   z-index:1500;
 }
-
 .sidebar a{
   display:block;
   padding:15px;
   color:#fff;
   text-decoration:none;
 }
-
 .sidebar a:hover{background:#00c6ff;color:#000}
-
 .overlay{
   position:fixed;
   width:100%;
@@ -88,15 +78,14 @@ header{text-align:center;padding:15px}
   border-radius:10px;
 }
 
-/* TABLE */
-.table-page{display:none;padding:10px}
+/* TABLE PAGE */
+.table-page,.chart-page{display:none;padding:10px}
 
+/* DASHBOARD */
 .dashboard{
   display:flex;
-  flex-wrap:wrap;
   gap:5px;
 }
-
 .card{
   flex:1;
   background:#fff;
@@ -106,15 +95,17 @@ header{text-align:center;padding:15px}
   text-align:center;
 }
 
+/* SEARCH + SORT SAME LINE */
 .top-bar{
-  display: inline;
-  flex-wrap:wrap;
-  width:30px;
-  height:20px;
-  gap:5px;
+  display:flex;
+  gap:10px;
   margin-top:10px;
 }
+.top-bar input{
+  flex:1;
+}
 
+/* TABLE */
 table{
   width:100%;
   background:#fff;
@@ -123,17 +114,20 @@ table{
   border-collapse:collapse;
   min-width:700px;
 }
-
 th,td{
   padding:6px;
   border:1px solid #ccc;
-  text-align:center;
   font-size:12px;
 }
+th{text-align:center}
+td{text-align:left}
 
-td[contenteditable]{background:#f9f9f9}
-
-canvas{background:#fff;margin-top:10px;border-radius:10px}
+/* CHART */
+canvas{
+  background:#fff;
+  margin-top:20px;
+  border-radius:10px;
+}
 </style>
 </head>
 
@@ -157,6 +151,7 @@ canvas{background:#fff;margin-top:10px;border-radius:10px}
 <div class="sidebar" id="sidebar">
   <a onclick="showForm()">➕ Add Record</a>
   <a onclick="showTable()">📊 View Records</a>
+  <a onclick="showChart()">📈 Chart</a>
   <a onclick="downloadPDF()">🧾 Download PDF</a>
   <a onclick="logout()">🚪 Logout</a>
 </div>
@@ -185,8 +180,6 @@ canvas{background:#fff;margin-top:10px;border-radius:10px}
   <div class="card">Total Debt<br><b id="tDebt">₦0</b></div>
 </div>
 
-<canvas id="chart"></canvas>
-
 <div class="top-bar">
   <input id="search" placeholder="Search..." onkeyup="searchTable()">
   <button onclick="sortAZ()">A-Z</button>
@@ -197,14 +190,19 @@ canvas{background:#fff;margin-top:10px;border-radius:10px}
 <table>
 <thead>
 <tr>
-<th>SN</th><th>Name</th><th>Product</th><th>Amount</th><th>Paid</th><th>Remaining</th><th>Total</th><th>Date</th><th>Action</th>
+<th>SN</th><th>Name</th><th>Product</th><th>Amount</th><th>Paid</th><th>Debt</th><th>Total</th><th>Date</th><th>Action</th>
 </tr>
 </thead>
 <tbody id="tbody"></tbody>
 </table>
 </div>
-
 </div>
+
+<!-- CHART PAGE -->
+<div class="chart-page" id="chartPage">
+  <canvas id="chart"></canvas>
+</div>
+
 </div>
 
 <script>
@@ -239,25 +237,44 @@ function openMenu(){sidebar.style.left="0";overlay.style.display="block";}
 function closeMenu(){sidebar.style.left="-260px";overlay.style.display="none";}
 
 /* NAV */
-function showForm(){formPage.style.display="block";tablePage.style.display="none";closeMenu();}
-function showTable(){formPage.style.display="none";tablePage.style.display="block";loadData();closeMenu();}
+function showForm(){
+  formPage.style.display="block";
+  tablePage.style.display="none";
+  chartPage.style.display="none";
+  closeMenu();
+}
+
+function showTable(){
+  formPage.style.display="none";
+  tablePage.style.display="block";
+  chartPage.style.display="none";
+  loadData();
+  closeMenu();
+}
+
+function showChart(){
+  formPage.style.display="none";
+  tablePage.style.display="none";
+  chartPage.style.display="block";
+  drawChart();
+  closeMenu();
+}
 
 /* SAVE */
 function saveData(){
-  let now=new Date();
-  let remaining=amount.value-paid.value;
+  let debt = Number(amount.value) - Number(paid.value);
+  if(debt < 0) debt = 0;
 
-  let data={
+  records.push({
     name: customer.value,
-    product:product.value,
-    amount:Number(amount.value),
-    paid:Number(paid.value),
-    remaining:remaining>0?remaining:0,
-    total:Number(paid.value),
-    date:now.toLocaleDateString()
-  };
+    product: product.value,
+    amount: Number(amount.value),
+    paid: Number(paid.value),
+    debt: debt,
+    total: Number(paid.value),
+    date: new Date().toLocaleDateString()
+  });
 
-  records.push(data);
   updateAll();
 }
 
@@ -274,7 +291,7 @@ function loadData(){
 
   records.forEach((r,i)=>{
     paidT+=r.paid;
-    debtT+=r.remaining;
+    debtT+=r.debt;
 
     tbody.innerHTML+=`
     <tr>
@@ -283,7 +300,7 @@ function loadData(){
     <td>${r.product}</td>
     <td>₦${r.amount}</td>
     <td>₦${r.paid}</td>
-    <td contenteditable onblur="editRemain(${i},this)">${r.remaining}</td>
+    <td>${r.debt}</td>
     <td>₦${r.total}</td>
     <td>${r.date}</td>
     <td><button onclick="del(${i})">Del</button></td>
@@ -292,17 +309,6 @@ function loadData(){
 
   tPaid.innerText="₦"+paidT;
   tDebt.innerText="₦"+debtT;
-
-  drawChart(paidT,debtT);
-}
-
-/* EDIT REMAINING */
-function editRemain(i,el){
-  let val=Number(el.innerText);
-  if(isNaN(val))return;
-  records[i].remaining=val;
-  records[i].total=records[i].paid+val;
-  updateAll();
 }
 
 /* DELETE */
@@ -329,19 +335,20 @@ function sortAZ(){
 function downloadPDF(){
   let w=window.open("");
   let html=`<h2 style="text-align:center;">AKURA GENERAL ENTERPRISES</h2>
-  <table border="1" style="width:100%;border-collapse:collapse;text-align:center;">
-  <tr><th>SN</th><th>NAME</th><th>PRODUCT</th><th>AMOUNT</th><th>PAID</th><th>REMAINING</th><th>TOTAL</th><th>DATE</th></tr>`;
+  <table border="1" style="width:100%;border-collapse:collapse;">
+  <tr>
+  <th>SN</th><th>NAME</th><th>PRODUCT</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th></tr>`;
 
   records.forEach((r,i)=>{
     html+=`<tr>
-    <td>${i+1}</td>
-    <td>${r.name}</td>
-    <td>${r.product}</td>
-    <td>₦${r.amount}</td>
-    <td>₦${r.paid}</td>
-    <td>${r.remaining}</td>
-    <td>₦${r.total}</td>
-    <td>${r.date}</td>
+    <td style="text-align:left">${i+1}</td>
+    <td style="text-align:left">${r.name}</td>
+    <td style="text-align:left">${r.product}</td>
+    <td style="text-align:left">₦${r.amount}</td>
+    <td style="text-align:left">₦${r.paid}</td>
+    <td style="text-align:left">${r.debt}</td>
+    <td style="text-align:left">₦${r.total}</td>
+    <td style="text-align:left">${r.date}</td>
     </tr>`;
   });
 
@@ -351,14 +358,20 @@ function downloadPDF(){
 }
 
 /* CHART */
-function drawChart(paid,debt){
+function drawChart(){
   if(chart) chart.destroy();
+
+  let paid=0,debt=0;
+  records.forEach(r=>{
+    paid+=r.paid;
+    debt+=r.debt;
+  });
 
   chart=new Chart(document.getElementById("chart"),{
     type:"doughnut",
     data:{
       labels:["Income","Debt"],
-      datasets:[{data:[paid,debt],backgroundColor:["green","red"]}]
+      datasets:[{data:[paid,debt]}]
     }
   });
 }
