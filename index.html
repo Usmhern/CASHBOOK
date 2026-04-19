@@ -79,7 +79,7 @@ header{text-align:center;padding:15px}
   border-radius:10px;
 }
 
-/* TABLE */
+/* TABLE & CHART */
 .table-page,.chart-page{display:none;padding:10px}
 
 /* DASHBOARD */
@@ -93,13 +93,24 @@ header{text-align:center;padding:15px}
   text-align:center;
 }
 
-/* TOP BAR */
+/* TOP BAR (FIXED) */
 .top-bar{
   display:flex;
-  gap:10px;
+  gap:6px;
   margin-top:10px;
+  align-items:center;
 }
-.top-bar input{flex:1}
+
+.top-bar input{
+  flex:1;
+  padding:10px;
+}
+
+.top-bar button{
+  width:55px;
+  padding:6px;
+  font-size:11px;
+}
 
 /* TABLE */
 table{
@@ -114,11 +125,11 @@ th,td{
   padding:6px;
   border:1px solid #ccc;
   font-size:12px;
-  text-align:left;
 }
 th{text-align:center}
+td{text-align:left}
 
-/* ₦ INPUT WRAPPER */
+/* DEBT INPUT CLEAN STYLE */
 .money{
   display:flex;
   align-items:center;
@@ -128,9 +139,11 @@ th{text-align:center}
   font-weight:bold;
 }
 .money input{
+  border:none;
+  outline:none;
+  background:transparent;
   width:80px;
-  padding:3px;
-  text-align:center;
+  font-size:12px;
 }
 
 /* CHART */
@@ -194,7 +207,7 @@ canvas{
 <div class="top-bar">
   <input id="search" placeholder="Search..." onkeyup="searchTable()">
   <button onclick="sortAZ()">A-Z</button>
-  <button onclick="loadData()">Reset</button>
+  <button onclick="loadData()">R</button>
 </div>
 
 <div style="overflow-x:auto">
