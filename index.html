@@ -107,8 +107,10 @@ header{text-align:center;padding:15px}
 }
 
 .top-bar{
-  display:flex;
+  display: inline;
   flex-wrap:wrap;
+  width:30px;
+  height:20px;
   gap:5px;
   margin-top:10px;
 }
@@ -168,7 +170,7 @@ canvas{background:#fff;margin-top:10px;border-radius:10px}
 
 <!-- FORM -->
 <div class="container" id="formPage">
-  <input id="name" placeholder="Name">
+  <input id="customer" placeholder="Name">
   <input id="product" placeholder="Product">
   <input id="amount" type="number" placeholder="Amount ₦">
   <input id="paid" type="number" placeholder="Paid ₦">
@@ -246,7 +248,7 @@ function saveData(){
   let remaining=amount.value-paid.value;
 
   let data={
-    name:name.value,
+    name: customer.value,
     product:product.value,
     amount:Number(amount.value),
     paid:Number(paid.value),
