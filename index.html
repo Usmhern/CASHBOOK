@@ -3,31 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>AKURA GENERAL ENTERPRISES</title>
+<link rel="icon" href="logo.png">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#0f172a;
-  color:white;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+
+body{background:#141e30;color:#fff}
 
 /* LOGIN */
-#login{
-  height:100vh;
+#loginPage{
   display:flex;
+  height:100vh;
   justify-content:center;
   align-items:center;
 }
 
-.box{
-  width:300px;
-  padding:20px;
-  background:#1e293b;
+.login-box{
+  background:#243b55;
+  padding:25px;
   border-radius:10px;
+  width:280px;
 }
 
 input,button{
@@ -36,65 +35,139 @@ input,button{
   margin-top:10px;
 }
 
-/* APP */
-#app{display:none}
+button{background:#00c6ff;border:none;cursor:pointer}
+
+/* MENU */
+.menu-btn{
+  position:fixed;
+  top:15px;
+  left:15px;
+  font-size:24px;
+  z-index:2000;
+}
+
+.sidebar{
+  position:fixed;
+  top:0;
+  left:-260px;
+  width:260px;
+  height:100%;
+  background:#000;
+  padding-top:60px;
+  transition:0.3s;
+  z-index:1500;
+}
+
+.sidebar a{
+  display:block;
+  padding:15px;
+  color:#fff;
+  text-decoration:none;
+}
+
+.sidebar a:hover{background:#00c6ff;color:#000}
+
+.overlay{
+  position:fixed;
+  width:100%;
+  height:100%;
+  display:none;
+  z-index:1400;
+}
+
+/* HEADER */
+header{text-align:center;padding:15px}
+.logo{width:60px;border-radius:50%}
 
 /* FORM */
-.form{
+.container{
   max-width:400px;
-  margin:20px auto;
-  background:#1e293b;
+  margin:15px auto;
+  background:rgba(255,255,255,0.1);
   padding:20px;
   border-radius:10px;
 }
 
-/* POPUP */
-#popup{
-  position:fixed;
-  top:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:green;
-  padding:10px 15px;
-  border-radius:8px;
-  display:none;
+/* TABLE */
+.table-page{display:none;padding:10px}
+
+.dashboard{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
 }
 
-/* TABLE */
+.card{
+  flex:1;
+  background:#fff;
+  color:#000;
+  padding:10px;
+  border-radius:6px;
+  text-align:center;
+}
+
+.top-bar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  margin-top:10px;
+}
+
 table{
   width:100%;
-  background:white;
-  color:black;
+  background:#fff;
+  color:#000;
+  margin-top:10px;
   border-collapse:collapse;
+  min-width:700px;
 }
 
 th,td{
+  padding:6px;
   border:1px solid #ccc;
-  padding:8px;
+  text-align:center;
   font-size:12px;
 }
+
+td[contenteditable]{background:#f9f9f9}
+
+canvas{background:#fff;margin-top:10px;border-radius:10px}
 </style>
 </head>
 
 <body>
 
-<!-- POPUP -->
-<div id="popup">Saved Successfully ✔</div>
-
 <!-- LOGIN -->
-<div id="login">
-  <div class="box">
+<div id="loginPage">
+  <div class="login-box">
     <h3>Admin Login</h3>
-    <input id="u" placeholder="Username">
-    <input id="p" type="password" placeholder="Password">
+    <input id="user" placeholder="Username">
+    <input id="pass" type="password" placeholder="Password">
     <button onclick="login()">Login</button>
   </div>
 </div>
 
 <!-- APP -->
-<div id="app">
+<div id="app" style="display:none">
 
-<div class="form">
+<div class="menu-btn" onclick="openMenu()">☰</div>
+
+<div class="sidebar" id="sidebar">
+  <a onclick="showForm()">➕ Add Record</a>
+  <a onclick="showTable()">📊 View Records</a>
+  <a onclick="downloadPDF()">🧾 Download PDF</a>
+  <a onclick="logout()">🚪 Logout</a>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+<header>
+  <img src="logo.png" class="logo">
+  <h3>AKURA GENERAL ENTERPRISES</h3>
+</header>
+
+<!-- FORM -->
+<div class="container" id="formPage">
   <input id="name" placeholder="Name">
   <input id="product" placeholder="Product">
   <input id="amount" type="number" placeholder="Amount ₦">
@@ -102,112 +175,191 @@ th,td{
   <button onclick="saveData()">Save</button>
 </div>
 
+<!-- TABLE -->
+<div class="table-page" id="tablePage">
+
+<div class="dashboard">
+  <div class="card">Total Paid<br><b id="tPaid">₦0</b></div>
+  <div class="card">Total Debt<br><b id="tDebt">₦0</b></div>
+</div>
+
+<canvas id="chart"></canvas>
+
+<div class="top-bar">
+  <input id="search" placeholder="Search..." onkeyup="searchTable()">
+  <button onclick="sortAZ()">A-Z</button>
+  <button onclick="loadData()">Reset</button>
+</div>
+
+<div style="overflow-x:auto">
 <table>
 <thead>
 <tr>
-<th>Name</th>
-<th>Product</th>
-<th>Amount</th>
-<th>Paid</th>
-<th>Remaining</th>
-<th>Date</th>
+<th>SN</th><th>Name</th><th>Product</th><th>Amount</th><th>Paid</th><th>Remaining</th><th>Total</th><th>Date</th><th>Action</th>
 </tr>
 </thead>
-<tbody id="table"></tbody>
+<tbody id="tbody"></tbody>
 </table>
+</div>
 
+</div>
 </div>
 
 <script>
+const ADMIN_USER="Admin";
+const ADMIN_PASS="1234";
 
-/* SAFE DOM REFERENCES (IMPORTANT FIX) */
-const nameInput = document.getElementById("name");
-const productInput = document.getElementById("product");
-const amountInput = document.getElementById("amount");
-const paidInput = document.getElementById("paid");
-
-const table = document.getElementById("table");
-
-let data = JSON.parse(localStorage.getItem("data")) || [];
+let records=JSON.parse(localStorage.getItem("records"))||[];
+let chart;
 
 /* LOGIN */
+if(localStorage.getItem("login")==="true") showApp();
+
 function login(){
-  if(u.value==="admin" && p.value==="1234"){
-    login.style.display="none";
-    app.style.display="block";
-    load();
-  }else{
-    alert("Wrong login");
-  }
+  if(user.value===ADMIN_USER && pass.value===ADMIN_PASS){
+    localStorage.setItem("login","true");
+    showApp();
+  }else alert("Wrong login");
 }
 
-/* SAVE - FIXED (THIS IS YOUR ORIGINAL FLOW RESTORED) */
+function logout(){
+  localStorage.removeItem("login");
+  location.reload();
+}
+
+function showApp(){
+  loginPage.style.display="none";
+  app.style.display="block";
+}
+
+/* MENU */
+function openMenu(){sidebar.style.left="0";overlay.style.display="block";}
+function closeMenu(){sidebar.style.left="-260px";overlay.style.display="none";}
+
+/* NAV */
+function showForm(){formPage.style.display="block";tablePage.style.display="none";closeMenu();}
+function showTable(){formPage.style.display="none";tablePage.style.display="block";loadData();closeMenu();}
+
+/* SAVE */
 function saveData(){
+  let now=new Date();
+  let remaining=amount.value-paid.value;
 
-  let n = nameInput.value.trim();
-  let pr = productInput.value.trim();
-  let a = Number(amountInput.value);
-  let pa = Number(paidInput.value);
-
-  if(!n || !pr || !a || !pa){
-    alert("Fill all fields");
-    return;
-  }
-
-  let remaining = a - pa;
-
-  let obj = {
-    name:n,
-    product:pr,
-    amount:a,
-    paid:pa,
-    remaining: remaining > 0 ? remaining : 0,
-    date: new Date().toLocaleDateString()
+  let data={
+    name:name.value,
+    product:product.value,
+    amount:Number(amount.value),
+    paid:Number(paid.value),
+    remaining:remaining>0?remaining:0,
+    total:Number(paid.value),
+    date:now.toLocaleDateString()
   };
 
-  data.push(obj);
-
-  localStorage.setItem("data", JSON.stringify(data));
-
-  showPopup();
-
-  nameInput.value="";
-  productInput.value="";
-  amountInput.value="";
-  paidInput.value="";
-
-  load();
+  records.push(data);
+  updateAll();
 }
 
-/* POPUP */
-function showPopup(){
-  popup.style.display="block";
-  setTimeout(()=>popup.style.display="none",1500);
+/* UPDATE */
+function updateAll(){
+  localStorage.setItem("records",JSON.stringify(records));
+  loadData();
 }
 
-/* LOAD TABLE */
-function load(){
-  table.innerHTML="";
+/* LOAD */
+function loadData(){
+  tbody.innerHTML="";
+  let paidT=0,debtT=0;
 
-  data.forEach((d)=>{
-    table.innerHTML += `
-      <tr>
-        <td>${d.name}</td>
-        <td>${d.product}</td>
-        <td>₦${d.amount}</td>
-        <td>₦${d.paid}</td>
-        <td>₦${d.remaining}</td>
-        <td>${d.date}</td>
-      </tr>
-    `;
+  records.forEach((r,i)=>{
+    paidT+=r.paid;
+    debtT+=r.remaining;
+
+    tbody.innerHTML+=`
+    <tr>
+    <td>${i+1}</td>
+    <td>${r.name}</td>
+    <td>${r.product}</td>
+    <td>₦${r.amount}</td>
+    <td>₦${r.paid}</td>
+    <td contenteditable onblur="editRemain(${i},this)">${r.remaining}</td>
+    <td>₦${r.total}</td>
+    <td>${r.date}</td>
+    <td><button onclick="del(${i})">Del</button></td>
+    </tr>`;
+  });
+
+  tPaid.innerText="₦"+paidT;
+  tDebt.innerText="₦"+debtT;
+
+  drawChart(paidT,debtT);
+}
+
+/* EDIT REMAINING */
+function editRemain(i,el){
+  let val=Number(el.innerText);
+  if(isNaN(val))return;
+  records[i].remaining=val;
+  records[i].total=records[i].paid+val;
+  updateAll();
+}
+
+/* DELETE */
+function del(i){
+  records.splice(i,1);
+  updateAll();
+}
+
+/* SEARCH */
+function searchTable(){
+  let v=search.value.toLowerCase();
+  document.querySelectorAll("tbody tr").forEach(r=>{
+    r.style.display=r.innerText.toLowerCase().includes(v)?"":"none";
   });
 }
 
-/* INIT */
-if(localStorage.getItem("data")){
-  load();
+/* SORT */
+function sortAZ(){
+  records.sort((a,b)=>a.name.localeCompare(b.name));
+  updateAll();
 }
 
+/* PDF */
+function downloadPDF(){
+  let w=window.open("");
+  let html=`<h2 style="text-align:center;">AKURA GENERAL ENTERPRISES</h2>
+  <table border="1" style="width:100%;border-collapse:collapse;text-align:center;">
+  <tr><th>SN</th><th>NAME</th><th>PRODUCT</th><th>AMOUNT</th><th>PAID</th><th>REMAINING</th><th>TOTAL</th><th>DATE</th></tr>`;
+
+  records.forEach((r,i)=>{
+    html+=`<tr>
+    <td>${i+1}</td>
+    <td>${r.name}</td>
+    <td>${r.product}</td>
+    <td>₦${r.amount}</td>
+    <td>₦${r.paid}</td>
+    <td>${r.remaining}</td>
+    <td>₦${r.total}</td>
+    <td>${r.date}</td>
+    </tr>`;
+  });
+
+  html+="</table>";
+  w.document.write(html);
+  w.print();
+}
+
+/* CHART */
+function drawChart(paid,debt){
+  if(chart) chart.destroy();
+
+  chart=new Chart(document.getElementById("chart"),{
+    type:"doughnut",
+    data:{
+      labels:["Income","Debt"],
+      datasets:[{data:[paid,debt],backgroundColor:["green","red"]}]
+    }
+  });
+}
 </script>
 
 </body>
