@@ -57,6 +57,7 @@ button{background:#00c6ff;border:none;cursor:pointer}
   text-decoration:none;
 }
 .sidebar a:hover{background:#00c6ff;color:#000}
+
 .overlay{
   position:fixed;
   width:100%;
@@ -78,14 +79,11 @@ header{text-align:center;padding:15px}
   border-radius:10px;
 }
 
-/* TABLE PAGE */
+/* TABLE */
 .table-page,.chart-page{display:none;padding:10px}
 
 /* DASHBOARD */
-.dashboard{
-  display:flex;
-  gap:5px;
-}
+.dashboard{display:flex;gap:5px}
 .card{
   flex:1;
   background:#fff;
@@ -95,15 +93,13 @@ header{text-align:center;padding:15px}
   text-align:center;
 }
 
-/* SEARCH + SORT SAME LINE */
+/* TOP BAR */
 .top-bar{
   display:flex;
   gap:10px;
   margin-top:10px;
 }
-.top-bar input{
-  flex:1;
-}
+.top-bar input{flex:1}
 
 /* TABLE */
 table{
@@ -118,9 +114,24 @@ th,td{
   padding:6px;
   border:1px solid #ccc;
   font-size:12px;
+  text-align:left;
 }
 th{text-align:center}
-td{text-align:left}
+
+/* ₦ INPUT WRAPPER */
+.money{
+  display:flex;
+  align-items:center;
+  gap:3px;
+}
+.money span{
+  font-weight:bold;
+}
+.money input{
+  width:80px;
+  padding:3px;
+  text-align:center;
+}
 
 /* CHART */
 canvas{
@@ -190,7 +201,7 @@ canvas{
 <table>
 <thead>
 <tr>
-<th>SN</th><th>NAME</th><th>PRODUCT/SERVICE</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th><th>ACTION</th>
+<th>SN</th><th>Name</th><th>Product</th><th>Amount</th><th>Paid</th><th>Debt</th><th>Total</th><th>Date</th><th>Action</th>
 </tr>
 </thead>
 <tbody id="tbody"></tbody>
@@ -198,7 +209,7 @@ canvas{
 </div>
 </div>
 
-<!-- CHART PAGE -->
+<!-- CHART -->
 <div class="chart-page" id="chartPage">
   <canvas id="chart"></canvas>
 </div>
@@ -295,20 +306,38 @@ function loadData(){
 
     tbody.innerHTML+=`
     <tr>
-    <td>${i+1}</td>
-    <td>${r.name}</td>
-    <td>${r.product}</td>
-    <td>₦${r.amount}</td>
-    <td>₦${r.paid}</td>
-    <td>${r.debt}</td>
-    <td>₦${r.total}</td>
-    <td>${r.date}</td>
-    <td><button onclick="del(${i})">Del</button></td>
+      <td>${i+1}</td>
+      <td>${r.name}</td>
+      <td>${r.product}</td>
+      <td>₦${r.amount}</td>
+      <td>₦${r.paid}</td>
+
+      <td>
+        <div class="money">
+          <span>₦</span>
+          <input value="${r.debt}" oninput="editDebt(${i},this)">
+        </div>
+      </td>
+
+      <td>₦${r.total}</td>
+      <td>${r.date}</td>
+      <td><button onclick="del(${i})">Del</button></td>
     </tr>`;
   });
 
   tPaid.innerText="₦"+paidT;
   tDebt.innerText="₦"+debtT;
+}
+
+/* EDIT DEBT */
+function editDebt(i,el){
+  let val=Number(el.value);
+  if(isNaN(val)) val=0;
+
+  records[i].debt=val;
+  records[i].total=records[i].paid+val;
+
+  updateAll();
 }
 
 /* DELETE */
@@ -336,19 +365,19 @@ function downloadPDF(){
   let w=window.open("");
   let html=`<h2 style="text-align:center;">AKURA GENERAL ENTERPRISES</h2>
   <table border="1" style="width:100%;border-collapse:collapse;">
-  <tr>
-  <th>SN</th><th>NAME</th><th>PRODUCT</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th></tr>`;
+  <tr><th>SN</th><th>NAME</th><th>PRODUCT</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th></tr>`;
 
   records.forEach((r,i)=>{
-    html+=`<tr>
-    <td style="text-align:left">${i+1}</td>
-    <td style="text-align:left">${r.name}</td>
-    <td style="text-align:left">${r.product}</td>
-    <td style="text-align:left">₦${r.amount}</td>
-    <td style="text-align:left">₦${r.paid}</td>
-    <td style="text-align:left">${r.debt}</td>
-    <td style="text-align:left">₦${r.total}</td>
-    <td style="text-align:left">${r.date}</td>
+    html+=`
+    <tr>
+      <td>${i+1}</td>
+      <td>${r.name}</td>
+      <td>${r.product}</td>
+      <td>₦${r.amount}</td>
+      <td>₦${r.paid}</td>
+      <td>₦${r.debt}</td>
+      <td>₦${r.total}</td>
+      <td>${r.date}</td>
     </tr>`;
   });
 
@@ -371,7 +400,10 @@ function drawChart(){
     type:"doughnut",
     data:{
       labels:["Income","Debt"],
-      datasets:[{data:[paid,debt]}]
+      datasets:[{
+        data:[paid,debt],
+        backgroundColor:["#007bff","#ff3b3b"]
+      }]
     }
   });
 }
