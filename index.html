@@ -183,7 +183,7 @@ canvas{
 <div class="overlay" id="overlay" onclick="closeMenu()"></div>
 
 <header>
-  <img src="logo.png" class="logo">
+  <img src="akura.png" class="logo">
   <h3 style="color:#0bf">AKURA GENERAL ENTERPRISES</h3>
 </header>
 
@@ -206,15 +206,15 @@ canvas{
 
 <div class="top-bar">
   <input id="search" placeholder="Search..." onkeyup="searchTable()">
-  <button onclick="sortAZ()">A-Z</button>
-  <button onclick="loadData()">R</button>
+  <button style="color:#fff; background:red;" onclick="sortAZ()">A-Z</button>
+  <button style="color:#fff; background: #080;" onclick="loadData()">🔄</button>
 </div>
 
 <div style="overflow-x:auto">
 <table>
-<thead>
+<thead style="background: navy; color:#fff;">
 <tr>
-<th>SN</th><th>Name</th><th>Product</th><th>Amount</th><th>Paid</th><th>Debt</th><th>Total</th><th>Date</th><th>Action</th>
+<th>SN</th><th>NAME</th><th>PRODUCT</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th><th>ACTION</th>
 </tr>
 </thead>
 <tbody id="tbody"></tbody>
@@ -334,7 +334,7 @@ function loadData(){
 
       <td>₦${r.total}</td>
       <td>${r.date}</td>
-      <td><button onclick="del(${i})">Del</button></td>
+      <td><button onclick="del(${i})">❌</button></td>
     </tr>`;
   });
 
@@ -376,7 +376,7 @@ function sortAZ(){
 /* PDF */
 function downloadPDF(){
   let w=window.open("");
-  let html=`<h2 style="text-align:center;">AKURA GENERAL ENTERPRISES</h2>
+  let html=`<h2 style="color: navy; text-align:center;">AKURA GENERAL ENTERPRISES</h2><h4 style="color:black; text-align:center;">CASH BOOK</h4>
   <table border="1" style="width:100%;border-collapse:collapse;">
   <tr><th>SN</th><th>NAME</th><th>PRODUCT</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th></tr>`;
 
