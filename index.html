@@ -3,61 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>AKURA GENERAL ENTERPRISES</title>
-<link rel="icon" href="logo.png">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:system-ui;
-}
-
 body{
-  background:linear-gradient(135deg,#0f172a,#111827);
-  color:#fff;
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
 }
 
 /* LOGIN */
-#loginPage{
+#login{
   height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
 }
 
-.login-box{
-  width:320px;
-  padding:25px;
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:14px;
-  backdrop-filter:blur(10px);
+.box{
+  width:300px;
+  padding:20px;
+  background:#1e293b;
+  border-radius:10px;
 }
 
-/* INPUT */
 input,button{
   width:100%;
-  padding:12px;
+  padding:10px;
   margin-top:10px;
-  border:none;
+}
+
+/* APP */
+#app{display:none}
+
+/* FORM */
+.form{
+  max-width:400px;
+  margin:20px auto;
+  background:#1e293b;
+  padding:20px;
   border-radius:10px;
-  outline:none;
-}
-
-input{
-  background:rgba(255,255,255,0.08);
-  color:#fff;
-}
-
-button{
-  background:#22d3ee;
-  font-weight:600;
-  cursor:pointer;
 }
 
 /* POPUP */
@@ -66,131 +54,23 @@ button{
   top:20px;
   left:50%;
   transform:translateX(-50%);
-  background:#16a34a;
-  padding:10px 18px;
-  border-radius:10px;
+  background:green;
+  padding:10px 15px;
+  border-radius:8px;
   display:none;
-  z-index:9999;
-}
-
-/* APP */
-#app{display:none}
-
-/* MENU */
-.menu{
-  position:fixed;
-  top:15px;
-  left:15px;
-  font-size:26px;
-  cursor:pointer;
-  z-index:2000;
-}
-
-.sidebar{
-  position:fixed;
-  top:0;
-  left:-260px;
-  width:260px;
-  height:100%;
-  background:#0b1220;
-  padding-top:70px;
-  transition:.3s;
-  z-index:1500;
-  border-right:1px solid rgba(255,255,255,0.1);
-}
-
-.sidebar a{
-  display:block;
-  padding:15px;
-  color:#fff;
-  text-decoration:none;
-}
-
-.sidebar a:hover{
-  background:rgba(255,255,255,0.05);
-}
-
-.overlay{
-  position:fixed;
-  inset:0;
-  display:none;
-}
-
-/* HEADER */
-header{
-  text-align:center;
-  padding:15px;
-}
-
-/* FORM */
-.container{
-  max-width:420px;
-  margin:20px auto;
-  padding:20px;
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:14px;
-  backdrop-filter:blur(10px);
-}
-
-/* DASHBOARD */
-.dashboard{
-  display:flex;
-  gap:10px;
-  padding:10px;
-}
-
-.card{
-  flex:1;
-  padding:12px;
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:12px;
-  text-align:center;
 }
 
 /* TABLE */
-.table-page{display:none;padding:10px}
-
 table{
   width:100%;
-  min-width:800px;
+  background:white;
+  color:black;
   border-collapse:collapse;
-  margin-top:10px;
-  background:rgba(255,255,255,0.03);
 }
 
 th,td{
-  border:1px solid rgba(255,255,255,0.1);
+  border:1px solid #ccc;
   padding:8px;
-  text-align:center;
-  font-size:13px;
-}
-
-th{
-  background:rgba(255,255,255,0.08);
-}
-
-/* CHART */
-.chart-box{
-  max-width:250px;
-  margin:10px auto;
-}
-
-/* TOP BAR */
-.topbar{
-  display:flex;
-  gap:10px;
-  padding:10px;
-}
-
-.topbar input{
-  flex:1;
-}
-
-.small-btn{
-  width:auto;
-  padding:8px 10px;
   font-size:12px;
 }
 </style>
@@ -199,14 +79,14 @@ th{
 <body>
 
 <!-- POPUP -->
-<div id="popup">✔ Saved Successfully</div>
+<div id="popup">Saved Successfully ✔</div>
 
 <!-- LOGIN -->
-<div id="loginPage">
-  <div class="login-box">
+<div id="login">
+  <div class="box">
     <h3>Admin Login</h3>
-    <input id="user" placeholder="Username">
-    <input id="pass" type="password" placeholder="Password">
+    <input id="u" placeholder="Username">
+    <input id="p" type="password" placeholder="Password">
     <button onclick="login()">Login</button>
   </div>
 </div>
@@ -214,23 +94,7 @@ th{
 <!-- APP -->
 <div id="app">
 
-<div class="menu" onclick="openMenu()">☰</div>
-
-<div class="sidebar" id="sidebar">
-  <a onclick="showForm()">➕ Add Record</a>
-  <a onclick="showTable()">📚 View Records</a>
-  <a onclick="downloadPDF()">⬇️ Download PDF</a>
-  <a onclick="logout()">🚪 Logout</a>
-</div>
-
-<div class="overlay" id="overlay" onclick="closeMenu()"></div>
-
-<header>
-  <h2>AKURA GENERAL ENTERPRISES</h2>
-</header>
-
-<!-- FORM -->
-<div class="container" id="formPage">
+<div class="form">
   <input id="name" placeholder="Name">
   <input id="product" placeholder="Product">
   <input id="amount" type="number" placeholder="Amount ₦">
@@ -238,196 +102,112 @@ th{
   <button onclick="saveData()">Save</button>
 </div>
 
-<!-- TABLE -->
-<div class="table-page" id="tablePage">
-
-<div class="dashboard">
-  <div class="card">Paid<br><b id="paidT">₦0</b></div>
-  <div class="card">Debt<br><b id="debtT">₦0</b></div>
-</div>
-
-<div class="chart-box">
-  <canvas id="chart"></canvas>
-</div>
-
-<div class="topbar">
-  <input id="search" placeholder="Search..." onkeyup="searchTable()">
-  <button class="small-btn" onclick="sortAZ()">A-Z</button>
-  <button class="small-btn" onclick="load()">Reset</button>
-</div>
-
 <table>
 <thead>
 <tr>
-<th>SN</th><th>Name</th><th>Product</th><th>Amount</th><th>Paid</th><th>Remaining</th><th>Total</th><th>Date</th><th>Action</th>
+<th>Name</th>
+<th>Product</th>
+<th>Amount</th>
+<th>Paid</th>
+<th>Remaining</th>
+<th>Date</th>
 </tr>
 </thead>
-<tbody id="tbody"></tbody>
+<tbody id="table"></tbody>
 </table>
 
 </div>
-</div>
 
 <script>
-let records = JSON.parse(localStorage.getItem("records")) || [];
-let chart;
+
+/* SAFE DOM REFERENCES (IMPORTANT FIX) */
+const nameInput = document.getElementById("name");
+const productInput = document.getElementById("product");
+const amountInput = document.getElementById("amount");
+const paidInput = document.getElementById("paid");
+
+const table = document.getElementById("table");
+
+let data = JSON.parse(localStorage.getItem("data")) || [];
 
 /* LOGIN */
-const ADMIN="admin";
-const PASS="1234";
-
-if(localStorage.getItem("login")==="true") showApp();
-
 function login(){
-  if(user.value===ADMIN && pass.value===PASS){
-    localStorage.setItem("login","true");
-    showApp();
-  }else alert("Wrong login");
+  if(u.value==="admin" && p.value==="1234"){
+    login.style.display="none";
+    app.style.display="block";
+    load();
+  }else{
+    alert("Wrong login");
+  }
 }
 
-function logout(){
-  localStorage.removeItem("login");
-  location.reload();
-}
-
-function showApp(){
-  loginPage.style.display="none";
-  app.style.display="block";
-}
-
-/* MENU */
-function openMenu(){sidebar.style.left="0";overlay.style.display="block";}
-function closeMenu(){sidebar.style.left="-260px";overlay.style.display="none";}
-
-/* NAV */
-function showForm(){
-  formPage.style.display="block";
-  tablePage.style.display="none";
-  closeMenu();
-}
-
-function showTable(){
-  formPage.style.display="none";
-  tablePage.style.display="block";
-  load();
-  closeMenu();
-}
-
-/* SAVE (FIXED & SAFE) */
+/* SAVE - FIXED (THIS IS YOUR ORIGINAL FLOW RESTORED) */
 function saveData(){
 
-  let n=name.value.trim();
-  let p=product.value.trim();
-  let a=Number(amount.value);
-  let pa=Number(paid.value);
+  let n = nameInput.value.trim();
+  let pr = productInput.value.trim();
+  let a = Number(amountInput.value);
+  let pa = Number(paidInput.value);
 
-  if(!n||!p||!a||!pa){
+  if(!n || !pr || !a || !pa){
     alert("Fill all fields");
     return;
   }
 
-  let data={
+  let remaining = a - pa;
+
+  let obj = {
     name:n,
-    product:p,
+    product:pr,
     amount:a,
     paid:pa,
-    remaining:Math.max(a-pa,0),
-    total:pa,
-    date:new Date().toLocaleDateString()
+    remaining: remaining > 0 ? remaining : 0,
+    date: new Date().toLocaleDateString()
   };
 
-  records.push(data);
-  save();
+  data.push(obj);
 
-  name.value="";
-  product.value="";
-  amount.value="";
-  paid.value="";
+  localStorage.setItem("data", JSON.stringify(data));
 
   showPopup();
+
+  nameInput.value="";
+  productInput.value="";
+  amountInput.value="";
+  paidInput.value="";
+
+  load();
 }
 
 /* POPUP */
 function showPopup(){
-  let p=document.getElementById("popup");
-  p.style.display="block";
-  setTimeout(()=>p.style.display="none",1500);
+  popup.style.display="block";
+  setTimeout(()=>popup.style.display="none",1500);
 }
 
-/* SAVE STORAGE */
-function save(){
-  localStorage.setItem("records",JSON.stringify(records));
+/* LOAD TABLE */
+function load(){
+  table.innerHTML="";
+
+  data.forEach((d)=>{
+    table.innerHTML += `
+      <tr>
+        <td>${d.name}</td>
+        <td>${d.product}</td>
+        <td>₦${d.amount}</td>
+        <td>₦${d.paid}</td>
+        <td>₦${d.remaining}</td>
+        <td>${d.date}</td>
+      </tr>
+    `;
+  });
+}
+
+/* INIT */
+if(localStorage.getItem("data")){
   load();
 }
 
-/* LOAD */
-function load(){
-  tbody.innerHTML="";
-  let paid=0,debt=0;
-
-  records.forEach((r,i)=>{
-    paid+=r.paid;
-    debt+=r.remaining;
-
-    tbody.innerHTML+=`
-    <tr>
-      <td>${i+1}</td>
-      <td>${r.name}</td>
-      <td>${r.product}</td>
-      <td>₦${r.amount}</td>
-      <td>₦${r.paid}</td>
-      <td>₦${r.remaining}</td>
-      <td>₦${r.total}</td>
-      <td>${r.date}</td>
-      <td><button onclick="del(${i})">Del</button></td>
-    </tr>`;
-  });
-
-  paidT.innerText="₦"+paid;
-  debtT.innerText="₦"+debt;
-
-  draw(paid,debt);
-}
-
-/* DELETE */
-function del(i){
-  records.splice(i,1);
-  save();
-}
-
-/* SEARCH */
-function searchTable(){
-  let v=search.value.toLowerCase();
-  document.querySelectorAll("tbody tr").forEach(r=>{
-    r.style.display=r.innerText.toLowerCase().includes(v)?"":"none";
-  });
-}
-
-/* SORT */
-function sortAZ(){
-  records.sort((a,b)=>a.name.localeCompare(b.name));
-  save();
-}
-
-/* CHART */
-function draw(p,d){
-  if(chart) chart.destroy();
-
-  chart=new Chart(document.getElementById("chart"),{
-    type:"doughnut",
-    data:{
-      labels:["Income","Debt"],
-      datasets:[{data:[p,d],backgroundColor:["#22c55e","#ef4444"]}]
-    }
-  });
-}
-
-/* PDF */
-function downloadPDF(){
-  let w=window.open("");
-  w.document.write("<h2>AKURA GENERAL ENTERPRISES</h2>");
-  w.print();
-}
 </script>
 
 </body>
