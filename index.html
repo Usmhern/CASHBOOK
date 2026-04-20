@@ -358,10 +358,12 @@ loadData();
 function loadData(){
 tbody.innerHTML="";
 let p=0,d=0;
+let klear=document.getElementById("search");
 
 records.forEach((r,i)=>{
-p+=r.paid; d+=r.debt;
-
+p+=r.paid; 
+d+=r.debt;
+klear.value="";
 tbody.innerHTML+=`
 <tr>
 <td>${i+1}</td>
@@ -439,8 +441,8 @@ startY:20,
 head:[["SN","NAME","PRODUCT","AMOUNT","PAID","DEBT","TOTAL","DATE"]],
 body:records.map((r,i)=>[
 i+1,r.name,r.product,
-"<strike>N</strike>"+r.amount,"<strike>N</strike>"+r.paid,
-"<strike>N</strike>"+r.debt,"<strike>N</strike>"+r.total,r.date
+"N"+r.amount,"N"+r.paid,
+"N"+r.debt,"N"+r.total,r.date
 ]),
 styles: {
   fontSize: 8,
