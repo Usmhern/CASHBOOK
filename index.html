@@ -1,439 +1,426 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width, initial-scale=1.0">  
-<title>AKURA GENERAL ENTERPRISE</title>  
-<link rel="icon" href="akura.png">  
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  <style>  
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}  
-body{background:#141e30;color:#fff}  
-  
-/* LOGIN */  
-#loginPage{  
-  display:flex;  
-  height:100vh;  
-  justify-content:center;  
-  align-items:center;  
-}  
-.login-box{  
-  background:#243b55;  
-  padding:25px;  
-  border-radius:10px;  
-  width:280px;  
-}  
-input,button{  
-  width:100%;  
-  padding:10px;  
-  margin-top:10px;  
-}  
-button{background:#00c6ff;border:none;cursor:pointer}  
-  
-/* MENU */  
-.menu-btn{  
-  position:fixed;  
-  top:15px;  
-  left:15px;  
-  font-size:24px;  
-  z-index:2000;  
-}  
-.sidebar{  
-  position:fixed;  
-  top:0;  
-  left:-260px;  
-  width:260px;  
-  height:100%;  
-  background:#000;  
-  padding-top:60px;  
-  transition:0.3s;  
-  z-index:1500;  
-}  
-.sidebar a{  
-  display:block;  
-  padding:15px;  
-  color:#fff;  
-  text-decoration:none;  
-}  
-.sidebar a:hover{background:#00c6ff;color:#000}  
-  
-.overlay{  
-  position:fixed;  
-  width:100%;  
-  height:100%;  
-  display:none;  
-  z-index:1400;  
-}  
-  
-/* HEADER */  
-header{  
-  text-align:center;  
-  padding:15px;  
-  background:#000;  
-}  
-.logo{  
-  width:110px;  
-  border-radius:0;  
-}  
-  
-/* FORM */  
-.container{  
-  max-width:400px;  
-  margin:15px auto;  
-  background:rgba(255,255,255,0.1);  
-  padding:20px;  
-  border-radius:10px;  
-}  
-  
-/* TABLE */  
-.table-page,.chart-page{display:none;padding:10px}  
-  
-.dashboard{display:flex;gap:5px}  
-.card{  
-  flex:1;  
-  background:#fff;  
-  color:#000;  
-  padding:10px;  
-  border-radius:6px;  
-  text-align:center;  
-}  
-  
-/* TOP BAR */  
-.top-bar{  
-  display:flex;  
-  gap:6px;  
-  margin-top:10px;  
-  align-items:center;  
-}  
-.top-bar input{  
-  flex:1;  
-  padding:10px;  
-}  
-.top-bar button{  
-  width:55px;  
-  padding:6px;  
-  font-size:11px;  
-}  
-  
-/* TABLE */  
-table{  
-  width:100%;  
-  background:#fff;  
-  color:#000;  
-  margin-top:10px;  
-  border-collapse:collapse;  
-  min-width:700px;  
-}  
-th,td{  
-  padding:6px;  
-  border:1px solid #ccc;  
-  font-size:12px;  
-}  
-  
-/* DELETE BUTTON */  
-td button{  
-  color:#fff;  
-  background:transparent;  
-  border:none;  
-  cursor:pointer;  
-  font-size:14px;  
-}  
-  
-/* DEBT INPUT */  
-.money{  
-  display:flex;  
-  align-items:center;  
-  gap:3px;  
-}  
-.money span{font-weight:bold;}  
-.money input{  
-  border:none;  
-  outline:none;  
-  background:transparent;  
-  width:80px;  
-  font-size:12px;  
-}  
-  
-/* CHART */  
-canvas{  
-  background:#fff;  
-  margin-top:20px;  
-  border-radius:10px;  
-}  
-  
-/* 🔥 TOAST NOTIFICATION */  
-#toast{  
-  position:fixed;  
-  top:20px;  
-  right:20px;  
-  background:#00c853;  
-  color:#fff;  
-  padding:12px 16px;  
-  border-radius:6px;  
-  font-size:13px;  
-  z-index:9999;  
-  display:none;  
-}  
-</style>  </head>  <body>  <!-- TOAST -->  <div id="toast"></div>  <!-- LOGIN -->  <div id="loginPage">  
-  <div class="login-box">  
-    <h3>Admin Login</h3>  
-    <input id="user" placeholder="Username">  
-    <input id="pass" type="password" placeholder="Password">  
-    <button onclick="login()">Login</button>  
-  </div>  
-</div>  <!-- APP -->  <div id="app" style="display:none">  <div class="menu-btn" onclick="openMenu()">☰</div>  <div class="sidebar" id="sidebar">  
-  <a onclick="showForm()">➕ Add Record</a>  
-  <a onclick="showTable()">📊 View Records</a>  
-  <a onclick="showChart()">📈 Chart</a>  
-  <a onclick="downloadPDF()">🧾 Download PDF</a>  
-  <a onclick="logout()">🚪 Logout</a>  
-</div>  <div class="overlay" id="overlay" onclick="closeMenu()"></div>  <header>  
-  <img src="akura.jpg" class="logo">  
-  <h3 style="color:#0bf">AKURA GENERAL ENTERPRISE</h3>  
-  <h4 style="color:#fff">CASHBOOK</h4>  
-</header>  <!-- FORM -->  <div class="container" id="formPage">  
-  <input id="customer" placeholder="Name">  
-  <input id="product" placeholder="Product">  
-  <input id="amount" type="number" placeholder="Amount ₦">  
-  <input id="paid" type="number" placeholder="Paid ₦">  
-  <button onclick="saveData()">Save</button>  
-</div>  <!-- TABLE -->  <div class="table-page" id="tablePage">  <div class="dashboard">  
-  <div class="card">Total Paid<br><b id="tPaid">₦0</b></div>  
-  <div class="card">Total Debt<br><b id="tDebt">₦0</b></div>  
-</div>  <div class="top-bar">  
-  <input id="search" placeholder="Search..." onkeyup="searchTable()">  
-  <button style="background:red;color:#fff; border:1px solid #fff" onclick="sortAZ()"><b>A-Z</b></button>  
-  <button style="background:green;color:#fff; border:1px solid #fff" onclick="loadData()">RESET</button>  
-</div>  <div style="overflow-x:auto">  
-<table>  
-<thead style="background:navy;color:#fff">  
-<tr>  
-<th>SN</th><th>NAME</th><th>PRODUCT/SERVICE</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th><th>ACTION</th>  
-</tr>  
-</thead>  
-<tbody id="tbody"></tbody>  
-</table>  
-</div>  
-</div>  <!-- CHART -->  <div class="chart-page" id="chartPage">  
-  <canvas id="chart"></canvas>  
-</div>  </div>  <script>  
-const ADMIN_USER="Admin";  
-const ADMIN_PASS="1234";  
-  
-let records=JSON.parse(localStorage.getItem("records"))||[];  
-let chart;  
-  
-/* TOAST */  
-function showToast(msg,color="#00c853"){  
-  let toast=document.getElementById("toast");  
-  toast.innerText=msg;  
-  toast.style.background=color;  
-  toast.style.display="block";  
-  setTimeout(()=>toast.style.display="none",2000);  
-}  
-  
-/* LOGIN */  
-if(localStorage.getItem("login")==="true") showApp();  
-  
-function login(){  
-  if(user.value===ADMIN_USER && pass.value===ADMIN_PASS){  
-    localStorage.setItem("login","true");  
-    showApp();  
-  }else alert("Wrong login");  
-}  
-  
-function logout(){  
-  localStorage.removeItem("login");  
-  location.reload();  
-}  
-  
-function showApp(){  
-  loginPage.style.display="none";  
-  app.style.display="block";  
-}  
-  
-/* MENU */  
-function openMenu(){sidebar.style.left="0";overlay.style.display="block";}  
-function closeMenu(){sidebar.style.left="-260px";overlay.style.display="none";}  
-  
-/* NAV */  
-function showForm(){  
-  formPage.style.display="block";  
-  tablePage.style.display="none";  
-  chartPage.style.display="none";  
-  closeMenu();  
-}  
-  
-function showTable(){  
-  formPage.style.display="none";  
-  tablePage.style.display="block";  
-  chartPage.style.display="none";  
-  loadData();  
-  closeMenu();  
-}  
-  
-function showChart(){  
-  formPage.style.display="none";  
-  tablePage.style.display="none";  
-  chartPage.style.display="block";  
-  drawChart();  
-  closeMenu();  
-}  
-  
-/* SAVE */  
-function saveData(){  
-  let debt = Number(amount.value) - Number(paid.value);  
-  if(debt < 0) debt = 0;  
-  
-  records.push({  
-    name: customer.value,  
-    product: product.value,  
-    amount: Number(amount.value),  
-    paid: Number(paid.value),  
-    debt: debt,  
-    total: Number(paid.value),  
-    date: new Date().toLocaleDateString()  
-  });  
-  
-  updateAll();  
-  
-  // CLEAR FORM  
-  customer.value="";  
-  product.value="";  
-  amount.value="";  
-  paid.value="";  
-  
-  showToast("✓ Saved successfully");  
-}  
-  
-/* UPDATE */  
-function updateAll(){  
-  localStorage.setItem("records",JSON.stringify(records));  
-  loadData();  
-}  
-  
-/* LOAD */  
-function loadData(){  
-  tbody.innerHTML="";  
-  let paidT=0,debtT=0;  
- let klear= document.getElementById("search");
-  records.forEach((r,i)=>{  
-    paidT+=r.paid;  
-    debtT+=r.debt;  
-    klear.value="";
-    tbody.innerHTML+=`  
-    <tr>  
-      <td>${i+1}</td>  
-      <td>${r.name}</td>  
-      <td>${r.product}</td>  
-      <td>₦${r.amount}</td>  
-      <td>₦${r.paid}</td>  
-      <td>  
-        <div class="money">  
-          <span>₦</span>  
-          <input value="${r.debt}" oninput="editDebt(${i},this)">  
-        </div>  
-      </td>  
-      <td>₦${r.total}</td>  
-      <td>${r.date}</td>  
-      <td>
-  <button onclick="enableEdit(${i},this)">✏️</button>
-  <button onclick="del(${i})">❌</button>
-</td>
-          </tr>`;  
-  });  
-  
-  tPaid.innerText="₦"+paidT;  
-  tDebt.innerText="₦"+debtT;  
-}  
-  
-/* DELETE */  
-function del(i){  
-  records.splice(i,1);  
-  updateAll();  
-  showToast("✓ Deleted successfully","#e53935");  
-}  
-  
-/* EDIT */  
-function editDebt(i,el){
-  let newDebt = Number(el.value) || 0;
-  let oldDebt = records[i].debt || 0;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKURA GENERAL ENTERPRISE</title>
+<link rel="icon" href="akura.png">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  // Adjust total based on difference
-  if(newDebt < oldDebt){
-    // Debt reduced → add difference to total
-    records[i].total += (oldDebt - newDebt);
-  }else{
-    // Debt increased → subtract difference from total
-    records[i].total -= (newDebt - oldDebt);
-  }
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#141e30;color:#fff}
 
-  records[i].debt = newDebt;
+/* LOGIN */
+#loginPage{
+  display:flex;
+  height:100vh;
+  justify-content:center;
+  align-items:center;
+}
+.login-box{
+  background:#243b55;
+  padding:25px;
+  border-radius:10px;
+  width:280px;
+}
+input,button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+}
+button{background:#00c6ff;border:none;cursor:pointer}
+
+/* MENU */
+.menu-btn{
+  position:fixed;
+  top:15px;
+  left:15px;
+  font-size:24px;
+  z-index:2000;
+}
+.sidebar{
+  position:fixed;
+  top:0;
+  left:-260px;
+  width:260px;
+  height:100%;
+  background:#000;
+  padding-top:60px;
+  transition:0.3s;
+  z-index:1500;
+}
+.sidebar a{
+  display:block;
+  padding:15px;
+  color:#fff;
+  text-decoration:none;
+}
+.sidebar a:hover{background:#00c6ff;color:#000}
+
+.overlay{
+  position:fixed;
+  width:100%;
+  height:100%;
+  display:none;
+  z-index:1400;
+}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:15px;
+  background:#000;
+}
+.logo{
+  width:110px;
+}
+
+/* FORM */
+.container{
+  max-width:400px;
+  margin:15px auto;
+  background:rgba(255,255,255,0.1);
+  padding:20px;
+  border-radius:10px;
+}
+
+/* TABLE */
+.table-page,.chart-page{display:none;padding:10px}
+
+.dashboard{display:flex;gap:5px}
+.card{
+  flex:1;
+  background:#fff;
+  color:#000;
+  padding:10px;
+  border-radius:6px;
+  text-align:center;
+}
+
+/* TOP BAR */
+.top-bar{
+  display:flex;
+  gap:6px;
+  margin-top:10px;
+  align-items:center;
+}
+.top-bar input{flex:1}
+
+/* TABLE */
+table{
+  width:100%;
+  background:#fff;
+  color:#000;
+  margin-top:10px;
+  border-collapse:collapse;
+  min-width:700px;
+}
+th,td{
+  padding:6px;
+  border:1px solid #ccc;
+  font-size:12px;
+}
+
+td button{
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  font-size:14px;
+}
+
+/* TOAST */
+#toast{
+  position:fixed;
+  top:20px;
+  right:20px;
+  background:#00c853;
+  color:#fff;
+  padding:12px 16px;
+  border-radius:6px;
+  font-size:13px;
+  z-index:9999;
+  display:none;
+}
+
+/* EDIT PANEL */
+#editPanel{
+  position:fixed;
+  bottom:-100%;
+  left:0;
+  width:100%;
+  background:#243b55;
+  padding:20px;
+  transition:0.3s;
+  z-index:3000;
+}
+</style>
+</head>
+
+<body>
+
+<div id="toast"></div>
+
+<!-- LOGIN -->
+<div id="loginPage">
+  <div class="login-box">
+    <h3>Admin Login</h3>
+    <input id="user" placeholder="Username">
+    <input id="pass" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+
+<div class="menu-btn" onclick="openMenu()">☰</div>
+
+<div class="sidebar" id="sidebar">
+  <a onclick="showForm()">➕ Add Record</a>
+  <a onclick="showTable()">📊 View Records</a>
+  <a onclick="showChart()">📈 Chart</a>
+  <a onclick="downloadPDF()">🧾 Download PDF</a>
+  <a onclick="logout()">🚪 Logout</a>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+<header>
+  <img src="akura.jpg" class="logo">
+  <h3 style="color:#0bf">AKURA GENERAL ENTERPRISE</h3>
+  <h4>CASHBOOK</h4>
+</header>
+
+<!-- FORM -->
+<div class="container" id="formPage">
+  <input id="customer" placeholder="Name">
+  <input id="product" placeholder="Product">
+  <input id="amount" type="number" placeholder="Amount ₦">
+  <input id="paid" type="number" placeholder="Paid ₦">
+  <button onclick="saveData()">Save</button>
+</div>
+
+<!-- TABLE -->
+<div class="table-page" id="tablePage">
+
+<div class="dashboard">
+  <div class="card">Total Paid<br><b id="tPaid">₦0</b></div>
+  <div class="card">Total Debt<br><b id="tDebt">₦0</b></div>
+</div>
+
+<div class="top-bar">
+  <input id="search" placeholder="Search..." onkeyup="searchTable()">
+  <button onclick="sortAZ()">A-Z</button>
+  <button onclick="loadData()">RESET</button>
+</div>
+
+<div style="overflow-x:auto">
+<table>
+<thead style="background:navy;color:#fff">
+<tr>
+<th>SN</th><th>NAME</th><th>PRODUCT</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th><th>ACTION</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- CHART -->
+<div class="chart-page" id="chartPage">
+  <canvas id="chart"></canvas>
+</div>
+
+</div>
+
+<!-- EDIT PANEL -->
+<div id="editPanel">
+  <h3>Edit Debt</h3>
+  <input id="editDebtInput" type="number" placeholder="Enter Debt ₦">
+  <button onclick="saveDebt()">Save</button>
+  <button onclick="closePanel()" style="background:red">Cancel</button>
+</div>
+
+<script>
+const ADMIN_USER="Admin";
+const ADMIN_PASS="1234";
+
+let records=JSON.parse(localStorage.getItem("records"))||[];
+let chart;
+let currentEditIndex=null;
+
+/* TOAST */
+function showToast(msg,color="#00c853"){
+  toast.innerText=msg;
+  toast.style.background=color;
+  toast.style.display="block";
+  setTimeout(()=>toast.style.display="none",2000);
+}
+
+/* LOGIN */
+if(localStorage.getItem("login")==="true") showApp();
+
+function login(){
+  if(user.value===ADMIN_USER && pass.value===ADMIN_PASS){
+    localStorage.setItem("login","true");
+    showApp();
+  }else alert("Wrong login");
+}
+
+function logout(){
+  localStorage.removeItem("login");
+  location.reload();
+}
+
+function showApp(){
+  loginPage.style.display="none";
+  app.style.display="block";
+}
+
+/* MENU */
+function openMenu(){sidebar.style.left="0";overlay.style.display="block";}
+function closeMenu(){sidebar.style.left="-260px";overlay.style.display="none";}
+
+/* NAV */
+function showForm(){formPage.style.display="block";tablePage.style.display="none";chartPage.style.display="none";}
+function showTable(){formPage.style.display="none";tablePage.style.display="block";loadData();}
+function showChart(){formPage.style.display="none";tablePage.style.display="none";chartPage.style.display="block";drawChart();}
+
+/* SAVE */
+function saveData(){
+  let debt = Number(amount.value) - Number(paid.value);
+  if(debt<0) debt=0;
+
+  records.push({
+    name: customer.value,
+    product: product.value,
+    amount: Number(amount.value),
+    paid: Number(paid.value),
+    debt: debt,
+    total: Number(paid.value),
+    date: new Date().toLocaleDateString()
+  });
 
   updateAll();
+  customer.value=product.value=amount.value=paid.value="";
+  showToast("✓ Saved successfully");
 }
-  
-/* SEARCH */  
-function searchTable(){  
-  let v=search.value.toLowerCase();  
-  document.querySelectorAll("tbody tr").forEach(r=>{  
-    r.style.display=r.innerText.toLowerCase().includes(v)?"":"none";  
-  });  
-}  
-  
-/* SORT */  
-function sortAZ(){  
-  records.sort((a,b)=>a.name.localeCompare(b.name));  
-  updateAll();  
-}  
-  
-/* PDF */  
-function downloadPDF(){  
-  let w=window.open("");  
-  let html=`<h3 style="text-align:center">AKURA GENERAL ENTERPRISE CASHBOOK</h3><table border="1" style="width:100%;border-collapse:collapse">
-   <tr> <th style="background:#273; color:#fff">SN</th><th>NAME</th><th>PRODUCT/SERVICE</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th></tr>`;  
-  records.forEach((r,i)=>{  
-    html+=`
 
-    <tr>  
-      <td> ${i+1} </td>  
-      <td> ${r.name} </td>  
-      <td> ${r.product} </td>  
-      <td> ₦${r.amount} </td>  
-      <td> ₦${r.paid} </td>  
-      <td> ₦${r.debt} </td>  
-      <td> ₦${r.total} </td>  
-      <td> ${r.date} </td>  
-    </tr>`;  
-  });  
-  
-  html+="</table>";  
-  w.document.write(html);  
-  w.print();  
-}  
-  
-/* CHART */  
-function drawChart(){  
-  if(chart) chart.destroy();  
-  
-  let paid=0,debt=0;  
-  records.forEach(r=>{  
-    paid+=r.paid;  
-    debt+=r.debt;  
-  });  
-  
-  chart=new Chart(document.getElementById("chart"),{  
-    type:"doughnut",  
-    data:{  
-      labels:["Income","Debt"],  
-      datasets:[{data:[paid,debt]}]  
-    }  
-  });  
-}  
-  function enableEdit(i,btn){
-  let row = btn.closest("tr");
-  let input = row.querySelector(".money input");
+/* UPDATE */
+function updateAll(){
+  localStorage.setItem("records",JSON.stringify(records));
+  loadData();
+}
 
-  input.focus();
-  input.select();
-    }
-</script>  </body>  
+/* LOAD */
+function loadData(){
+  tbody.innerHTML="";
+  let paidT=0,debtT=0;
+
+  records.forEach((r,i)=>{
+    paidT+=r.paid;
+    debtT+=r.debt;
+
+    tbody.innerHTML+=`
+    <tr>
+      <td>${i+1}</td>
+      <td>${r.name}</td>
+      <td>${r.product}</td>
+      <td>₦${r.amount}</td>
+      <td>₦${r.paid}</td>
+      <td>₦${r.debt}</td>
+      <td>₦${r.total}</td>
+      <td>${r.date}</td>
+      <td style="white-space:nowrap;">
+        <button onclick="openDebtEditor(${i})">✏️</button>
+        <button onclick="del(${i})">❌</button>
+      </td>
+    </tr>`;
+  });
+
+  tPaid.innerText="₦"+paidT;
+  tDebt.innerText="₦"+debtT;
+}
+
+/* DELETE */
+function del(i){
+  records.splice(i,1);
+  updateAll();
+  showToast("✓ Deleted","#e53935");
+}
+
+/* EDIT PANEL */
+function openDebtEditor(i){
+  currentEditIndex=i;
+  editDebtInput.value=records[i].debt;
+  editPanel.style.bottom="0";
+  editDebtInput.focus();
+}
+
+function closePanel(){
+  editPanel.style.bottom="-100%";
+}
+
+function saveDebt(){
+  let newDebt=Number(editDebtInput.value)||0;
+  let oldDebt=records[currentEditIndex].debt||0;
+
+  if(newDebt<oldDebt){
+    records[currentEditIndex].total += (oldDebt-newDebt);
+  }else{
+    records[currentEditIndex].total -= (newDebt-oldDebt);
+  }
+
+  records[currentEditIndex].debt=newDebt;
+
+  updateAll();
+  closePanel();
+  showToast("✓ DEBT UPDATED");
+}
+
+/* SEARCH */
+function searchTable(){
+  let v=search.value.toLowerCase();
+  document.querySelectorAll("tbody tr").forEach(r=>{
+    r.style.display=r.innerText.toLowerCase().includes(v)?"":"none";
+  });
+}
+
+/* SORT */
+function sortAZ(){
+  records.sort((a,b)=>a.name.localeCompare(b.name));
+  updateAll();
+}
+
+/* PDF */
+function downloadPDF(){
+  let w=window.open("");
+  let html=`<h3 style="text-align:center">AKURA GENERAL ENTERPRISE CASHBOOK</h3><table border="1" style="width:100%">`;
+  records.forEach((r,i)=>{
+    html+=`<tr><td>${i+1}</td><td>${r.name}</td><td>${r.product}</td><td>₦${r.amount}</td><td>₦${r.paid}</td><td>₦${r.debt}</td><td>₦${r.total}</td><td>${r.date}</td></tr>`;
+  });
+  html+="</table>";
+  w.document.write(html);
+  w.print();
+}
+
+/* CHART */
+function drawChart(){
+  if(chart) chart.destroy();
+
+  let paid=0,debt=0;
+  records.forEach(r=>{
+    paid+=r.paid;
+    debt+=r.debt;
+  });
+
+  chart=new Chart(document.getElementById("chart"),{
+    type:"doughnut",
+    data:{labels:["Income","Debt"],datasets:[{data:[paid,debt]}]}
+  });
+}
+</script>
+
+</body>
 </html>
