@@ -105,7 +105,15 @@ header{
   margin-top:10px;
   align-items:center;
 }
-.top-bar input{flex:1}
+.top-bar input{
+  flex:1;
+  padding:10px;
+}
+.top-bar button{
+  width:45px;
+  padding:4px;
+  font-size:10px;
+}
 
 /* TABLE */
 table{
@@ -122,11 +130,21 @@ th,td{
   font-size:12px;
 }
 
+/* INLINE BUTTON FIX */
 td button{
+  width:auto;
+  padding:2px 6px;
   background:transparent;
   border:none;
   cursor:pointer;
   font-size:14px;
+}
+
+/* CHART */
+canvas{
+  background:#fff;
+  margin-top:20px;
+  border-radius:10px;
 }
 
 /* TOAST */
@@ -148,11 +166,14 @@ td button{
   position:fixed;
   bottom:-100%;
   left:0;
-  width:100%;
+  right:0;
+  max-width:400px;
+  margin:auto;
   background:#243b55;
   padding:20px;
   transition:0.3s;
   z-index:3000;
+  border-radius:10px 10px 0 0;
 }
 </style>
 </head>
@@ -211,15 +232,15 @@ td button{
 
 <div class="top-bar">
   <input id="search" placeholder="Search..." onkeyup="searchTable()">
-  <button onclick="sortAZ()">A-Z</button>
-  <button onclick="loadData()">RESET</button>
+  <button style="background:red;color:#fff;border:1px solid #fff" onclick="sortAZ()">A-Z</button>
+  <button style="background:green;color:#fff;border:1px solid #fff" onclick="loadData()">RESET</button>
 </div>
 
 <div style="overflow-x:auto">
 <table>
 <thead style="background:navy;color:#fff">
 <tr>
-<th>SN</th><th>NAME</th><th>PRODUCT</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th><th>ACTION</th>
+<th>SN</th><th>NAME</th><th>PRODUCT/SERVICE</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th><th>ACTION</th>
 </tr>
 </thead>
 <tbody id="tbody"></tbody>
@@ -283,9 +304,9 @@ function openMenu(){sidebar.style.left="0";overlay.style.display="block";}
 function closeMenu(){sidebar.style.left="-260px";overlay.style.display="none";}
 
 /* NAV */
-function showForm(){formPage.style.display="block";tablePage.style.display="none";chartPage.style.display="none";}
-function showTable(){formPage.style.display="none";tablePage.style.display="block";loadData();}
-function showChart(){formPage.style.display="none";tablePage.style.display="none";chartPage.style.display="block";drawChart();}
+function showForm(){formPage.style.display="block";tablePage.style.display="none";chartPage.style.display="none";closeMenu();}
+function showTable(){formPage.style.display="none";tablePage.style.display="block";chartPage.style.display="none";loadData();closeMenu();}
+function showChart(){formPage.style.display="none";tablePage.style.display="none";chartPage.style.display="block";drawChart();closeMenu();}
 
 /* SAVE */
 function saveData(){
@@ -317,11 +338,11 @@ function updateAll(){
 function loadData(){
   tbody.innerHTML="";
   let paidT=0,debtT=0;
-
+ let klear=document.getElementById("search");
   records.forEach((r,i)=>{
-    paidT+=r.paid;
-    debtT+=r.debt;
-
+    paidT+=Number(r.paid)||0;
+    debtT+=Number(r.debt)||0;
+    klear.value="";
     tbody.innerHTML+=`
     <tr>
       <td>${i+1}</td>
