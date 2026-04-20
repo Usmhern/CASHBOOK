@@ -372,10 +372,10 @@ tbody.innerHTML+=`
 <td>₦${r.debt}</td>
 <td>₦${r.total}</td>
 <td>${r.date}</td>
-<td>
-<button onclick="openDebtEditor(${i})">✏️</button>
-<button onclick="del(${i})">❌</button>
-</td>
+<td> <center>
+<button style="border:1px solid black; border-radius:50px" onclick="openDebtEditor(${i})">✏️</button> &nbsp; &nbsp;
+<button style="border:1px solid black; border-radius:50px" onclick="del(${i})">❌</button>
+</center> </td>
 </tr>`;
 });
 
@@ -432,18 +432,27 @@ function downloadPDF(){
 const { jsPDF }=window.jspdf;
 const doc=new jsPDF("p","mm","a4");
 
-doc.text("AKURA CASHBOOK",105,15,{align:"center"});
+doc.text("AKURA GENERAL ENTERPRISE CASHBOOK",105,15,{align:"center"});
 
 doc.autoTable({
 startY:20,
 head:[["SN","NAME","PRODUCT","AMOUNT","PAID","DEBT","TOTAL","DATE"]],
 body:records.map((r,i)=>[
 i+1,r.name,r.product,
-"₦"+r.amount,"₦"+r.paid,
-"₦"+r.debt,"₦"+r.total,r.date
+"<strike>N</strike>"+r.amount,"<strike>N</strike>"+r.paid,
+"<strike>N</strike>"+r.debt,"<strike>N</strike>"+r.total,r.date
 ]),
-styles:{fontSize:8,halign:"center"},
-headStyles:{fillColor:[0,0,128],textColor:255}
+styles: {
+  fontSize: 8,
+  halign: "center",
+  lineWidth: 0.2,
+  lineColor: [0, 0, 0]
+},
+
+headStyles: {
+  fillColor: [0, 0, 128],
+  textColor: 255
+}
 });
 
 doc.save("AKURA.pdf");
