@@ -6,7 +6,8 @@
 <title>AKURA GENERAL ENTERPRISE</title>
 <link rel="icon" href="akura.png">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:#141e30;color:#fff}
@@ -422,137 +423,64 @@ function sortAZ(){
 
 /* PDF */
 function downloadPDF(){
-  let w = window.open("");
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("p","mm","a4");
 
   let today = new Date().toLocaleDateString();
 
-  let html = `
-  <html>
-  <head>
-    <title>AKURA PDF</title>
-    <style>
-      @page {
-        size: A4;
-        margin: 20mm;
-      }
+  // Title
+  doc.setFontSize(14);
+  doc.text("AKURA GENERAL ENTERPRISE CASHBOOK", 105, 15, {align:"center"});
 
-      body{
-        font-family: Arial;
-      }
+  // Date (top-right, safe position)
+  doc.setFontSize(9);
+  doc.text(today, 200, 10, {align:"right"});
 
-      .header{
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        margin-bottom:10px;
-      }
+  // Table Data
+  let tableData = records.map((r,i)=>[
+    i+1,
+    r.name,
+    r.product,
+    "₦"+r.amount,
+    "₦"+r.paid,
+    "₦"+r.debt,
+    "₦"+r.total,
+    r.date
+  ]);
 
-      .title{
-        text-align:center;
-        font-weight:bold;
-        font-size:16px;
-        flex:1;
-      }
+  doc.autoTable({
+    startY: 20,
+    head: [[
+      "SN","NAME","PRODUCT/SERVICE","AMOUNT","PAID","DEBT","TOTAL","DATE"
+    ]],
+    body: tableData,
 
-      .date{
-        position:absolute;
-        top:10mm;
-        right:20mm;
-        font-size:12px;
-      }
+    styles:{
+      fontSize:8,
+      halign:'center'
+    },
 
-      table{
-        width:100%;
-        border-collapse:collapse;
-        font-size:12px;
-      }
+    headStyles:{
+      fillColor:[0,0,128], // navy
+      textColor:255
+    },
 
-      th,td{
-        border:1px solid #000;
-        padding:6px;
-        text-align:center;
-      }
+    didDrawPage: function (data) {
+      let pageCount = doc.internal.getNumberOfPages();
+      let pageSize = doc.internal.pageSize;
 
-      th{
-        background:#000;
-        color:#fff;
-      }
-
-      tr{
-        page-break-inside:avoid;
-      }
-
-      .footer{
-        position:fixed;
-        bottom:10mm;
-        right:20mm;
-        font-size:12px;
-      }
-    </style>
-  </head>
-
-  <body>
-
-    <div class="date">${today}</div>
-
-    <div class="title">AKURA GENERAL ENTERPRISE CASHBOOK</div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>SN</th>
-          <th>NAME</th>
-          <th>PRODUCT/SERVICE</th>
-          <th>AMOUNT</th>
-          <th>PAID</th>
-          <th>DEBT</th>
-          <th>TOTAL</th>
-          <th>DATE</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
-
-  records.forEach((r,i)=>{
-    html += `
-      <tr>
-        <td>${i+1}</td>
-        <td>${r.name}</td>
-        <td>${r.product}</td>
-        <td>₦${r.amount}</td>
-        <td>₦${r.paid}</td>
-        <td>₦${r.debt}</td>
-        <td>₦${r.total}</td>
-        <td>${r.date}</td>
-      </tr>
-    `;
+      doc.setFontSize(9);
+      doc.text(
+        "Page " + pageCount,
+        pageSize.getWidth() - 20,
+        pageSize.getHeight() - 10
+      );
+    }
   });
 
-  html += `
-      </tbody>
-    </table>
-
-    <div class="footer">
-      Page <span class="pageNumber"></span>
-    </div>
-
-    <script>
-      // Page number support (works in Chrome print preview)
-      let page = 1;
-      document.querySelectorAll('.pageNumber').forEach(el=>{
-        el.innerText = page;
-      });
-    <\/script>
-
-  </body>
-  </html>
-  `;
-
-  w.document.write(html);
-  w.document.close();
-  w.focus();
-  w.print();
-}
+  // Auto download
+  doc.save("AKURA_CASHBOOK.pdf");
+               }
 
 /* CHART */
 function drawChart(){
