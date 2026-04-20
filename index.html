@@ -196,6 +196,10 @@ canvas{
   z-index:3000;
   border-radius:10px 10px 0 0;
 }
+  .table-scroll{
+  max-height: 70vh;   /* limits height */
+  overflow: auto;     /* enables both vertical + horizontal scroll */
+  }
 </style>
 </head>
 
@@ -257,7 +261,7 @@ canvas{
   <button style="background:grey;color:#fff;border-radius:20px" onclick="loadData()">RESET</button>
 </div>
 
-<div style="overflow-x:auto">
+  <div class="table-scroll">
 <table>
 <thead style="background:navy;color:#fff">
 <tr>
