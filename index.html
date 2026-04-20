@@ -219,7 +219,8 @@
         if(user.value === AUTH_USER && pass.value === AUTH_PASS) {
             localStorage.setItem("isLoggedIn", "true");
             loginDone();
-        } else { alert("Invalid Details"); }
+        } else {  document.getElementById("invalidModal").style.display = "block";
+    document.getElementById("overlay").style.display = "block";}
     }
 
     function loginDone() {
