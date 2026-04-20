@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AKURA GENERAL ENTERPRISE</title>
 <link rel="icon" href="akura.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -429,22 +431,25 @@ function downloadPDF(){
   let today = new Date().toLocaleDateString();
 
   // Title
+  doc.setFont("helvetica","normal");
   doc.setFontSize(14);
   doc.text("AKURA GENERAL ENTERPRISE CASHBOOK", 105, 15, {align:"center"});
 
-  // Date (top-right, safe position)
+  // Date top right
   doc.setFontSize(9);
   doc.text(today, 200, 10, {align:"right"});
 
-  // Table Data
+  // ✅ IMPORTANT: force UTF-8 rendering support
+  const formatNaira = (val) => `₦${val}`;
+
   let tableData = records.map((r,i)=>[
     i+1,
     r.name,
     r.product,
-    "₦"+r.amount,
-    "₦"+r.paid,
-    "₦"+r.debt,
-    "₦"+r.total,
+    formatNaira(r.amount),
+    formatNaira(r.paid),
+    formatNaira(r.debt),
+    formatNaira(r.total),
     r.date
   ]);
 
@@ -457,15 +462,16 @@ function downloadPDF(){
 
     styles:{
       fontSize:8,
-      halign:'center'
+      halign:"center",
+      font: "helvetica"
     },
 
     headStyles:{
-      fillColor:[0,0,128], // navy
+      fillColor:[0,0,128],
       textColor:255
     },
 
-    didDrawPage: function (data) {
+    didDrawPage: function () {
       let pageCount = doc.internal.getNumberOfPages();
       let pageSize = doc.internal.pageSize;
 
@@ -478,9 +484,8 @@ function downloadPDF(){
     }
   });
 
-  // Auto download
   doc.save("AKURA_CASHBOOK.pdf");
-               }
+}
 
 /* CHART */
 function drawChart(){
