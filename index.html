@@ -1,443 +1,342 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AKURA GENERAL ENTERPRISE</title>
-<link rel="icon" href="akura.png">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AKURA GENERAL ENTERPRISE</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background:#141e30; color:#fff; min-height:100vh; overflow-x: hidden; }
 
-body{
-  background:#141e30;
-  color:#fff;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
+        /* Auth Pages */
+        #loginPage { 
+            display: flex; height: 100vh; justify-content: center; align-items: center; 
+            background: linear-gradient(to right, #141e30, #243b55);
+        }
+        .login-box { background:#1c2e4a; padding:30px; border-radius:12px; width:320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        
+        /* App Structure */
+        #app { display: none; }
+        .page { display: none; padding: 20px; padding-top: 90px; max-width: 900px; margin: auto; }
+        .active-page { display: block; }
 
-/* APP WRAPPER CENTERED */
-#app{
-  width:100%;
-  max-width:480px;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-}
+        /* Header & Sidebar */
+        header { 
+            position: fixed; top: 0; width: 100%; background: #000; 
+            padding: 15px; text-align: center; z-index: 1000; border-bottom: 2px solid #00c6ff;
+        }
+        .menu-btn { 
+            position: fixed; top: 15px; left: 15px; z-index: 1100; 
+            font-size: 24px; cursor: pointer; background: #00c6ff; 
+            padding: 5px 12px; border-radius: 4px; color: #000;
+        }
+        .sidebar { 
+            position: fixed; top: 0; left: -260px; width: 260px; height: 100%; 
+            background: #0a0f18; transition: 0.3s; z-index: 1500; padding-top: 60px; 
+            border-right: 1px solid #333;
+        }
+        .sidebar a { 
+            display: block; padding: 15px 25px; color: #fff; 
+            text-decoration: none; border-bottom: 1px solid #1a1a1a; cursor: pointer;
+        }
+        .sidebar a:hover { background: #00c6ff; color: #000; }
+        .overlay { 
+            position: fixed; top:0; left:0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.7); display: none; z-index: 1400; 
+        }
 
-/* LOGIN */
-#loginPage{
-  display:flex;
-  height:100vh;
-  justify-content:center;
-  align-items:center;
-}
-.login-box{
-  background:#243b55;
-  padding:25px;
-  border-radius:10px;
-  width:280px;
-}
-input,button{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-}
-button{background:#00c6ff;border:none;cursor:pointer}
+        /* Forms & Inputs */
+        .container { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 10px; }
+        input { 
+            width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; 
+            border: 1px solid #333; background: #0a0f18; color: #fff; 
+        }
+        button { 
+            width: 100%; padding: 12px; background: #00c6ff; border: none; 
+            border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px;
+        }
+        button:hover { opacity: 0.8; }
 
-/* MENU */
-.menu-btn{
-  position:fixed;
-  top:59px;
-  left:17px;
-  font-size:30px;
-  z-index:2000;
-}
-.sidebar{
-  position:fixed;
-  top:0;
-  left:-260px;
-  width:260px;
-  height:100%;
-  background:#000;
-  padding-top:60px;
-  transition:0.3s;
-  z-index:1500;
-}
-.sidebar a{
-  display:block;
-  padding:15px;
-  color:#fff;
-  text-decoration:none;
-}
-.sidebar a:hover{background:#00c6ff;color:#000}
+        /* Table Dashboard */
+        .dashboard { display: flex; gap: 10px; margin-bottom: 20px; }
+        .card { flex: 1; background: #fff; color: #000; padding: 15px; border-radius: 8px; text-align: center; }
+        .table-wrap { overflow-x: auto; background: #fff; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; color: #000; min-width: 600px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 13px; }
+        th { background: #243b55; color: #fff; }
 
-.overlay{
-  position:fixed;
-  width:100%;
-  height:100%;
-  display:none;
-  z-index:1400;
-}
+        /* Action Buttons */
+        .btn-edit { background: #f39c12; color: #fff; padding: 5px 10px; width: auto; margin-right: 5px; }
+        .btn-del { background: #e74c3c; color: #fff; padding: 5px 10px; width: auto; }
 
-/* HEADER */
-header{
-  text-align:center;
-  padding:15px;
-  background:#000;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-.logo{
-  width:110px;
-  border-radius:0;
-}
+        /* Modal */
+        #editModal {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #1c2e4a; padding: 25px; border-radius: 12px; z-index: 2000;
+            display: none; width: 90%; max-width: 350px; border: 1px solid #00c6ff;
+        }
 
-/* FORM + PAGES */
-.container,.table-page,.chart-page{
-  width:100%;
-}
-
-/* FORM */
-.container{
-  max-width:400px;
-  margin:auto;
-  background:rgba(255,255,255,0.1);
-  padding:20px;
-  border-radius:10px;
-}
-
-/* DASHBOARD */
-.dashboard{display:flex;gap:5px}
-.card{
-  flex:1;
-  background:#fff;
-  color:#000;
-  padding:10px;
-  border-radius:6px;
-  text-align:center;
-}
-
-/* TOP BAR */
-.top-bar{
-  display:flex;
-  gap:6px;
-  margin-top:10px;
-  align-items:center;
-}
-.top-bar input{
-  flex:1;
-  padding:10px;
-}
-.top-bar button{
-  width:55px;
-  padding:6px;
-  font-size:11px;
-}
-
-/* TABLE */
-table{
-  width:100%;
-  background:#fff;
-  color:#000;
-  margin-top:10px;
-  border-collapse:collapse;
-  min-width:700px;
-}
-th,td{
-  padding:6px;
-  border:1px solid #ccc;
-  font-size:12px;
-}
-
-/* DELETE BUTTON */
-td button{
-  color:#fff;
-  background:transparent;
-  border:none;
-  cursor:pointer;
-  font-size:14px;
-}
-
-/* DEBT INPUT */
-.money{
-  display:flex;
-  align-items:center;
-  gap:3px;
-}
-.money span{font-weight:bold;}
-.money input{
-  border:none;
-  outline:none;
-  background:transparent;
-  width:80px;
-  font-size:12px;
-}
-
-/* CHART */
-canvas{
-  background:#fff;
-  margin-top:20px;
-  border-radius:10px;
-}
-
-/* TOAST */
-#toast{
-  position:fixed;
-  top:50px;
-  right:20px;
-  background:#00c853;
-  color:#fff;
-  padding:12px 16px;
-  border-radius:6px;
-  font-size:13px;
-  z-index:9999;
-  display:none;
-}
-</style>
+        #toast {
+            position: fixed; top: 20px; right: 20px; padding: 15px 25px; 
+            border-radius: 5px; display: none; z-index: 3000; font-weight: bold;
+        }
+    </style>
 </head>
-
 <body>
 
 <div id="toast"></div>
 
-<!-- LOGIN -->
 <div id="loginPage">
-  <div class="login-box">
-    <h3>Admin Login</h3>
-    <input id="user" placeholder="Username">
-    <input id="pass" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-  </div>
+    <div class="login-box">
+        <h2 style="text-align:center; margin-bottom:20px;">Admin Login</h2>
+        <input id="user" placeholder="Username">
+        <input id="pass" type="password" placeholder="Password">
+        <button onclick="login()">LOGIN</button>
+    </div>
 </div>
 
-<!-- APP -->
-<div id="app" style="display:none">
+<div id="app">
+    <div class="menu-btn" onclick="toggleMenu(true)">☰</div>
+    <div class="overlay" id="overlay" onclick="toggleMenu(false)"></div>
 
-<div class="menu-btn" onclick="openMenu()">☰</div>
+    <div class="sidebar" id="sidebar">
+        <a onclick="showPage('formPage')">➕ Add New Record</a>
+        <a onclick="showPage('tablePage')">📊 View Records</a>
+        <a onclick="showPage('chartPage')">📈 Statistics Chart</a>
+        <a onclick="downloadPDF()">🧾 Download PDF Report</a>
+        <a onclick="logout()" style="color: #ff4d4d; margin-top: 20px;">🚪 Logout</a>
+    </div>
 
-<div class="sidebar" id="sidebar">
-  <a onclick="showForm()">➕ Add Record</a>
-  <a onclick="showTable()">📊 View Records</a>
-  <a onclick="showChart()">📈 Chart</a>
-  <a onclick="downloadPDF()">🧾 Download PDF</a>
-  <a onclick="logout()">🚪 Logout</a>
+    <header>
+        <h3 style="color:#00c6ff">AKURA GENERAL ENTERPRISE</h3>
+    </header>
+
+    <div id="formPage" class="page">
+        <div class="container">
+            <h3>Register Sale</h3>
+            <input id="custName" placeholder="Customer Name">
+            <input id="prodName" placeholder="Product">
+            <input id="totalAmt" type="number" placeholder="Total Amount (₦)">
+            <input id="paidAmt" type="number" placeholder="Amount Paid (₦)">
+            <button onclick="saveRecord()">SAVE RECORD</button>
+        </div>
+    </div>
+
+    <div id="tablePage" class="page">
+        <div class="dashboard">
+            <div class="card">Total Paid<br><b id="sumPaid" style="color:green">₦0</b></div>
+            <div class="card">Total Debt<br><b id="sumDebt" style="color:red">₦0</b></div>
+        </div>
+        <input id="searchBox" placeholder="Search by name or product..." onkeyup="filterTable()">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>SN</th><th>Name</th><th>Product</th><th>Total</th><th>Paid</th><th>Debt</th><th>Date</th><th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="chartPage" class="page">
+        <div class="container" style="background:white; max-width: 450px;">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
 </div>
 
-<div class="overlay" onclick="closeMenu()"></div>
-
-<header>
-  <img src="akura.jpg" class="logo">
-  <h3 style="color:#0bf">AKURA GENERAL ENTERPRISE</h3>
-</header>
-
-<!-- FORM -->
-<div class="container" id="formPage">
-  <input id="customer" placeholder="Name">
-  <input id="product" placeholder="Product">
-  <input id="amount" type="number" placeholder="Amount ₦">
-  <input id="paid" type="number" placeholder="Paid ₦">
-  <button onclick="saveData()">Save</button>
-</div>
-
-<!-- TABLE -->
-<div class="table-page" id="tablePage">
-
-<div class="dashboard">
-  <div class="card">Total Paid<br><b id="tPaid">₦0</b></div>
-  <div class="card">Total Debt<br><b id="tDebt">₦0</b></div>
-</div>
-
-<div class="top-bar">
-  <input id="search" placeholder="Search..." onkeyup="searchTable()">
-  <button style="background:red;color:#fff" onclick="sortAZ()">A-Z</button>
-  <button style="background:green;color:#fff" onclick="loadData()">🔄</button>
-</div>
-
-<div style="overflow-x:auto">
-<table>
-<thead style="background:navy;color:#fff">
-<tr>
-<th>SN</th><th>NAME</th><th>PRODUCT</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th><th>ACTION</th>
-</tr>
-</thead>
-<tbody id="tbody"></tbody>
-</table>
-</div>
-</div>
-
-<!-- CHART -->
-<div class="chart-page" id="chartPage">
-  <canvas id="chart"></canvas>
-</div>
-
+<div id="editModal">
+    <h3>Update Debt</h3>
+    <p id="editLabel" style="font-size:12px; margin-top:5px; color:#aaa;"></p>
+    <input id="newDebtInput" type="number" placeholder="Enter Remaining Debt">
+    <button onclick="confirmEdit()">UPDATE</button>
+    <button onclick="closeEdit()" style="background:#444; color:white;">CANCEL</button>
 </div>
 
 <script>
-const ADMIN_USER="Admin";
-const ADMIN_PASS="1234";
+    const AUTH_USER = "Admin";
+    const AUTH_PASS = "1234";
+    let records = JSON.parse(localStorage.getItem("akura_records")) || [];
+    let editIdx = null;
+    let chartObj = null;
 
-let records=JSON.parse(localStorage.getItem("records"))||[];
-let chart;
-
-/* TOAST */
-function showToast(msg,color="#00c853"){
-  let toast=document.getElementById("toast");
-  toast.innerText=msg;
-  toast.style.background=color;
-  toast.style.display="block";
-  setTimeout(()=>toast.style.display="none",2000);
-}
-
-/* LOGIN */
-if(localStorage.getItem("login")==="true") showApp();
-
-function login(){
-  if(user.value===ADMIN_USER && pass.value===ADMIN_PASS){
-    localStorage.setItem("login","true");
-    showApp();
-  }else alert("Wrong login");
-}
-
-function logout(){
-  localStorage.removeItem("login");
-  location.reload();
-}
-
-function showApp(){
-  loginPage.style.display="none";
-  app.style.display="block";
-}
-
-/* MENU */
-function openMenu(){sidebar.style.left="0";document.querySelector(".overlay").style.display="block";}
-function closeMenu(){sidebar.style.left="-260px";document.querySelector(".overlay").style.display="none";}
-
-/* NAV */
-function showForm(){
-  formPage.style.display="block";
-  tablePage.style.display="none";
-  chartPage.style.display="none";
-}
-
-function showTable(){
-  formPage.style.display="none";
-  tablePage.style.display="block";
-  chartPage.style.display="none";
-  loadData();
-}
-
-function showChart(){
-  formPage.style.display="none";
-  tablePage.style.display="none";
-  chartPage.style.display="block";
-  drawChart();
-}
-
-/* SAVE */
-function saveData(){
-  let debt = Number(amount.value) - Number(paid.value);
-  if(debt < 0) debt = 0;
-
-  records.push({
-    name: customer.value,
-    product: product.value,
-    amount: Number(amount.value),
-    paid: Number(paid.value),
-    debt: debt,
-    total: Number(paid.value),
-    date: new Date().toLocaleDateString()
-  });
-
-  updateAll();
-
-  customer.value="";
-  product.value="";
-  amount.value="";
-  paid.value="";
-
-  showToast("✓ Saved successfully");
-}
-
-/* UPDATE */
-function updateAll(){
-  localStorage.setItem("records",JSON.stringify(records));
-  loadData();
-    showToast("✓ Debt Updated","blue");
-}
-
-/* LOAD */
-function loadData(){
-  tbody.innerHTML="";
-  let paidT=0,debtT=0;
-
-  records.forEach((r,i)=>{
-    paidT+=r.paid;
-    debtT+=r.debt;
-
-    tbody.innerHTML+=`
-    <tr>
-      <td>${i+1}</td>
-      <td>${r.name}</td>
-      <td>${r.product}</td>
-      <td>N ${r.amount}</td>
-      <td>N ${r.paid}</td>
-      <td>N ${r.debt}</td>
-      <td>N ${r.total}</td>
-      <td>${r.date}</td>
-      <td><button onclick="del(${i})">❌</button></td>
-    </tr>`;
-  });
-
-  tPaid.innerText="₦"+paidT;
-  tDebt.innerText="₦"+debtT;
-}
-
-/* DELETE */
-function del(i){
-  records.splice(i,1);
-  updateAll();
-  showToast("✓ Deleted","#e53935");
-}
-
-/* SEARCH */
-function searchTable(){
-  let v=search.value.toLowerCase();
-  document.querySelectorAll("tbody tr").forEach(r=>{
-    r.style.display=r.innerText.toLowerCase().includes(v)?"":"none";
-  });
-}
-
-/* SORT */
-function sortAZ(){
-  records.sort((a,b)=>a.name.localeCompare(b.name));
-  updateAll();
-}
-
-/* CHART */
-function drawChart(){
-  if(chart) chart.destroy();
-
-  let paid=0,debt=0;
-  records.forEach(r=>{
-    paid+=r.paid;
-    debt+=r.debt;
-  });
-
-  chart=new Chart(document.getElementById("chart"),{
-    type:"doughnut",
-    data:{
-      labels:["Income","Debt"],
-      datasets:[{data:[paid,debt]}]
+    // Toast Logic
+    function toast(msg, bg="#00c853") {
+        const t = document.getElementById("toast");
+        t.innerText = msg; t.style.background = bg; t.style.display = "block";
+        setTimeout(() => t.style.display="none", 2500);
     }
-  });
-}
-</script>
 
+    // Auth Logic
+    if(localStorage.getItem("isLoggedIn") === "true") loginDone();
+
+    function login() {
+        if(user.value === AUTH_USER && pass.value === AUTH_PASS) {
+            localStorage.setItem("isLoggedIn", "true");
+            loginDone();
+        } else { alert("Invalid Credentials"); }
+    }
+
+    function loginDone() {
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("app").style.display = "block";
+        showPage('tablePage');
+    }
+
+    function logout() {
+        localStorage.removeItem("isLoggedIn");
+        location.reload();
+    }
+
+    // Navigation
+    function toggleMenu(open) {
+        document.getElementById("sidebar").style.left = open ? "0" : "-260px";
+        document.getElementById("overlay").style.display = open ? "block" : "none";
+    }
+
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+        document.getElementById(id).classList.add('active-page');
+        toggleMenu(false);
+        if(id === 'tablePage') renderTable();
+        if(id === 'chartPage') renderChart();
+    }
+
+    // Data Actions
+    function saveRecord() {
+        const total = Number(totalAmt.value);
+        const paid = Number(paidAmt.value);
+        if(!custName.value || total <= 0) return alert("Please enter valid details");
+
+        records.push({
+            name: custName.value,
+            product: prodName.value,
+            total: total,
+            paid: paid,
+            debt: total - paid,
+            date: new Date().toLocaleDateString()
+        });
+
+        localStorage.setItem("akura_records", JSON.stringify(records));
+        custName.value = prodName.value = totalAmt.value = paidAmt.value = "";
+        toast("Record Saved!");
+        showPage('tablePage');
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "";
+        let sPaid = 0, sDebt = 0;
+
+        records.forEach((r, i) => {
+            sPaid += r.paid; sDebt += r.debt;
+            tbody.innerHTML += `
+                <tr>
+                    <td>${i+1}</td>
+                    <td>${r.name}</td>
+                    <td>${r.product}</td>
+                    <td>₦${r.total}</td>
+                    <td>₦${r.paid}</td>
+                    <td style="color:${r.debt > 0 ? 'red' : 'green'}">₦${r.debt}</td>
+                    <td>${r.date}</td>
+                    <td>
+                        <button class="btn-edit" onclick="openEdit(${i})">✏️</button>
+                        <button class="btn-del" onclick="removeRec(${i})">❌</button>
+                    </td>
+                </tr>`;
+        });
+        document.getElementById("sumPaid").innerText = "₦" + sPaid;
+        document.getElementById("sumDebt").innerText = "₦" + sDebt;
+    }
+
+    // Edit Debt Logic
+    function openEdit(i) {
+        editIdx = i;
+        document.getElementById("editLabel").innerText = `Updating record for ${records[i].name}`;
+        document.getElementById("newDebtInput").value = records[i].debt;
+        document.getElementById("editModal").style.display = "block";
+        document.getElementById("overlay").style.display = "block";
+    }
+
+    function closeEdit() {
+        document.getElementById("editModal").style.display = "none";
+        toggleMenu(false);
+    }
+
+    function confirmEdit() {
+        const newDebt = Number(newDebtInput.value);
+        let r = records[editIdx];
+        
+        // When debt is reduced, the amount "Paid" increases.
+        r.debt = newDebt;
+        r.paid = r.total - newDebt;
+
+        localStorage.setItem("akura_records", JSON.stringify(records));
+        closeEdit();
+        renderTable();
+        toast("Debt Updated", "#2980b9");
+    }
+
+    function removeRec(i) {
+        if(confirm("Permanently delete this record?")) {
+            records.splice(i, 1);
+            localStorage.setItem("akura_records", JSON.stringify(records));
+            renderTable();
+        }
+    }
+
+    function filterTable() {
+        let val = searchBox.value.toLowerCase();
+        document.querySelectorAll("#tableBody tr").forEach(tr => {
+            tr.style.display = tr.innerText.toLowerCase().includes(val) ? "" : "none";
+        });
+    }
+
+    // PDF Generator
+    function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.setFontSize(20);
+        doc.text("AKURA GENERAL ENTERPRISE", 105, 15, { align: "center" });
+        doc.setFontSize(10);
+        doc.text(`Official Sales Report - ${new Date().toLocaleDateString()}`, 105, 22, { align: "center" });
+
+        const data = records.map((r, i) => [i+1, r.name, r.product, `N${r.total}`, `N${r.paid}`, `N${r.debt}`, r.date]);
+        
+        doc.autoTable({
+            startY: 30,
+            head: [['SN', 'Customer', 'Product', 'Total', 'Paid', 'Debt', 'Date']],
+            body: data,
+            theme: 'grid',
+            headStyles: { fillColor: [20, 198, 255], textColor: [0,0,0] }
+        });
+
+        doc.save("Akura_Report.pdf");
+        toast("PDF Downloaded", "#8e44ad");
+        toggleMenu(false);
+    }
+
+    function renderChart() {
+        const ctx = document.getElementById('myChart').getContext('2d');
+        let p = 0, d = 0;
+        records.forEach(r => { p += r.paid; d += r.debt; });
+
+        if(chartObj) chartObj.destroy();
+        chartObj = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Total Income', 'Total Debt'],
+                datasets: [{ data: [p, d], backgroundColor: ['#00c853', '#e74c3c'] }]
+            }
+        });
+    }
+</script>
 </body>
 </html>
