@@ -48,8 +48,8 @@
 }
 
 .main-logo {
-    width: 90px; /* Adjust size as needed */
-    height: auto;
+    width: 100px; /* Adjust size as needed */
+    height: 80px;
     margin-bottom: 5px;
 }
 
@@ -154,7 +154,7 @@
         <div class="container">
             <h3>REGISTER SALE</h3>
             <input id="custName" placeholder="Customer Name">
-            <input id="prodName" placeholder="Product">
+            <input id="prodName" placeholder="Service">
             <input id="totalAmt" type="number" placeholder="Total Amount (₦)">
             <input id="paidAmt" type="number" placeholder="Amount Paid (₦)">
             <button onclick="saveRecord()">SAVE RECORD</button>
@@ -171,7 +171,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>SN</th><th>NAME</th><th>PRODUCT/SERVICE</th><th>TOTAL</th><th>PAID</th><th>DEBT</th><th>DATE</th><th>ACTION</th>
+                        <th>SN</th><th>NAME</th><th>SERVICE</th><th>TOTAL</th><th>PAID</th><th>DEBT</th><th>DATE</th><th>ACTION</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -348,7 +348,7 @@
         
         doc.autoTable({
             startY: 30,
-            head: [['SN', 'Customer', 'Product', 'Total', 'Paid', 'Debt', 'Date']],
+            head: [['SN', 'CUSTOMER', 'SERVICE', 'TOTAL', 'PAID', 'DEBT', 'DATE']],
             body: data,
             theme: 'grid',
             headStyles: { fillColor: [20, 198, 255], textColor: [0,0,0] }
