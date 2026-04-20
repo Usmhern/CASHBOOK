@@ -301,7 +301,7 @@ function saveData(){
   amount.value="";  
   paid.value="";  
   
-  showToast("✅Saved successfully");  
+  showToast("✓ Saved successfully");  
 }  
   
 /* UPDATE */  
@@ -314,11 +314,11 @@ function updateAll(){
 function loadData(){  
   tbody.innerHTML="";  
   let paidT=0,debtT=0;  
-  
+ let klear= document.getElementById("search");
   records.forEach((r,i)=>{  
     paidT+=r.paid;  
     debtT+=r.debt;  
-  
+    klear.value="";
     tbody.innerHTML+=`  
     <tr>  
       <td>${i+1}</td>  
@@ -346,7 +346,7 @@ function loadData(){
 function del(i){  
   records.splice(i,1);  
   updateAll();  
-  showToast("✅Deleted successfully","#e53935");  
+  showToast("✓ Deleted successfully","#e53935");  
 }  
   
 /* EDIT */  
