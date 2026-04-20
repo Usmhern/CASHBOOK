@@ -206,7 +206,7 @@ canvas{
 <table>  
 <thead style="background:navy;color:#fff">  
 <tr>  
-<th>SN</th><th>NAME</th><th>PRODUCT</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th><th>ACTION</th>  
+<th>SN</th><th>NAME</th><th>PRODUCT/SERVICE</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th><th>ACTION</th>  
 </tr>  
 </thead>  
 <tbody id="tbody"></tbody>  
@@ -377,7 +377,8 @@ function downloadPDF(){
   let html=`<h3 style="text-align:center">AKURA GENERAL ENTERPRISE CASHBOOK</h3><table border="1" style="width:100%;border-collapse:collapse">`;  
   
   records.forEach((r,i)=>{  
-    html+=`  
+    html+=` <tr> <th style="background:#273; color:#fff">SN</th><th>NAME</th><th>PRODUCT/SERVICE</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th></tr>  
+
     <tr>  
       <td>${i+1}</td>  
       <td>${r.name}</td>  
