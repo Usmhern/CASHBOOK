@@ -26,7 +26,7 @@
 .page { 
     //display: none; 
     padding: 20px; 
-    padding-top: 140px; /* Increased from 90px to 140px */
+    padding-top: 170px; /* Increased from 90px to 140px */
     max-width: 900px; 
     margin: auto; 
 }
@@ -48,7 +48,7 @@
 }
 
 .main-logo {
-    width: 60px; /* Adjust size as needed */
+    width: 90px; /* Adjust size as needed */
     height: auto;
     margin-bottom: 5px;
 }
@@ -62,7 +62,7 @@
 }
         
         .menu-btn { 
-            position: fixed; top: 40px; left: 17px; z-index: 1100; 
+            position: fixed; top: 60px; left: 17px; z-index: 1100; 
             font-size: 25px; cursor: pointer; background: #00c6ff; 
             padding: 5px 12px; border-radius: 4px; color: #000;
         }
@@ -102,8 +102,8 @@
         th { background: #243b55; color: #fff; }
 
         /* Action Buttons */
-        .btn-edit { background: #f39c12; color: #fff; padding: 5px 10px; width: auto; margin-right: 5px; }
-        .btn-del { background: #e74c3c; color: #fff; padding: 5px 10px; width: auto; }
+        .btn-edit { background: #eee; color: #fff; padding: 5px 10px; width: auto; margin-right: 5px; }
+        .btn-del { background: #eee; color: #fff; padding: 5px 10px; width: auto; }
 
         /* Modal */
         #editModal {
@@ -113,7 +113,7 @@
         }
 
         #toast {
-            position: fixed; top: 20px; right: 20px; padding: 15px 25px; 
+            position: fixed; top: 50px; right: 40px; padding: 15px 25px; 
             border-radius: 5px; display: none; z-index: 3000; font-weight: bold;
         }
     </style>
@@ -152,7 +152,7 @@
 
     <div id="formPage" class="page">
         <div class="container">
-            <h3>Register Sale</h3>
+            <h3>REGISTER SALE</h3>
             <input id="custName" placeholder="Customer Name">
             <input id="prodName" placeholder="Product">
             <input id="totalAmt" type="number" placeholder="Total Amount (₦)">
@@ -171,7 +171,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>SN</th><th>Name</th><th>Product</th><th>Total</th><th>Paid</th><th>Debt</th><th>Date</th><th>Action</th>
+                        <th>SN</th><th>NAME</th><th>PRODUCT/SERVICE</th><th>TOTAL</th><th>PAID</th><th>DEBT</th><th>DATE</th><th>ACTION</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -315,7 +315,7 @@
         localStorage.setItem("akura_records", JSON.stringify(records));
         closeEdit();
         renderTable();
-        toast("Debt Updated", "#2980b9");
+        toast("✓ Debt Updated", "orange");
     }
 
     function removeRec(i) {
@@ -323,6 +323,7 @@
             records.splice(i, 1);
             localStorage.setItem("akura_records", JSON.stringify(records));
             renderTable();
+            toast("X Deleted", "red");
         }
     }
 
@@ -354,7 +355,7 @@
         });
 
         doc.save("Akura_Report.pdf");
-        toast("PDF Downloaded", "#8e44ad");
+        toast(",✓ PDF Downloaded", "blue");
         toggleMenu(false);
     }
 
