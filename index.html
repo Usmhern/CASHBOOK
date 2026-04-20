@@ -71,7 +71,11 @@ header{
   text-align:center;
   padding:15px;
   background:#000;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
+
 .logo{
   width:110px;
   border-radius:0;
@@ -175,6 +179,39 @@ canvas{
   z-index:9999;
   display:none;
 }
+  /* 🔥 MOBILE RESPONSIVE FIX */
+body{
+  display:flex;
+  justify-content:center;
+}
+
+/* MAIN APP CENTERING */
+#app{
+  width:100%;
+  max-width:480px;
+  margin:auto;
+}
+
+/* PREVENT OVERFLOW */
+table{
+  width:100%;
+  overflow-x:auto;
+}
+
+/* MAKE DASHBOARD STACK NICELY ON SMALL SCREENS */
+@media(max-width:500px){
+  .dashboard{
+    flex-direction:column;
+  }
+
+  .top-bar{
+    flex-direction:column;
+  }
+
+  .top-bar button{
+    width:100%;
+  }
+  
 </style>
 </head>
 
@@ -233,7 +270,7 @@ canvas{
 <div class="top-bar">
   <input id="search" placeholder="Search..." onkeyup="searchTable()">
   <button style="background:red;color:#fff; border:1px solid #fff" onclick="sortAZ()"><b>A-Z</b></button>
-  <button style="background:grey;color:#fff; border:1px solod #fff" onclick="loadData()">🔄</button>
+  <button style="background:grey;color:#fff; border:1px solid #234" onclick="loadData()">RESET🔄</button>
 </div>
 
 <div style="overflow-x:auto">
