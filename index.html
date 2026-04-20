@@ -393,7 +393,7 @@ tDebt.innerText="₦"+d;
 function del(i){
 records.splice(i,1);
 updateAll();
-showToast("✓ Deleted");
+showToast3("✓ Deleted");
 }
 
 /* EDIT */
@@ -418,7 +418,7 @@ r.total=r.paid;
 
 updateAll();
 closePanel();
-showToast("✓ Debt Updated");
+showToast2("✓ Debt Updated");
 }
 
 /* SEARCH */
@@ -478,7 +478,36 @@ type:"doughnut",
 data:{labels:["Income","Debt"],datasets:[{data:[p,d]}]}
 });
 }
+  //SAVED
   function showToast(msg,color="#00c853"){
+  if(!toast) return;
+
+  toast.innerText=msg;
+  toast.style.background=color;
+  toast.style.display="block";
+
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(()=>{
+    toast.style.display="none";
+  },2000);
+}
+
+  //UPDATE
+    function showToast2(msg,color="blue"){
+  if(!toast) return;
+
+  toast.innerText=msg;
+  toast.style.background=color;
+  toast.style.display="block";
+
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(()=>{
+    toast.style.display="none";
+  },2000);
+    }
+
+  //DELETE
+    function showToast3(msg,color="red"){
   if(!toast) return;
 
   toast.innerText=msg;
