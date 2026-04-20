@@ -384,22 +384,28 @@ function closePanel(){
 }
 
 function saveDebt(){
-  let newDebt=Number(editDebtInput.value)||0;
-  let oldDebt=records[currentEditIndex].debt||0;
+  let newDebt = Number(editDebtInput.value) || 0;
+  let record = records[currentEditIndex];
 
-  if(newDebt<oldDebt){
-    records[currentEditIndex].total += (oldDebt-newDebt);
+  // 🔥 MAIN LOGIC
+  if(newDebt === 0){
+    // If debt cleared → customer has fully paid
+    record.paid = record.amount;
+    record.total = record.amount;
   }else{
-    records[currentEditIndex].total -= (newDebt-oldDebt);
+    // If debt exists → paid = amount - debt
+    record.paid = record.amount - newDebt;
+    if(record.paid < 0) record.paid = 0;
+
+    record.total = record.paid;
   }
 
-  records[currentEditIndex].debt=newDebt;
+  record.debt = newDebt;
 
   updateAll();
   closePanel();
   showToast("✓ DEBT UPDATED");
 }
-
 /* SEARCH */
 function searchTable(){
   let v=search.value.toLowerCase();
