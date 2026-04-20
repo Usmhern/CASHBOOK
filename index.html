@@ -35,7 +35,9 @@ input,button{
   input{
 border-left:none;
     border-top:none;
-    border-right-none;
+    border-right:none;
+    outline:none;
+    text-decoration:none;
     background: transparent;
     color:#fff;
     border-bottom:1px solid #fff;
@@ -243,9 +245,9 @@ canvas{
 </div>
 
 <div class="top-bar">
-  <input id="search" placeholder="Search..." onkeyup="searchTable()">
-  <button style="background:orange;color:#fff;border:1px solid #fff" onclick="sortAZ()">A-Z</button>
-  <button style="background:grey;color:#fff;border:1px solid #fff" onclick="loadData()">RESET</button>
+  <input style="background:#fff; color:black; id="search" placeholder="Search..." onkeyup="searchTable()">
+  <button style="background:orange;color:#fff;border:1px solid #fff; border-radius:20px" onclick="sortAZ()">A-Z</button>
+  <button style="background:grey;color:#fff;border:1px solid #fff; border-radius:20px" onclick="loadData()">RESET</button>
 </div>
 
 <div style="overflow-x:auto">
@@ -472,7 +474,8 @@ function downloadPDF(){
     styles:{
       fontSize:8,
       halign:"center",
-      font: "helvetica"
+      font: "helvetica",
+      border:1px solid black;
     },
 
     headStyles:{
