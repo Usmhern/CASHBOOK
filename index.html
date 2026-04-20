@@ -32,6 +32,15 @@ input,button{
   padding:10px;
   margin-top:10px;
 }
+  input{
+border-left:none;
+    border-top:none;
+    border-right-none;
+    background: transparent;
+    color:#fff;
+    border-bottom:1px solid #fff;
+    
+  }
 button{background:#00c6ff;border:none;cursor:pointer}
 
 /* MENU */
@@ -229,14 +238,14 @@ canvas{
 <div class="table-page" id="tablePage">
 
 <div class="dashboard">
-  <div class="card">Total Paid<br><b id="tPaid">₦0</b></div>
-  <div class="card">Total Debt<br><b id="tDebt">₦0</b></div>
+  <div style="background:green; color:#fff" class="card">Total Paid<br><b id="tPaid">₦0</b></div>
+  <div style="background:red; color:#fff"class="card">Total Debt<br><b id="tDebt">₦0</b></div>
 </div>
 
 <div class="top-bar">
   <input id="search" placeholder="Search..." onkeyup="searchTable()">
-  <button style="background:red;color:#fff;border:1px solid #fff" onclick="sortAZ()">A-Z</button>
-  <button style="background:green;color:#fff;border:1px solid #fff" onclick="loadData()">RESET</button>
+  <button style="background:orange;color:#fff;border:1px solid #fff" onclick="sortAZ()">A-Z</button>
+  <button style="background:grey;color:#fff;border:1px solid #fff" onclick="loadData()">RESET</button>
 </div>
 
 <div style="overflow-x:auto">
@@ -357,8 +366,8 @@ function loadData(){
       <td>₦${r.total}</td>
       <td>${r.date}</td>
       <td style="white-space:nowrap;">
-        <button onclick="openDebtEditor(${i})">✏️</button>
-        <button onclick="del(${i})">❌</button>
+        <button style="border:1px solid black" onclick="openDebtEditor(${i})">✏️</button>
+        &nbsp; &nbsp;<button style="border:1px solid black" onclick="del(${i})">❌</button>
       </td>
     </tr>`;
   });
