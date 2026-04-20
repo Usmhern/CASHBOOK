@@ -9,7 +9,25 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#141e30;color:#fff}
+
+body{
+  background:#141e30;
+  color:#fff;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+/* APP WRAPPER CENTERED */
+#app{
+  width:100%;
+  max-width:480px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
 
 /* LOGIN */
 #loginPage{
@@ -75,24 +93,26 @@ header{
   flex-direction:column;
   align-items:center;
 }
-
 .logo{
   width:110px;
   border-radius:0;
 }
 
+/* FORM + PAGES */
+.container,.table-page,.chart-page{
+  width:100%;
+}
+
 /* FORM */
 .container{
   max-width:400px;
-  margin:15px auto;
+  margin:auto;
   background:rgba(255,255,255,0.1);
   padding:20px;
   border-radius:10px;
 }
 
-/* TABLE */
-.table-page,.chart-page{display:none;padding:10px}
-
+/* DASHBOARD */
 .dashboard{display:flex;gap:5px}
 .card{
   flex:1;
@@ -166,7 +186,7 @@ canvas{
   border-radius:10px;
 }
 
-/* 🔥 TOAST NOTIFICATION */
+/* TOAST */
 #toast{
   position:fixed;
   top:20px;
@@ -179,45 +199,11 @@ canvas{
   z-index:9999;
   display:none;
 }
-  /* 🔥 MOBILE RESPONSIVE FIX */
-body{
-  display:flex;
-  justify-content:center;
-}
-
-/* MAIN APP CENTERING */
-#app{
-  width:100%;
-  max-width:480px;
-  margin:auto;
-}
-
-/* PREVENT OVERFLOW */
-table{
-  width:100%;
-  overflow-x:auto;
-}
-
-/* MAKE DASHBOARD STACK NICELY ON SMALL SCREENS */
-@media(max-width:500px){
-  .dashboard{
-    flex-direction:column;
-  }
-
-  .top-bar{
-    flex-direction:column;
-  }
-
-  .top-bar button{
-    width:100%;
-  }
-  
 </style>
 </head>
 
 <body>
 
-<!-- TOAST -->
 <div id="toast"></div>
 
 <!-- LOGIN -->
@@ -243,7 +229,7 @@ table{
   <a onclick="logout()">🚪 Logout</a>
 </div>
 
-<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+<div class="overlay" onclick="closeMenu()"></div>
 
 <header>
   <img src="akura.jpg" class="logo">
@@ -269,8 +255,8 @@ table{
 
 <div class="top-bar">
   <input id="search" placeholder="Search..." onkeyup="searchTable()">
-  <button style="background:red;color:#fff; border:1px solid #fff" onclick="sortAZ()"><b>A-Z</b></button>
-  <button style="background:grey;color:#fff; border:1px solid #234" onclick="loadData()">RESET🔄</button>
+  <button style="background:red;color:#fff" onclick="sortAZ()">A-Z</button>
+  <button style="background:#236;color:#fff" onclick="loadData()">🔄</button>
 </div>
 
 <div style="overflow-x:auto">
@@ -329,15 +315,14 @@ function showApp(){
 }
 
 /* MENU */
-function openMenu(){sidebar.style.left="0";overlay.style.display="block";}
-function closeMenu(){sidebar.style.left="-260px";overlay.style.display="none";}
+function openMenu(){sidebar.style.left="0";document.querySelector(".overlay").style.display="block";}
+function closeMenu(){sidebar.style.left="-260px";document.querySelector(".overlay").style.display="none";}
 
 /* NAV */
 function showForm(){
   formPage.style.display="block";
   tablePage.style.display="none";
   chartPage.style.display="none";
-  closeMenu();
 }
 
 function showTable(){
@@ -345,7 +330,6 @@ function showTable(){
   tablePage.style.display="block";
   chartPage.style.display="none";
   loadData();
-  closeMenu();
 }
 
 function showChart(){
@@ -353,7 +337,6 @@ function showChart(){
   tablePage.style.display="none";
   chartPage.style.display="block";
   drawChart();
-  closeMenu();
 }
 
 /* SAVE */
@@ -373,7 +356,6 @@ function saveData(){
 
   updateAll();
 
-  // CLEAR FORM
   customer.value="";
   product.value="";
   amount.value="";
@@ -404,12 +386,7 @@ function loadData(){
       <td>${r.product}</td>
       <td>₦${r.amount}</td>
       <td>₦${r.paid}</td>
-      <td>
-        <div class="money">
-          <span>₦</span>
-          <input value="${r.debt}" oninput="editDebt(${i},this)">
-        </div>
-      </td>
+      <td>₦${r.debt}</td>
       <td>₦${r.total}</td>
       <td>${r.date}</td>
       <td><button onclick="del(${i})">❌</button></td>
@@ -427,14 +404,6 @@ function del(i){
   showToast("Deleted successfully","#e53935");
 }
 
-/* EDIT */
-function editDebt(i,el){
-  let val=Number(el.value)||0;
-  records[i].debt=val;
-  records[i].total=records[i].paid+val;
-  updateAll();
-}
-
 /* SEARCH */
 function searchTable(){
   let v=search.value.toLowerCase();
@@ -447,30 +416,6 @@ function searchTable(){
 function sortAZ(){
   records.sort((a,b)=>a.name.localeCompare(b.name));
   updateAll();
-}
-
-/* PDF */
-function downloadPDF(){
-  let w=window.open("");
-  let html=`<h2 style="text-align:center">AKURA GENERAL ENTERPRISE</h2><table border="1" style="width:100%;border-collapse:collapse">`;
-
-  records.forEach((r,i)=>{
-    html+=`
-    <tr>
-      <td>${i+1}</td>
-      <td>${r.name}</td>
-      <td>${r.product}</td>
-      <td>₦${r.amount}</td>
-      <td>₦${r.paid}</td>
-      <td>₦${r.debt}</td>
-      <td>₦${r.total}</td>
-      <td>${r.date}</td>
-    </tr>`;
-  });
-
-  html+="</table>";
-  w.document.write(html);
-  w.print();
 }
 
 /* CHART */
