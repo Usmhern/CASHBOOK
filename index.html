@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AKURA GENERAL ENTERPRISE</title>
-<link rel="icon" href="logo.png">
+<link rel="icon" href="akura.png">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -66,7 +66,7 @@ button{background:#00c6ff;border:none;cursor:pointer}
   z-index:1400;
 }
 
-/* HEADER UPDATED */
+/* HEADER */
 header{
   text-align:center;
   padding:15px;
@@ -86,10 +86,9 @@ header{
   border-radius:10px;
 }
 
-/* TABLE & CHART */
+/* TABLE */
 .table-page,.chart-page{display:none;padding:10px}
 
-/* DASHBOARD */
 .dashboard{display:flex;gap:5px}
 .card{
   flex:1;
@@ -107,12 +106,10 @@ header{
   margin-top:10px;
   align-items:center;
 }
-
 .top-bar input{
   flex:1;
   padding:10px;
 }
-
 .top-bar button{
   width:55px;
   padding:6px;
@@ -133,10 +130,8 @@ th,td{
   border:1px solid #ccc;
   font-size:12px;
 }
-th{text-align:center}
-td{text-align:left}
 
-/* DELETE BUTTON UPDATED */
+/* DELETE BUTTON */
 td button{
   color:#fff;
   background:transparent;
@@ -145,15 +140,13 @@ td button{
   font-size:14px;
 }
 
-/* DEBT INPUT CLEAN STYLE */
+/* DEBT INPUT */
 .money{
   display:flex;
   align-items:center;
   gap:3px;
 }
-.money span{
-  font-weight:bold;
-}
+.money span{font-weight:bold;}
 .money input{
   border:none;
   outline:none;
@@ -168,10 +161,27 @@ canvas{
   margin-top:20px;
   border-radius:10px;
 }
+
+/* 🔥 TOAST NOTIFICATION */
+#toast{
+  position:fixed;
+  top:20px;
+  right:20px;
+  background:#00c853;
+  color:#fff;
+  padding:12px 16px;
+  border-radius:6px;
+  font-size:13px;
+  z-index:9999;
+  display:none;
+}
 </style>
 </head>
 
 <body>
+
+<!-- TOAST -->
+<div id="toast"></div>
 
 <!-- LOGIN -->
 <div id="loginPage">
@@ -222,13 +232,13 @@ canvas{
 
 <div class="top-bar">
   <input id="search" placeholder="Search..." onkeyup="searchTable()">
-  <button style="color:#fff; background:red;" onclick="sortAZ()">A-Z</button>
-  <button style="color:#fff; background:#080;" onclick="loadData()">🔄</button>
+  <button style="background:red;color:#fff; border:1px solid #fff" onclick="sortAZ()"><b>A-Z</b></button>
+  <button style="background:grey;color:#fff; border:1px solod #fff" onclick="loadData()">🔄</button>
 </div>
 
 <div style="overflow-x:auto">
 <table>
-<thead style="background: navy; color:#fff;">
+<thead style="background:navy;color:#fff">
 <tr>
 <th>SN</th><th>NAME</th><th>PRODUCT</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th><th>ACTION</th>
 </tr>
@@ -251,6 +261,15 @@ const ADMIN_PASS="1234";
 
 let records=JSON.parse(localStorage.getItem("records"))||[];
 let chart;
+
+/* TOAST */
+function showToast(msg,color="#00c853"){
+  let toast=document.getElementById("toast");
+  toast.innerText=msg;
+  toast.style.background=color;
+  toast.style.display="block";
+  setTimeout(()=>toast.style.display="none",2000);
+}
 
 /* LOGIN */
 if(localStorage.getItem("login")==="true") showApp();
@@ -316,6 +335,14 @@ function saveData(){
   });
 
   updateAll();
+
+  // CLEAR FORM
+  customer.value="";
+  product.value="";
+  amount.value="";
+  paid.value="";
+
+  showToast("Saved successfully");
 }
 
 /* UPDATE */
@@ -356,20 +383,18 @@ function loadData(){
   tDebt.innerText="₦"+debtT;
 }
 
-/* EDIT DEBT */
-function editDebt(i,el){
-  let val=Number(el.value);
-  if(isNaN(val)) val=0;
-
-  records[i].debt=val;
-  records[i].total=records[i].paid+val;
-
-  updateAll();
-}
-
 /* DELETE */
 function del(i){
   records.splice(i,1);
+  updateAll();
+  showToast("Deleted successfully","#e53935");
+}
+
+/* EDIT */
+function editDebt(i,el){
+  let val=Number(el.value)||0;
+  records[i].debt=val;
+  records[i].total=records[i].paid+val;
   updateAll();
 }
 
@@ -390,9 +415,7 @@ function sortAZ(){
 /* PDF */
 function downloadPDF(){
   let w=window.open("");
-  let html=`<h2 style="color: navy; text-align:center;">AKURA GENERAL ENTERPRISE</h2><h4 style="text-align:center;">CASH BOOK</h4>
-  <table border="1" style="width:100%;border-collapse:collapse;">
-  <tr><th>SN</th><th>NAME</th><th>PRODUCT</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th></tr>`;
+  let html=`<h2 style="text-align:center">AKURA GENERAL ENTERPRISE</h2><table border="1" style="width:100%;border-collapse:collapse">`;
 
   records.forEach((r,i)=>{
     html+=`
@@ -427,9 +450,7 @@ function drawChart(){
     type:"doughnut",
     data:{
       labels:["Income","Debt"],
-      datasets:[{
-        data:[paid,debt]
-      }]
+      datasets:[{data:[paid,debt]}]
     }
   });
 }
