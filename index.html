@@ -10,7 +10,9 @@
 
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background:#141e30; color:#fff; min-height:100vh; overflow-x: hidden; }
+        body { background:black;
+              /*#141e30;*/ 
+              color:#fff; min-height:100vh; overflow-x: hidden; }
 
         /* Auth Pages */
         #loginPage { 
@@ -139,7 +141,7 @@
         <a onclick="showPage('formPage')">➕ Add New Record</a>
         <a onclick="showPage('tablePage')">📊 View Records</a>
         <a onclick="showPage('chartPage')">📈 Statistics Chart</a>
-        <a onclick="downloadPDF()">🧾 Download PDF Report</a>
+        <a onclick="downloadPDF()">⬇️ Download PDF</a>
         <a onclick="logout()" style="color: #ff4d4d; margin-top: 20px;">🚪 Logout</a>
     </div>
 <br><br><br>
@@ -261,7 +263,7 @@
 
         localStorage.setItem("akura_records", JSON.stringify(records));
         custName.value = prodName.value = totalAmt.value = paidAmt.value = "";
-        toast("Record Saved!");
+        toast("✓ Record Saved!");
         showPage('tablePage');
     }
 
