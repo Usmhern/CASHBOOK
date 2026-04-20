@@ -374,20 +374,20 @@ function sortAZ(){
 /* PDF */  
 function downloadPDF(){  
   let w=window.open("");  
-  let html=`<h3 style="text-align:center">AKURA GENERAL ENTERPRISE CASHBOOK</h3><table border="1" style="width:100%;border-collapse:collapse">`;  
-  
+  let html=`<h3 style="text-align:center">AKURA GENERAL ENTERPRISE CASHBOOK</h3><table border="1" style="width:100%;border-collapse:collapse">
+   <tr> <th style="background:#273; color:#fff">SN</th><th>NAME</th><th>PRODUCT/SERVICE</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th></tr>`;  
   records.forEach((r,i)=>{  
-    html+=` <tr> <th style="background:#273; color:#fff">SN</th><th>NAME</th><th>PRODUCT/SERVICE</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>TOTAL</th><th>DATE</th></tr>  
+    html+=`
 
     <tr>  
-      <td>${i+1}</td>  
-      <td>${r.name}</td>  
-      <td>${r.product}</td>  
-      <td>₦${r.amount}</td>  
-      <td>₦${r.paid}</td>  
-      <td>₦${r.debt}</td>  
-      <td>₦${r.total}</td>  
-      <td>${r.date}</td>  
+      <td> ${i+1} </td>  
+      <td> ${r.name} </td>  
+      <td> ${r.product} </td>  
+      <td> ₦${r.amount} </td>  
+      <td> ₦${r.paid} </td>  
+      <td> ₦${r.debt} </td>  
+      <td> ₦${r.total} </td>  
+      <td> ${r.date} </td>  
     </tr>`;  
   });  
   
