@@ -334,8 +334,11 @@ function loadData(){
       </td>  
       <td>₦${r.total}</td>  
       <td>${r.date}</td>  
-      <td><button onclick="del(${i})">❌</button></td>  
-    </tr>`;  
+      <td>
+  <button onclick="enableEdit(${i},this)">✏️</button>
+  <button onclick="del(${i})">❌</button>
+</td>
+          </tr>`;  
   });  
   
   tPaid.innerText="₦"+paidT;  
@@ -350,12 +353,23 @@ function del(i){
 }  
   
 /* EDIT */  
-function editDebt(i,el){  
-  let val=Number(el.value)||0;  
-  records[i].debt=val;  
-  records[i].total=records[i].paid+val;  
-  updateAll();  
-}  
+function editDebt(i,el){
+  let newDebt = Number(el.value) || 0;
+  let oldDebt = records[i].debt || 0;
+
+  // Adjust total based on difference
+  if(newDebt < oldDebt){
+    // Debt reduced → add difference to total
+    records[i].total += (oldDebt - newDebt);
+  }else{
+    // Debt increased → subtract difference from total
+    records[i].total -= (newDebt - oldDebt);
+  }
+
+  records[i].debt = newDebt;
+
+  updateAll();
+}
   
 /* SEARCH */  
 function searchTable(){  
@@ -414,5 +428,12 @@ function drawChart(){
     }  
   });  
 }  
+  function enableEdit(i,btn){
+  let row = btn.closest("tr");
+  let input = row.querySelector(".money input");
+
+  input.focus();
+  input.select();
+    }
 </script>  </body>  
 </html>
