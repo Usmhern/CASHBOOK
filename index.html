@@ -5,9 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AKURA GENERAL ENTERPRISE</title>
 <link rel="icon" href="akura.png">
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:#141e30;color:#fff}
@@ -30,17 +32,16 @@ input,button{
   padding:10px;
   margin-top:10px;
 }
-  input{
-border-left:none;
-    border-top:none;
-    border-right:none;
-    outline:none;
-    //text-decoration:none;
-    background: transparent;
-    color:#fff;
-    border-bottom:1px solid #fff;
-    
-  }
+input{
+  border-left:none;
+  border-top:none;
+  border-right:none;
+  outline:none;
+  /* text-decoration:none; */
+  background: transparent;
+  color:#fff;
+  border-bottom:1px solid #fff;
+}
 button{background:#00c6ff;border:none;cursor:pointer}
 
 /* MENU */
@@ -84,9 +85,7 @@ header{
   padding:15px;
   background:#000;
 }
-.logo{
-  width:110px;
-}
+.logo{width:110px}
 
 /* FORM */
 .container{
@@ -117,10 +116,7 @@ header{
   margin-top:10px;
   align-items:center;
 }
-.top-bar input{
-  flex:1;
-  padding:10px;
-}
+.top-bar input{flex:1;padding:10px}
 .top-bar button{
   width:45px;
   padding:4px;
@@ -142,7 +138,7 @@ th,td{
   font-size:12px;
 }
 
-/* INLINE BUTTON FIX */
+/* BUTTON */
 td button{
   width:auto;
   padding:2px 6px;
@@ -238,14 +234,14 @@ canvas{
 <div class="table-page" id="tablePage">
 
 <div class="dashboard">
-  <div style="background:green; color:#fff" class="card">Total Paid<br><b id="tPaid">₦0</b></div>
-  <div style="background:red; color:#fff"class="card">Total Debt<br><b id="tDebt">₦0</b></div>
+  <div style="background:green;color:#fff" class="card">Total Paid<br><b id="tPaid">₦0</b></div>
+  <div style="background:red;color:#fff" class="card">Total Debt<br><b id="tDebt">₦0</b></div>
 </div>
 
 <div class="top-bar">
-  <input id="search" style="background:#fff; color:black;" placeholder="Search..." onkeyup="searchTable()">
-  <button style="background:orange;color:#fff;border:1px solid #fff; border-radius:20px;" onclick="sortAZ()">A-Z</button>
-  <button style="background:grey;color:#fff;border:1px solid #fff; border-radius:20px;" onclick="loadData()">RESET</button>
+  <input id="search" style="background:#fff;color:black;" placeholder="Search..." onkeyup="searchTable()">
+  <button style="background:orange;color:#fff;border-radius:20px" onclick="sortAZ()">A-Z</button>
+  <button style="background:grey;color:#fff;border-radius:20px" onclick="loadData()">RESET</button>
 </div>
 
 <div style="overflow-x:auto">
@@ -262,34 +258,47 @@ canvas{
 
 <!-- CHART -->
 <div class="chart-page" id="chartPage">
-  <canvas id="chart"></canvas>
+<canvas id="chart"></canvas>
 </div>
 
 </div>
 
 <!-- EDIT PANEL -->
 <div id="editPanel">
-  <h3>Edit Debt</h3>
-  <input id="editDebtInput" type="number" placeholder="Enter Debt ₦">
-  <button onclick="saveDebt()">Save</button>
-  <button onclick="closePanel()" style="background:red">Cancel</button>
+<h3>Edit Debt</h3>
+<input id="editDebtInput" type="number" placeholder="Enter Debt ₦">
+<button onclick="saveDebt()">Save</button>
+<button onclick="closePanel()" style="background:red">Cancel</button>
 </div>
 
 <script>
 const ADMIN_USER="Admin";
 const ADMIN_PASS="1234";
 
+const loginPage=document.getElementById("loginPage");
+const app=document.getElementById("app");
+const user=document.getElementById("user");
+const pass=document.getElementById("pass");
+
+const customer=document.getElementById("customer");
+const product=document.getElementById("product");
+const amount=document.getElementById("amount");
+const paid=document.getElementById("paid");
+const tbody=document.getElementById("tbody");
+const search=document.getElementById("search");
+
+const tPaid=document.getElementById("tPaid");
+const tDebt=document.getElementById("tDebt");
+
+const editPanel=document.getElementById("editPanel");
+const editDebtInput=document.getElementById("editDebtInput");
+const sidebar=document.getElementById("sidebar");
+const overlay=document.getElementById("overlay");
+const chartPage=document.getElementById("chartPage");
+
 let records=JSON.parse(localStorage.getItem("records"))||[];
 let chart;
 let currentEditIndex=null;
-
-/* TOAST */
-function showToast(msg,color="#00c853"){
-  toast.innerText=msg;
-  toast.style.background=color;
-  toast.style.display="block";
-  setTimeout(()=>toast.style.display="none",2000);
-}
 
 /* LOGIN */
 if(localStorage.getItem("login")==="true") showApp();
@@ -322,195 +331,135 @@ function showChart(){formPage.style.display="none";tablePage.style.display="none
 
 /* SAVE */
 function saveData(){
-  let debt = Number(amount.value) - Number(paid.value);
-  if(debt<0) debt=0;
+let debt=Number(amount.value)-Number(paid.value);
+if(debt<0)debt=0;
 
-  records.push({
-    name: customer.value,
-    product: product.value,
-    amount: Number(amount.value),
-    paid: Number(paid.value),
-    debt: debt,
-    total: Number(paid.value),
-    date: new Date().toLocaleDateString()
-  });
+records.push({
+name:customer.value,
+product:product.value,
+amount:Number(amount.value),
+paid:Number(paid.value),
+debt:debt,
+total:Number(paid.value),
+date:new Date().toLocaleDateString()
+});
 
-  updateAll();
-  customer.value=product.value=amount.value=paid.value="";
-  showToast("✓ Saved successfully");
+updateAll();
+customer.value=product.value=amount.value=paid.value="";
 }
 
 /* UPDATE */
 function updateAll(){
-  localStorage.setItem("records",JSON.stringify(records));
-  loadData();
+localStorage.setItem("records",JSON.stringify(records));
+loadData();
 }
 
 /* LOAD */
 function loadData(){
-  tbody.innerHTML="";
-  let paidT=0,debtT=0;
- let klear=document.getElementById("search");
-  records.forEach((r,i)=>{
-    paidT+=Number(r.paid)||0;
-    debtT+=Number(r.debt)||0;
-    klear.value="";
-    tbody.innerHTML+=`
-    <tr>
-      <td>${i+1}</td>
-      <td>${r.name}</td>
-      <td>${r.product}</td>
-      <td>₦${r.amount}</td>
-      <td>₦${r.paid}</td>
-      <td>₦${r.debt}</td>
-      <td>₦${r.total}</td>
-      <td>${r.date}</td>
-      <td style="white-space:nowrap;">
-        <button style="border:1px solid black" onclick="openDebtEditor(${i})">✏️</button>
-        &nbsp; &nbsp;<button style="border:1px solid black" onclick="del(${i})">❌</button>
-      </td>
-    </tr>`;
-  });
+tbody.innerHTML="";
+let p=0,d=0;
 
-  tPaid.innerText="₦"+paidT;
-  tDebt.innerText="₦"+debtT;
+records.forEach((r,i)=>{
+p+=r.paid; d+=r.debt;
+
+tbody.innerHTML+=`
+<tr>
+<td>${i+1}</td>
+<td>${r.name}</td>
+<td>${r.product}</td>
+<td>₦${r.amount}</td>
+<td>₦${r.paid}</td>
+<td>₦${r.debt}</td>
+<td>₦${r.total}</td>
+<td>${r.date}</td>
+<td>
+<button onclick="openDebtEditor(${i})">✏️</button>
+<button onclick="del(${i})">❌</button>
+</td>
+</tr>`;
+});
+
+tPaid.innerText="₦"+p;
+tDebt.innerText="₦"+d;
 }
 
 /* DELETE */
 function del(i){
-  records.splice(i,1);
-  updateAll();
-  showToast("✓ Deleted","#e53935");
+records.splice(i,1);
+updateAll();
 }
 
-/* EDIT PANEL */
+/* EDIT */
 function openDebtEditor(i){
-  currentEditIndex=i;
-  editDebtInput.value=records[i].debt;
-  editPanel.style.bottom="0";
-  editDebtInput.focus();
+currentEditIndex=i;
+editDebtInput.value=records[i].debt;
+editPanel.style.bottom="0";
 }
 
 function closePanel(){
-  editPanel.style.bottom="-100%";
+editPanel.style.bottom="-100%";
 }
 
 function saveDebt(){
-  let newDebt = Number(editDebtInput.value) || 0;
-  let record = records[currentEditIndex];
+let newDebt=Number(editDebtInput.value)||0;
+let r=records[currentEditIndex];
 
-  // 🔥 MAIN LOGIC
-  if(newDebt === 0){
-    // If debt cleared → customer has fully paid
-    record.paid = record.amount;
-    record.total = record.amount;
-  }else{
-    // If debt exists → paid = amount - debt
-    record.paid = record.amount - newDebt;
-    if(record.paid < 0) record.paid = 0;
+r.debt=newDebt;
+r.paid=r.amount-newDebt;
+if(r.paid<0)r.paid=0;
+r.total=r.paid;
 
-    record.total = record.paid;
-  }
-
-  record.debt = newDebt;
-
-  updateAll();
-  closePanel();
-  showToast("✓ DEBT UPDATED");
+updateAll();
+closePanel();
 }
+
 /* SEARCH */
 function searchTable(){
-  let v=search.value.toLowerCase();
-  document.querySelectorAll("tbody tr").forEach(r=>{
-    r.style.display=r.innerText.toLowerCase().includes(v)?"":"none";
-  });
+let v=search.value.toLowerCase();
+document.querySelectorAll("tbody tr").forEach(r=>{
+r.style.display=r.innerText.toLowerCase().includes(v)?"":"none";
+});
 }
 
 /* SORT */
 function sortAZ(){
-  records.sort((a,b)=>a.name.localeCompare(b.name));
-  updateAll();
+records.sort((a,b)=>a.name.localeCompare(b.name));
+updateAll();
 }
 
 /* PDF */
 function downloadPDF(){
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF("p","mm","a4");
+const { jsPDF }=window.jspdf;
+const doc=new jsPDF("p","mm","a4");
 
-  let today = new Date().toLocaleDateString();
+doc.text("AKURA CASHBOOK",105,15,{align:"center"});
 
-  // Title
-  doc.setFont("helvetica","normal");
-  doc.setFontSize(14);
-  doc.text("AKURA GENERAL ENTERPRISE CASHBOOK", 105, 15, {align:"center"});
+doc.autoTable({
+startY:20,
+head:[["SN","NAME","PRODUCT","AMOUNT","PAID","DEBT","TOTAL","DATE"]],
+body:records.map((r,i)=>[
+i+1,r.name,r.product,
+"₦"+r.amount,"₦"+r.paid,
+"₦"+r.debt,"₦"+r.total,r.date
+]),
+styles:{fontSize:8,halign:"center"},
+headStyles:{fillColor:[0,0,128],textColor:255}
+});
 
-  // Date top right
-  doc.setFontSize(9);
-  doc.text(today, 200, 10, {align:"right"});
-
-  // ✅ IMPORTANT: force UTF-8 rendering support
-  const formatNaira = (val) => `₦${val}`;
-
-  let tableData = records.map((r,i)=>[
-    i+1,
-    r.name,
-    r.product,
-    formatNaira(r.amount),
-    formatNaira(r.paid),
-    formatNaira(r.debt),
-    formatNaira(r.total),
-    r.date
-  ]);
-
-  doc.autoTable({
-    startY: 20,
-    head: [[
-      "SN","NAME","PRODUCT/SERVICE","AMOUNT","PAID","DEBT","TOTAL","DATE"
-    ]],
-    body: tableData,
-
-    styles:{
-      fontSize:8,
-      halign:"center",
-      font: "helvetica",
-      border:1px solid black;
-    },
-
-    headStyles:{
-      fillColor:[0,0,128],
-      textColor:255
-    },
-
-    didDrawPage: function () {
-      let pageCount = doc.internal.getNumberOfPages();
-      let pageSize = doc.internal.pageSize;
-
-      doc.setFontSize(9);
-      doc.text(
-        "Page " + pageCount,
-        pageSize.getWidth() - 20,
-        pageSize.getHeight() - 10
-      );
-    }
-  });
-
-  doc.save("AKURA_CASHBOOK.pdf");
+doc.save("AKURA.pdf");
 }
 
 /* CHART */
 function drawChart(){
-  if(chart) chart.destroy();
+if(chart)chart.destroy();
 
-  let paid=0,debt=0;
-  records.forEach(r=>{
-    paid+=r.paid;
-    debt+=r.debt;
-  });
+let p=0,d=0;
+records.forEach(r=>{p+=r.paid;d+=r.debt});
 
-  chart=new Chart(document.getElementById("chart"),{
-    type:"doughnut",
-    data:{labels:["Income","Debt"],datasets:[{data:[paid,debt]}]}
-  });
+chart=new Chart(document.getElementById("chart"),{
+type:"doughnut",
+data:{labels:["Income","Debt"],datasets:[{data:[p,d]}]}
+});
 }
 </script>
 
