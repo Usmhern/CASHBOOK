@@ -15,7 +15,7 @@
 body{
   background:black;
   color:#fff;
-  overflow:hidden;
+  overflow:hidden; /* prevent full page scroll */
 }
 
 /* LOGIN */
@@ -25,7 +25,6 @@ body{
   justify-content:center;
   align-items:center;
 }
-
 .login-box{
   background:#243b55;
   padding:25px;
@@ -40,30 +39,28 @@ input,button{
 }
 
 input{
-  border:none;
+  border-left:none;
+  border-top:none;
+  border-right:none;
   outline:none;
-  background:transparent;
+  background: transparent;
   color:#fff;
   border-bottom:1px solid #fff;
 }
 
-button{
-  background:#00c6ff;
-  border:none;
-  cursor:pointer;
-}
+button{background:#00c6ff;border:none;cursor:pointer}
 
 /* MENU */
 .menu-btn{
   position:fixed;
-  top:20px;
+  top:53px;
   left:20px;
-  font-size:26px;
+  font-size:30px;
 }
 
 .sidebar{
   position:fixed;
-  top:0;
+  top:30px;
   left:-260px;
   width:260px;
   height:100%;
@@ -79,10 +76,7 @@ button{
   text-decoration:none;
 }
 
-.sidebar a:hover{
-  background:#00c6ff;
-  color:#000;
-}
+.sidebar a:hover{background:#00c6ff;color:#000}
 
 .overlay{
   position:fixed;
@@ -111,9 +105,8 @@ header{
 .table-page,.chart-page{display:none;padding:10px}
 
 .table-scroll{
-  overflow-x:auto;
-  overflow-y:auto;
   max-height:60vh;
+  overflow:auto;
 }
 
 table{
@@ -134,10 +127,11 @@ th,td{
   position:fixed;
   top:70px;
   right:20px;
+  background:#00c853;
+  color:#fff;
   padding:12px 16px;
   border-radius:6px;
   display:none;
-  color:#fff;
   z-index:9999;
 }
 </style>
@@ -178,7 +172,7 @@ th,td{
 <div class="overlay" id="overlay" onclick="closeMenu()"></div>
 
 <header>
-  <h3>AKURA GENERAL ENTERPRISE</h3>
+  <h3 style="color:#0bf">AKURA GENERAL ENTERPRISE</h3>
   <h4>CASHBOOK</h4>
 </header>
 
@@ -238,43 +232,43 @@ let records=JSON.parse(localStorage.getItem("records"))||[];
 if(localStorage.getItem("login")==="true") showApp();
 
 function login(){
-if(user.value===ADMIN_USER && pass.value===ADMIN_PASS){
-localStorage.setItem("login","true");
-showApp();
-}else alert("Wrong login");
+  if(user.value===ADMIN_USER && pass.value===ADMIN_PASS){
+    localStorage.setItem("login","true");
+    showApp();
+  }else alert("Wrong login");
 }
 
 function logout(){
-localStorage.removeItem("login");
-location.reload();
+  localStorage.removeItem("login");
+  location.reload();
 }
 
 function showApp(){
-loginPage.style.display="none";
-app.style.display="block";
+  loginPage.style.display="none";
+  app.style.display="block";
 }
 
-/* TOAST + SOUND */
-function showToast(msg,color,sound){
-toast.innerText=msg;
-toast.style.background=color;
-toast.style.display="block";
+/* TOAST */
+function showToast(msg,color="#00c853",sound=null){
+  toast.innerText=msg;
+  toast.style.background=color;
+  toast.style.display="block";
 
-if(sound) sound.play();
+  if(sound) sound.play();
 
-setTimeout(()=>toast.style.display="none",2000);
+  setTimeout(()=>toast.style.display="none",2000);
 }
 
 /* SAVE */
 function saveData(){
-let debt=amount.value-paid.value;
-if(debt<0) debt=0;
+let debt=Number(amount.value)-Number(paid.value);
+if(debt<0)debt=0;
 
 records.push({
 name:customer.value,
 product:product.value,
-amount:+amount.value,
-paid:+paid.value,
+amount:Number(amount.value),
+paid:Number(paid.value),
 debt:debt,
 date:new Date().toLocaleDateString()
 });
