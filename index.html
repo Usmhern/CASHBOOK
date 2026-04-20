@@ -300,6 +300,9 @@ let records=JSON.parse(localStorage.getItem("records"))||[];
 let chart;
 let currentEditIndex=null;
 
+
+const toast = document.getElementById("toast");
+  
 /* LOGIN */
 if(localStorage.getItem("login")==="true") showApp();
 
@@ -345,6 +348,7 @@ date:new Date().toLocaleDateString()
 });
 
 updateAll();
+showToast("✓ Saved Successfully");
 customer.value=product.value=amount.value=paid.value="";
 }
 
@@ -389,6 +393,7 @@ tDebt.innerText="₦"+d;
 function del(i){
 records.splice(i,1);
 updateAll();
+showToast("✓ Deleted");
 }
 
 /* EDIT */
@@ -413,6 +418,7 @@ r.total=r.paid;
 
 updateAll();
 closePanel();
+showToast("✓ Debt Updated");
 }
 
 /* SEARCH */
@@ -471,6 +477,18 @@ chart=new Chart(document.getElementById("chart"),{
 type:"doughnut",
 data:{labels:["Income","Debt"],datasets:[{data:[p,d]}]}
 });
+}
+  function showToast(msg,color="#00c853"){
+  if(!toast) return;
+
+  toast.innerText=msg;
+  toast.style.background=color;
+  toast.style.display="block";
+
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(()=>{
+    toast.style.display="none";
+  },2000);
 }
 </script>
 
