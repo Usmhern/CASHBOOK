@@ -222,11 +222,11 @@
     document.getElementById("overlay").style.display = "block";
             loginDone();
         } 
-        else if(user.value !== AUTH_USER && pass.value === AUTH_PASS) {
+        else if(user.value != AUTH_USER && pass.value === AUTH_PASS) {
             document.getElementById("1Modal").style.display = "block";
     document.getElementById("overlay").style.display = "block";
                user.value=""; pass.value="";
-        } else if(user.value === AUTH_USER && pass.value !==AUTH_PASS) {
+        } else if(user.value === AUTH_USER && pass.value !=AUTH_PASS) {
             document.getElementById("2Modal").style.display = "block";
     document.getElementById("overlay").style.display = "block";
                user.value=""; pass.value="";
@@ -356,6 +356,9 @@ function closeDelete() {
 
     function closeInvalid() {
     document.getElementById("invalidModal").style.display = "none";
+        document.getElementById("successModal").style.display = "none";
+        document.getElementById("1Modal").style.display = "none";
+        document.getElementById("2Modal").style.display = "none";
     document.getElementById("overlay").style.display = "none";
     deleteIdx = null;
     }
