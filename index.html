@@ -9,6 +9,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
     <style>
+        /* 1. Define the animation keyframes */
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; } /* Dims the element */
+    100% { opacity: 1; }
+}
+
+/* 2. Create the Green Blink class */
+.blink-green {
+    color: #00ff00 !important; 
+    animation: blink 1.2s linear infinite; /* Loops forever */
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.6); /* Adds a glowing effect */
+    font-weight: bold;
+}
+
+/* 3. Create the Red Blink class */
+.blink-red {
+    color: #ff0000 !important; 
+    animation: blink 0.8s linear infinite; /* Faster blink for "danger" */
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+    font-weight: bold;
+}
+        
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
         body { background:black; color:#fff; min-height:100vh; overflow-x: hidden; }
 
@@ -93,7 +116,7 @@
 
     <div id="formPage" class="page">
         <div style="background:rgba(255,255,255,0.05); padding: 25px; border-radius: 10px;">
-            <h3>Register Sale</h3>
+            <h3>REGISTER SALE </h3>
             <input id="custName" placeholder="Customer Name">
             <input id="prodName" placeholder="Product">
             <input id="totalAmt" type="number" placeholder="Total Amount (₦)">
@@ -104,9 +127,10 @@
 <br><br>
     <div id="tablePage" class="page">
         <div class="dashboard">
-            <div class="card">Total Paid<br><b id="sumPaid" style="color:green">₦0</b></div>
-            <div class="card">Total Debt<br><b id="sumDebt" style="color:red">₦0</b></div>
+            <div class="card">TOTAL PAID<br><b id="sumPaid" style="color:green">₦0</b></div>
+            <div class="card">TOTAL DEBT<br><b id="sumDebt" style="color:red">₦0</b></div>
         </div>
+          <input id="searchBox" placeholder="Search by name or product..." onkeyup="filterTable()">
         <div class="table-wrap">
             <table>
                 <thead>
@@ -133,7 +157,7 @@
 
 <script>
     const ADMIN_USER = "Admin";
-    const ADMIN_PASS = "1234";
+    const ADMIN_PASS = "123456";
     let records = JSON.parse(localStorage.getItem("akura_records")) || [];
     let deleteIdx = null, editIdx = null, chartObj = null;
 
@@ -212,7 +236,7 @@
         records.push({ name: custName.value, product: prodName.value, total: total, paid: paid, debt: total - paid, date: new Date().toLocaleDateString() });
         localStorage.setItem("akura_records", JSON.stringify(records));
         custName.value = prodName.value = totalAmt.value = paidAmt.value = "";
-        showToast("✓ Record Saved", "#00c853");
+        showToast("✓ Record Saved", "green");
         showPage('tablePage');
     }
 
@@ -229,7 +253,14 @@
         document.getElementById("sumPaid").innerText = "₦" + sP;
         document.getElementById("sumDebt").innerText = "₦" + sD;
     }
-
+function filterTable() {
+        let val = searchBox.value.toLowerCase();
+        document.querySelectorAll("#tableBody tr").forEach(tr => {
+            tr.style.display = tr.innerText.toLowerCase().includes(val) ? "" : "none";
+        });
+        
+            }
+    
     // EDIT/DELETE POPUPS
     function openEdit(i) {
         editIdx = i;
@@ -244,7 +275,7 @@
         records[editIdx].paid = records[editIdx].total - nD;
         localStorage.setItem("akura_records", JSON.stringify(records));
         closeAllModals(); renderTable();
-        showToast("✓ Debt Updated", "#ffa500");
+        showToast("✓ Debt Updated", "orange");
     }
 
     function askDelete(i) {
@@ -256,20 +287,34 @@
         records.splice(deleteIdx, 1);
         localStorage.setItem("akura_records", JSON.stringify(records));
         closeAllModals(); renderTable();
-        showToast("✓ Deleted", "#ff4d4d");
+        showToast("✓ Deleted", "red");
     }
 
+
+    // PDF Generator
     function downloadPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.text("AKURA GENERAL ENTERPRISE - CASHBOOK", 10, 10);
-        const data = records.map((r, i) => [i+1, r.name, r.product, r.total, r.paid, r.debt, r.date]);
-        doc.autoTable({ head: [['SN', 'NAME', 'PRODUCT', 'AMOUNT', 'PAID', 'DEBT', 'DATE']], body: data });
-        doc.save("Akura_Cashbook.pdf");
-        showToast("PDF Downloaded", "#2196F3");
-        toggleMenu(false);
-    }
 
+        doc.setFontSize(20);
+        doc.text("AKURA GENERAL ENTERPRISE", 105, 15, { align: "center" });
+        doc.setFontSize(10);
+        doc.text(`CASHBOOK REPORT - ${new Date().toLocaleDateString()}`, 105, 22, { align: "center" });
+
+        const data = records.map((r, i) => [i+1, r.name, r.product, `N${r.total}`, `N${r.paid}`, `N${r.debt}`, r.date]);
+        
+        doc.autoTable({
+            startY: 30,
+            head: [['SN', 'CUSTOMER', 'SERVICE', 'AMOUNT', 'PAID', 'DEBT', 'DATE']],
+            body: data,
+            theme: 'grid',
+            headStyles: { fillColor: [20, 198, 255], textColor: [0,0,0] }
+        });
+
+        doc.save("Akura_Report.pdf");
+        showtoast("✓ PDF Downloaded", "blue");
+        toggleMenu(false);
+                                            }
     function renderChart() {
         const ctx = document.getElementById('myChart').getContext('2d');
         let p = 0, d = 0;
@@ -277,6 +322,35 @@
         if(chartObj) chartObj.destroy();
         chartObj = new Chart(ctx, { type: 'pie', data: { labels: ['Paid', 'Debt'], datasets: [{ data: [p, d], backgroundColor: ['#0ae', 'orange'] }] } });
     }
+
+    function danger() {
+    let p = document.getElementById("sumPaid");
+    let d = document.getElementById("sumDebt");
+
+    // Remove the Currency symbol and commas, then convert to Number
+    let paidVal = Number(p.textContent.replace(/[^\d.]/g, ''));
+    let debtVal = Number(d.textContent.replace(/[^\d.]/g, ''));
+
+    // Reset classes to ensure we start from a clean state
+    p.classList.remove("blink-green");
+    d.classList.remove("blink-red");
+
+    // 1. If Debt exists and is higher than Paid amount, trigger Red Alert
+    if (debtVal > paidVal && debtVal > 0) {
+        d.classList.add("blink-red");
+    } 
+    
+    // 2. If all debt is cleared and there is income, trigger Green Success
+    else if (debtVal === 0 && paidVal > 0) {
+        p.classList.add("blink-green");
+    }
+    
+    // 3. If debt is significant (e.g., over ₦50,000), blink regardless of income
+    else if (debtVal >= 50000) {
+        d.classList.add("blink-red");
+    }
+    }
+                                                                                                       
 </script>
 </body>
 </html>
