@@ -219,10 +219,8 @@
         if(user.value === AUTH_USER && pass.value === AUTH_PASS) {
             localStorage.setItem("isLoggedIn", "true");
             document.getElementById("successModal").style.display = "block";
-   let t=document.getElementById("overlay").style.display = "block";
-            setTimeout(() => t.style.display="none", 2500);
-   
-            loginDone();
+   document.getElementById("overlay").style.display = "block";
+            
         } 
         else if(user.value != AUTH_USER && pass.value === AUTH_PASS) {
             document.getElementById("1Modal").style.display = "block";
@@ -242,6 +240,12 @@
     function loginDone() {
         document.getElementById("loginPage").style.display = "none";
         document.getElementById("app").style.display = "block";
+        showPage('tablePage');
+    }
+    function loginDone2() {
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("app").style.display = "block";
+        closeInvalid();
         showPage('tablePage');
     }
 
@@ -458,6 +462,8 @@ function executeDelete() {
     <div id="successModal" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1c2e4a; padding: 25px; border-radius: 12px; z-index: 2100; width: 90%; max-width: 320px; border: 1px solid green; text-align: center;">
     <div style="font-size: 40px; color: #ff4d4d; margin-bottom: 10px;">✅</div>
     <h3 style="color: #fff;">SUCCESSFUL</h3>
+    <button onclick="loginDone2()" style="background: #444; color: white; margin-top: 5px;">OK</button>
+      
     
     </div>
 </body>
