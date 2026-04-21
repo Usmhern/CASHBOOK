@@ -346,13 +346,24 @@
 function renderSavingsTable() {
     const b = document.getElementById("savingsBody"); 
     b.innerHTML = "";
+    
     savings.forEach((s, i) => {
-        // Show withdrawal history if it exists
-        let historyHtml = s.withdrawals ? `<br><small style="color:gray">Last Out: ${s.withdrawDate}</small>` : "";
+        // Build the withdrawal list HTML
+        let historyHtml = "";
+        if (s.withdrawHistory && s.withdrawHistory.length > 0) {
+            historyHtml = s.withdrawHistory.map(log => 
+                `<div style="font-size: 11px; color: #cc6600; border-top: 1px solid #eee; margin-top: 2px;">
+                    ${log}
+                </div>`
+            ).join("");
+        }
         
         b.innerHTML += `
         <tr>
-            <td>${s.date}${historyHtml}</td>
+            <td style="vertical-align: top;">
+                <b>${s.date}</b>
+                ${historyHtml}
+            </td>
             <td>${s.name}</td>
             <td>${s.type}</td>
             <td style="color:${s.amount < 0 ? 'red':'green'}">
@@ -367,6 +378,7 @@ function renderSavingsTable() {
         </tr>`;
     });
 }
+
 
 
     function deleteSaving(idx) {
@@ -571,29 +583,30 @@ function addStock() {
     const amountInput = document.getElementById("drawAmt");
     const amountToDraw = Number(amountInput.value);
     
-    // 1. Validation
-    if (amountToDraw <= 0) {
-        return showToast("Please enter a valid amount", "red");
-    }
-    if (amountToDraw > savings[idx].amount) {
-        return showToast("Insufficient balance in this record", "red");
-    }
+    if (amountToDraw <= 0) return showToast("Enter a valid amount", "red");
+    if (amountToDraw > savings[idx].amount) return showToast("Insufficient balance", "red");
 
-    // 2. Update the Data Object
     const timestamp = new Date().toLocaleString();
-    savings[idx].amount -= amountToDraw; // Subtract the amount
-    savings[idx].withdrawals = true;     // Set flag for history
-    savings[idx].withdrawDate = `₦${amountToDraw.toLocaleString()} on ${timestamp}`;
+    
+    // 1. Subtract the amount
+    savings[idx].amount -= amountToDraw;
 
-    // 3. Save to LocalStorage (Crucial step)
+    // 2. Initialize history array if it's the first withdrawal
+    if (!Array.isArray(savings[idx].withdrawHistory)) {
+        savings[idx].withdrawHistory = [];
+    }
+
+    // 3. Add this withdrawal to the history list
+    savings[idx].withdrawHistory.push(`Out: ₦${amountToDraw.toLocaleString()} (${timestamp})`);
+
+    // 4. Save and Update UI
     localStorage.setItem("akura_savings", JSON.stringify(savings));
-
-    // 4. Reset UI and Refresh Table
-    amountInput.value = ""; // Clear modal input
-    closeAllModals();       // Close the modal
-    renderSavingsTable();   // <--- THIS RE-DRAWS THE TABLE
+    amountInput.value = "";
+    closeAllModals();
+    renderSavingsTable();
     showToast(`Withdrawn: ₦${amountToDraw.toLocaleString()}`, "orange");
-        }
+}
+
         
 </script>
     
