@@ -183,7 +183,7 @@
             <h3>REGISTER SALE</h3>
             <input id="custName" placeholder="Customer Name">
             <input id="prodName" placeholder="Service">
-            <input id="totalAmt" type="number" placeholder="Total Amount (₦)">
+            <input id="totalAmt" type="number" placeholder="Service Amount (₦)">
             <input id="paidAmt" type="number" placeholder="Amount Paid (₦)">
             <button onclick="saveRecord()">SAVE RECORD</button>
         </div>
@@ -199,7 +199,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>SN</th><th>NAME</th><th>SERVICE</th><th>TOTAL</th><th>PAID</th><th>DEBT</th><th>DATE</th><th>ACTION</th>
+                        <th>SN</th><th>NAME</th><th>SERVICE</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>DATE</th><th>ACTION</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -421,16 +421,16 @@ function executeDelete() {
         doc.setFontSize(20);
         doc.text("AKURA GENERAL ENTERPRISE", 105, 15, { align: "center" });
         doc.setFontSize(10);
-        doc.text(`Official Sales Report - ${new Date().toLocaleDateString()}`, 105, 22, { align: "center" });
+        doc.text(`CASHBOOK REPORT - ${new Date().toLocaleDateString()}`, 105, 22, { align: "center" });
 
         const data = records.map((r, i) => [i+1, r.name, r.product, `N${r.total}`, `N${r.paid}`, `N${r.debt}`, r.date]);
         
         doc.autoTable({
             startY: 30,
-            head: [['SN', 'CUSTOMER', 'SERVICE', 'TOTAL', 'PAID', 'DEBT', 'DATE']],
+            head: [['SN', 'CUSTOMER', 'SERVICE', 'AMOUNT', 'PAID', 'DEBT', 'DATE']],
             body: data,
             theme: 'grid',
-            headStyles: { fillColor: [20, 198, 255], textColor: [0,0,0] }
+            headStyles: { fillColor: [20, 198, 255], textColor: [0,0,0], Border:[1px solid #fff] }
         });
 
         doc.save("Akura_Report.pdf");
