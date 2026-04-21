@@ -18,14 +18,15 @@
         #loginPage { 
             display: flex; height: 100vh; justify-content: center; align-items: center; 
             background: linear-gradient(to right, #141e30, #243b55);
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 5000;
         }
-        .login-box { background:#1c2e4a; padding:30px; border-radius:12px; width:320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .login-box { background:#1c2e4a; padding:30px; border-radius:12px; width:320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; }
         
         #app { display: none; }
         .page { 
             display: none; 
             padding: 20px; 
-            padding-top: 220px; /* Original height restored */
+            padding-top: 220px; 
             max-width: 900px; 
             margin: auto; 
         }
@@ -54,7 +55,6 @@
         .sidebar a:hover { background: #00c6ff; color: #000; }
         .overlay { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 1400; }
 
-        /* Container & Inputs - Original UI */
         .container { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 10px; }
         input, select { 
             width: 100%; padding: 12px; margin: 10px 0; border: none; border-bottom: 1px solid #333; 
@@ -71,19 +71,17 @@
         th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 13px; }
         th { background: #243b55; color: #fff; }
 
-        /* Progress Bar & Reminders */
         .prog-container { background: #eee; height: 8px; border-radius: 4px; width: 100%; margin-top: 4px; overflow: hidden; }
         .prog-bar { background: #00c853; height: 100%; transition: 0.5s; }
         .remind-link { text-decoration: none; font-size: 18px; }
 
-        /* Modals - Original Logic */
         #editModal, #deleteModal, #successModal, #invalidModal, #1Modal, #2Modal {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #1c2e4a; padding: 25px; border-radius: 12px; z-index: 2000;
+            background: #1c2e4a; padding: 25px; border-radius: 12px; z-index: 6000;
             display: none; width: 90%; max-width: 350px; border: 1px solid #00c6ff; text-align: center;
         }
 
-        #toast { position: fixed; top: 50px; right: 40px; padding: 15px 25px; border-radius: 5px; display: none; z-index: 3000; font-weight: bold; }
+        #toast { position: fixed; top: 50px; right: 40px; padding: 15px 25px; border-radius: 5px; display: none; z-index: 7000; font-weight: bold; }
 
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
         .blink-green { color: #00ff00 !important; animation: blink 1s linear infinite; font-weight: bold; }
@@ -96,9 +94,9 @@
 
 <div id="loginPage">
     <div class="login-box">
-        <h2 style="text-align:center; margin-bottom:20px;">Admin Login</h2>
-        <input id="user" placeholder="Username">
-        <input id="pass" type="password" placeholder="Password">
+        <h2 style="margin-bottom:20px; color:#00c6ff;">Admin Login</h2>
+        <input id="userInput" placeholder="Username">
+        <input id="passInput" type="password" placeholder="Password">
         <button onclick="login()">LOGIN</button>
     </div>
 </div>
@@ -194,38 +192,41 @@
         setTimeout(() => t.style.display="none", 2500);
     }
 
-    /* Auth Logic - Restored Original */
     function login() {
-        if(user.value === AUTH_USER && pass.value === AUTH_PASS) {
+        const u = document.getElementById("userInput").value;
+        const p = document.getElementById("passInput").value;
+        
+        if(u === AUTH_USER && p === AUTH_PASS) {
             localStorage.setItem("isLoggedIn", "true");
             document.getElementById("successModal").style.display = "block";
             document.getElementById("overlay").style.display = "block";
-        } else if(user.value != AUTH_USER && pass.value === AUTH_PASS) {
+        } else if(u !== AUTH_USER && p === AUTH_PASS) {
             document.getElementById("1Modal").style.display = "block";
             document.getElementById("overlay").style.display = "block";
-            user.value=""; pass.value="";
-        } else if(user.value === AUTH_USER && pass.value !=AUTH_PASS) {
+        } else if(u === AUTH_USER && p !== AUTH_PASS) {
             document.getElementById("2Modal").style.display = "block";
             document.getElementById("overlay").style.display = "block";
-            user.value=""; pass.value="";
         } else {
             document.getElementById("invalidModal").style.display = "block";
             document.getElementById("overlay").style.display = "block";
-            user.value=""; pass.value="";
         }
     }
 
     function loginDone() {
         document.getElementById("loginPage").style.display = "none";
         document.getElementById("app").style.display = "block";
+        closeInvalid();
         showPage('tablePage');
     }
 
-    function loginDone2() { closeInvalid(); loginDone(); }
-    if(localStorage.getItem("isLoggedIn") === "true") loginDone();
+    function loginDone2() { loginDone(); }
+
+    if(localStorage.getItem("isLoggedIn") === "true") {
+        setTimeout(loginDone, 100);
+    }
+
     function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
 
-    /* Navigation */
     function toggleMenu(open) {
         document.getElementById("sidebar").style.left = open ? "0" : "-260px";
         document.getElementById("overlay").style.display = open ? "block" : "none";
@@ -239,7 +240,6 @@
         if(id === 'chartPage') renderChart();
     }
 
-    /* Data Logic */
     function saveRecord() {
         const total = Number(totalAmt.value), paid = Number(paidAmt.value);
         if(!custName.value || total <= 0) return alert("Fill all details");
@@ -265,7 +265,7 @@
 
             tbody.innerHTML += `<tr>
                 <td>${i+1}</td>
-                <td>${r.name}</td>
+                <td><b>${r.name}</b></td>
                 <td>${r.product}</td>
                 <td><div style="font-size:10px">${perc}%</div><div class="prog-container"><div class="prog-bar" style="width:${perc}%"></div></div></td>
                 <td>₦${r.total}</td>
@@ -273,7 +273,10 @@
                 <td style="color:${r.debt > 0 ? 'red' : 'green'}">₦${r.debt}</td>
                 <td>${r.date}</td>
                 <td>${r.debt > 0 ? `<a href="${link}" target="_blank" class="remind-link">${r.pref === 'whatsapp' ? '💬' : '📱'}</a>` : '✅'}</td>
-                <td><button onclick="openEdit(${i})" style="padding:4px; width:auto;">✏️</button> <button onclick="removeRec(${i})" style="padding:4px; width:auto;">❌</button></td>
+                <td>
+                    <button onclick="openEdit(${i})" style="padding:4px; width:auto; background:#eee; color:#000;">✏️</button> 
+                    <button onclick="removeRec(${i})" style="padding:4px; width:auto; background:#eee; color:#000;">❌</button>
+                </td>
             </tr>`;
         });
         document.getElementById("sumPaid").innerText = "₦" + sP;
@@ -282,7 +285,9 @@
     }
 
     function renderChart() {
-        const ctx = document.getElementById('myChart').getContext('2d');
+        const canvas = document.getElementById('myChart');
+        if(!canvas) return;
+        const ctx = canvas.getContext('2d');
         let p = 0, d = 0; records.forEach(r => { p += r.paid; d += r.debt; });
         if(chartObj) chartObj.destroy();
         chartObj = new Chart(ctx, {
@@ -292,7 +297,6 @@
         });
     }
 
-    /* Modal Actions */
     function openEdit(i) { editIdx = i; document.getElementById("editLabel").innerText = records[i].name; document.getElementById("newDebtInput").value = records[i].debt; document.getElementById("editModal").style.display="block"; document.getElementById("overlay").style.display="block"; }
     function closeEdit() { document.getElementById("editModal").style.display="none"; document.getElementById("overlay").style.display="none"; }
     function confirmEdit() { let n = Number(newDebtInput.value); records[editIdx].debt = n; records[editIdx].paid = records[editIdx].total - n; localStorage.setItem("akura_records", JSON.stringify(records)); closeEdit(); renderTable(); toast("Updated!", "orange"); }
@@ -300,7 +304,11 @@
     function removeRec(i) { deleteIdx = i; document.getElementById("delTargetName").innerText = records[i].name; document.getElementById("deleteModal").style.display="block"; document.getElementById("overlay").style.display="block"; }
     function executeDelete() { records.splice(deleteIdx, 1); localStorage.setItem("akura_records", JSON.stringify(records)); closeDelete(); renderTable(); toast("Deleted!", "red"); }
     function closeDelete() { document.getElementById("deleteModal").style.display="none"; document.getElementById("overlay").style.display="none"; }
-    function closeInvalid() { document.querySelectorAll("#successModal, #invalidModal, #1Modal, #2Modal").forEach(m => m.style.display="none"); document.getElementById("overlay").style.display="none"; }
+    
+    function closeInvalid() { 
+        document.querySelectorAll("#successModal, #invalidModal, #1Modal, #2Modal").forEach(m => m.style.display="none"); 
+        document.getElementById("overlay").style.display="none"; 
+    }
 
     function filterTable() { let v = searchBox.value.toLowerCase(); document.querySelectorAll("#tableBody tr").forEach(tr => { tr.style.display = tr.innerText.toLowerCase().includes(v) ? "" : "none"; }); }
 
@@ -321,4 +329,5 @@
     }
 </script>
 </body>
-</html>
+    </html>
+    
