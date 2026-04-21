@@ -15,15 +15,19 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
         body { background:black; color:#fff; min-height:100vh; overflow-x: hidden; }
 
-        /* Restored Original Login UI */
+        /* RESTORED ORIGINAL LOGIN & OVERLAY */
         #loginPage { 
-            display: flex; height: 100vh; justify-content: center; align-items: center; 
-            background: linear-gradient(to right, #141e30, #243b55);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 5000; display: flex; 
+            justify-content: center; align-items: center; 
         }
-        .login-box { background:#1c2e4a; padding:30px; border-radius:12px; width:320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .login-box { 
+            background: #111; padding: 40px; border-radius: 10px; 
+            border: 1px solid #00c6ff; width: 320px; text-align: center; 
+        }
         
         #app { display: none; }
-        .page { display: none; padding: 20px; padding-top: 220px; max-width: 900px; margin: auto; }
+        .page { display: none; padding: 20px; padding-top: 220px; max-width: 1000px; margin: auto; }
         .active-page { display: block; }
         
         header { 
@@ -48,7 +52,9 @@
         .sidebar a { display: block; padding: 15px 25px; color: #fff; text-decoration: none; border-bottom: 1px solid #1a1a1a; cursor: pointer; }
         .sidebar a:hover { background: #00c6ff; color: #000; }
         .sidebar a i { margin-right: 15px; width: 20px; text-align: center; color: #00c6ff; }
-        .overlay { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 1400; }
+        
+        /* Sidebar/Modal Overlay */
+        .overlay { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 1400; }
 
         .container { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 10px; }
         input, select { 
@@ -60,27 +66,29 @@
 
         .dashboard { display: flex; gap: 10px; margin-bottom: 20px; }
         .card { flex: 1; background: #fff; color: #000; padding: 15px; border-radius: 8px; text-align: center; }
+        
         .table-wrap { overflow-x: auto; background: #fff; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; color: #000; min-width: 800px; }
-        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 13px; }
+        table { width: 100%; border-collapse: collapse; color: #000; min-width: 900px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 12px; }
         th { background: #243b55; color: #fff; }
 
-        /* Original Action Buttons */
-        .btn-edit { background: #eee; color: #333; padding: 5px 10px; width: auto; margin-right: 5px; border:none; cursor:pointer; }
-        .btn-del { background: #eee; color: #333; padding: 5px 10px; width: auto; border:none; cursor:pointer; }
-        .btn-msg { text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 4px; background: #25D366; color: #fff; font-weight: bold; }
+        /* Progress Bar Styling */
+        .progress-bg { background: #eee; height: 8px; border-radius: 4px; width: 100%; margin-top: 5px; overflow: hidden; }
+        .progress-fill { background: #00c853; height: 100%; border-radius: 4px; transition: 0.5s; }
 
-        /* Modals */
-        #editModal, .custom-modal {
+        .btn-msg { text-decoration: none; font-size: 10px; padding: 4px 6px; border-radius: 4px; background: #25D366; color: #fff; font-weight: bold; }
+        .btn-edit, .btn-del { background: #f0f0f0; border:none; padding: 6px; cursor: pointer; border-radius: 4px; color: #333; }
+
+        #editModal {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #1c2e4a; padding: 25px; border-radius: 12px; z-index: 2000;
+            background: #111; padding: 25px; border-radius: 12px; z-index: 2000;
             display: none; width: 90%; max-width: 350px; border: 1px solid #00c6ff; text-align: center;
         }
 
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
         .blink-green { color: #00ff00 !important; animation: blink 1s linear infinite; font-weight: bold; }
         .blink-red { color: #ff0000 !important; animation: blink 1s linear infinite; font-weight: bold; }
-        #toast { position: fixed; top: 50px; right: 40px; padding: 15px 25px; border-radius: 5px; display: none; z-index: 3000; font-weight: bold; }
+        #toast { position: fixed; top: 50px; right: 40px; padding: 15px 25px; border-radius: 5px; display: none; z-index: 6000; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -89,10 +97,10 @@
 
 <div id="loginPage">
     <div class="login-box">
-        <h2 style="text-align:center; margin-bottom:20px;">Admin Login</h2>
+        <h2 style="color:#00c6ff; margin-bottom:20px;">AKURA ADMIN</h2>
         <input id="user" placeholder="Username">
         <input id="pass" type="password" placeholder="Password">
-        <button onclick="login()">LOGIN</button>
+        <button onclick="login()">ENTER SYSTEM</button>
     </div>
 </div>
 
@@ -101,57 +109,46 @@
     <div class="overlay" id="overlay" onclick="toggleMenu(false)"></div>
 
     <div class="sidebar" id="sidebar">
-        <a onclick="showPage('formPage')"><i class="fas fa-plus"></i> Add New Sale</a>
-        <a onclick="showPage('expensePage')"><i class="fas fa-wallet"></i> Record Expense</a>
-        <a onclick="showPage('tablePage')"><i class="fas fa-table"></i> View Records</a>
-        <a onclick="showPage('chartPage')"><i class="fas fa-chart-line"></i> Statistics</a>
+        <a onclick="showPage('formPage')"><i class="fas fa-plus-circle"></i> Add New Sale</a>
+        <a onclick="showPage('tablePage')"><i class="fas fa-table"></i> Records Ledger</a>
+        <a onclick="showPage('chartPage')"><i class="fas fa-chart-pie"></i> Business Health</a>
         <a onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> Download PDF</a>
-        <a onclick="exportData()"><i class="fas fa-database"></i> Backup Data</a>
-        <a onclick="logout()" style="color: #ff4d4d; margin-top: 20px;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <a onclick="logout()" style="color: #ff4d4d; margin-top: 20px;"><i class="fas fa-power-off"></i> Logout</a>
     </div>
 
     <header>
         <img src="akura.png" alt="AKURA" class="main-logo">
         <h3 style="color:#00c6ff; margin: 0;">AKURA GENERAL ENTERPRISE</h3>
-        <p class="sub-heading">CASHBOOK</p>
+        <p class="sub-heading">PROFESSIONAL CASHBOOK</p>
     </header>
 
     <div id="formPage" class="page">
         <div class="container">
-            <h3>REGISTER SALE</h3>
+            <h3>REGISTER TRANSACTION</h3>
             <input id="custName" placeholder="Customer Name">
-            <input id="custPhone" placeholder="Phone Number (e.g. 23480...)">
+            <input id="custPhone" placeholder="WhatsApp/Phone Number">
             <select id="msgPref">
                 <option value="whatsapp">Prefer WhatsApp</option>
                 <option value="sms">Prefer SMS</option>
             </select>
-            <input id="prodName" placeholder="Service">
-            <input id="totalAmt" type="number" placeholder="Service Amount (₦)">
+            <input id="prodName" placeholder="Product/Service">
+            <input id="totalAmt" type="number" placeholder="Total Amount (₦)">
             <input id="paidAmt" type="number" placeholder="Amount Paid (₦)">
-            <button onclick="saveRecord()">SAVE RECORD</button>
-        </div>
-    </div>
-
-    <div id="expensePage" class="page">
-        <div class="container">
-            <h3>RECORD EXPENSE</h3>
-            <input id="expDesc" placeholder="Expense Description">
-            <input id="expAmt" type="number" placeholder="Amount (₦)">
-            <button onclick="saveExpense()" style="background:orange; color:black;">SAVE EXPENSE</button>
+            <button onclick="saveRecord()">CONFIRM SALE</button>
         </div>
     </div>
 
     <div id="tablePage" class="page">
         <div class="dashboard">
-            <div class="card">TOTAL PAID<br><b id="sumPaid" style="color:green">₦0</b></div>
-            <div class="card">TOTAL DEBT<br><b id="sumDebt" style="color:red">₦0</b></div>
+            <div class="card">TOTAL CASH<br><b id="sumPaid" style="color:green">₦0</b></div>
+            <div class="card">OUTSTANDING<br><b id="sumDebt" style="color:red">₦0</b></div>
         </div>
-        <input id="searchBox" placeholder="Search..." onkeyup="filterTable()">
+        <input id="searchBox" placeholder="Search customer or service..." onkeyup="filterTable()">
         <div class="table-wrap">
-            <table>
+            <table id="recordsTable">
                 <thead>
                     <tr>
-                        <th>SN</th><th>NAME</th><th>SERVICE</th><th>TOTAL</th><th>PAID</th><th>DEBT</th><th>DATE</th><th>ACTION</th>
+                        <th>SN</th><th>CLIENT</th><th>SERVICE</th><th>TOTAL</th><th>PROGRESS</th><th>DEBT</th><th>DATE</th><th>NOTIFY</th><th>ACTION</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -160,14 +157,17 @@
     </div>
 
     <div id="chartPage" class="page">
-        <div class="container" style="background:black; border: 1px solid #333;">
-            <canvas id="myChart"></canvas>
+        <div class="container" style="background:black; border: 1px solid #333; text-align: center;">
+            <h4 style="margin-bottom:20px; color:#00c6ff;">Financial Ratio Analysis</h4>
+            <div style="height: 350px; position: relative;">
+                <canvas id="myChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
 
 <div id="editModal">
-    <h3>Update Debt</h3>
+    <h3>Update Debt Balance</h3>
     <p id="editLabel" style="font-size:12px; margin:10px 0; color:#aaa;"></p>
     <input id="newDebtInput" type="number" placeholder="Enter Remaining Debt">
     <button onclick="confirmEdit()">UPDATE</button>
@@ -177,7 +177,6 @@
 <script>
     const AUTH_USER = "Admin", AUTH_PASS = "1234";
     let records = JSON.parse(localStorage.getItem("akura_records")) || [];
-    let expenses = JSON.parse(localStorage.getItem("akura_expenses")) || [];
     let editIdx = null, chartObj = null;
 
     function toast(m, b="#00c853") {
@@ -185,12 +184,11 @@
         setTimeout(() => t.style.display="none", 2500);
     }
 
-    // Login logic
     function login() {
         if(user.value === AUTH_USER && pass.value === AUTH_PASS) {
             localStorage.setItem("isLoggedIn", "true");
             loginDone();
-        } else { toast("Invalid Credentials", "red"); }
+        } else { toast("Access Denied", "red"); }
     }
     function loginDone() {
         document.getElementById("loginPage").style.display = "none";
@@ -215,25 +213,16 @@
 
     function saveRecord() {
         const total = Number(totalAmt.value), paid = Number(paidAmt.value);
-        if(!custName.value || total <= 0) return toast("Enter valid details", "red");
+        if(!custName.value || total <= 0) return toast("Invalid Entry", "red");
         records.push({
             name: custName.value, phone: custPhone.value, pref: msgPref.value,
             product: prodName.value, total: total, paid: paid, debt: total - paid,
             date: new Date().toLocaleDateString(), timestamp: Date.now()
         });
         localStorage.setItem("akura_records", JSON.stringify(records));
-        toast("Sale Saved!");
+        toast("Sale Registered!");
         ["custName","custPhone","prodName","totalAmt","paidAmt"].forEach(id => document.getElementById(id).value = "");
         showPage('tablePage');
-    }
-
-    function saveExpense() {
-        const amt = Number(expAmt.value);
-        if(!expDesc.value || amt <= 0) return toast("Invalid Expense", "red");
-        expenses.push({ desc: expDesc.value, amount: amt, date: new Date().toLocaleDateString() });
-        localStorage.setItem("akura_expenses", JSON.stringify(expenses));
-        toast("Expense Recorded", "orange");
-        expDesc.value = ""; expAmt.value = "";
     }
 
     function renderTable() {
@@ -243,9 +232,8 @@
 
         records.forEach((r, i) => {
             sP += r.paid; sD += r.debt;
-            
-            // Check if 7 days (604800000 ms) have passed
-            const isOldDebt = (Date.now() - r.timestamp) > 604800000 && r.debt > 0;
+            const progress = (r.paid / r.total) * 100;
+            const isLate = (Date.now() - r.timestamp) > 604800000 && r.debt > 0;
             
             let msg = `Hello ${r.name}, this is Akura General Enterprise. Reminder for debt: N${r.debt}.`;
             let link = r.pref === 'whatsapp' ? `https://wa.me/${r.phone}?text=${encodeURIComponent(msg)}` : `sms:${r.phone}?body=${encodeURIComponent(msg)}`;
@@ -256,13 +244,18 @@
                     <td><b>${r.name}</b></td>
                     <td>${r.product}</td>
                     <td>₦${r.total}</td>
-                    <td>₦${r.paid}</td>
+                    <td>
+                        <div style="font-size:9px">${Math.round(progress)}%</div>
+                        <div class="progress-bg"><div class="progress-fill" style="width:${progress}%"></div></div>
+                    </td>
                     <td style="color:${r.debt > 0 ? 'red' : 'green'}">₦${r.debt}</td>
                     <td>${r.date}</td>
                     <td>
-                        <button class="btn-edit" onclick="openEdit(${i})">✏️</button>
-                        <button class="btn-del" onclick="deleteRec(${i})">❌</button>
-                        ${r.debt > 0 ? `<a href="${link}" class="btn-msg" style="${isOldDebt ? 'background:red' : ''}">${isOldDebt ? '⏰' : ''} ${r.pref === 'whatsapp' ? 'WA' : 'SMS'}</a>` : ''}
+                        ${r.debt > 0 ? `<a href="${link}" class="btn-msg" style="${isLate ? 'background:#d32f2f' : ''}">${isLate ? '⏰' : ''} ${r.pref === 'whatsapp' ? 'WA' : 'SMS'}</a>` : '✅'}
+                    </td>
+                    <td>
+                        <button class="btn-edit" onclick="openEdit(${i})"><i class="fas fa-edit"></i></button>
+                        <button class="btn-del" onclick="deleteRec(${i})"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
         });
@@ -273,26 +266,23 @@
 
     function openEdit(i) {
         editIdx = i;
-        document.getElementById("editLabel").innerText = `Update debt for ${records[i].name}`;
+        document.getElementById("editLabel").innerText = `Adjusting balance for ${records[i].name}`;
         document.getElementById("newDebtInput").value = records[i].debt;
         document.getElementById("editModal").style.display = "block";
         document.getElementById("overlay").style.display = "block";
     }
 
-    function closeEdit() {
-        document.getElementById("editModal").style.display = "none";
-        document.getElementById("overlay").style.display = "none";
-    }
+    function closeEdit() { document.getElementById("editModal").style.display = "none"; document.getElementById("overlay").style.display = "none"; }
 
     function confirmEdit() {
         const newD = Number(newDebtInput.value);
         records[editIdx].debt = newD;
         records[editIdx].paid = records[editIdx].total - newD;
         localStorage.setItem("akura_records", JSON.stringify(records));
-        closeEdit(); renderTable(); toast("Debt Updated", "orange");
+        closeEdit(); renderTable(); toast("Ledger Updated", "orange");
     }
 
-    function deleteRec(i) { if(confirm("Delete record?")) { records.splice(i, 1); localStorage.setItem("akura_records", JSON.stringify(records)); renderTable(); } }
+    function deleteRec(i) { if(confirm("Confirm deletion?")) { records.splice(i, 1); localStorage.setItem("akura_records", JSON.stringify(records)); renderTable(); } }
 
     function filterTable() {
         let v = searchBox.value.toLowerCase();
@@ -309,27 +299,26 @@
 
     function renderChart() {
         const ctx = document.getElementById('myChart').getContext('2d');
-        const dly = {}; records.forEach(r => dly[r.date] = (dly[r.date] || 0) + r.paid);
+        let tP = 0, tD = 0; records.forEach(r => { tP += r.paid; tD += r.debt; });
         if(chartObj) chartObj.destroy();
         chartObj = new Chart(ctx, {
-            type: 'line',
-            data: { labels: Object.keys(dly), datasets: [{ label: 'Paid', data: Object.values(dly), borderColor: '#00c6ff', fill:true, backgroundColor:'rgba(0,198,255,0.1)' }] },
-            options: { plugins:{legend:{labels:{color:'#fff'}}}, scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}} }
+            type: 'doughnut',
+            data: { labels: ['Paid', 'Debt'], datasets: [{ data: [tP, tD], backgroundColor: ['#00c853', '#ff4d4d'], borderWidth: 0 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#fff' } } } }
         });
     }
 
-    function exportData() {
-        const blob = new Blob([JSON.stringify({records, expenses})], {type: "application/json"});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "Akura_Backup.json"; a.click();
-    }
-
     function downloadPDF() {
-        const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        doc.text("AKURA CASHBOOK REPORT", 10, 10);
-        doc.autoTable({ head: [['SN','Name','Service','Total','Paid','Debt','Date']], body: records.map((r,i)=>[i+1, r.name, r.product, r.total, r.paid, r.debt, r.date]) });
-        doc.save("Report.pdf");
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("AKURA GENERAL ENTERPRISE - LEDGER", 10, 10);
+        doc.autoTable({
+            head: [['SN', 'NAME', 'SERVICE', 'TOTAL', 'PAID', 'DEBT', 'DATE']],
+            body: records.map((r, i) => [i + 1, r.name, r.product, r.total, r.paid, r.debt, r.date])
+        });
+        doc.save("Akura_Ledger.pdf");
     }
 </script>
 </body>
     </html>
-        
+    
