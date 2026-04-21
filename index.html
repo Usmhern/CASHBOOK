@@ -468,7 +468,7 @@ function executeDelete() {
     });
 }*/
     function renderChart() {
-    const ctx = document.getElementById('myChart').getContext('3d');
+    const ctx = document.getElementById('myChart').getContext('2d');
     let p = 0, d = 0;
     records.forEach(r => { p += r.paid; d += r.debt; });
 
