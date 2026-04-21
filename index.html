@@ -4,30 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AKURA GENERAL ENTERPRISE</title>
-    <link rel="icon" type="image/png" href="akura.png">
+    <link rel="icon" type="image/jpeg" href="akura.png">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
         body { background:black; color:#fff; min-height:100vh; overflow-x: hidden; }
 
-        /* RESTORED ORIGINAL LOGIN & OVERLAY */
+        /* Auth Pages */
         #loginPage { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 5000; display: flex; 
-            justify-content: center; align-items: center; 
+            display: flex; height: 100vh; justify-content: center; align-items: center; 
+            background: linear-gradient(to right, #141e30, #243b55);
         }
-        .login-box { 
-            background: #111; padding: 40px; border-radius: 10px; 
-            border: 1px solid #00c6ff; width: 320px; text-align: center; 
-        }
+        .login-box { background:#1c2e4a; padding:30px; border-radius:12px; width:320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         
         #app { display: none; }
-        .page { display: none; padding: 20px; padding-top: 220px; max-width: 1000px; margin: auto; }
+        .page { padding: 20px; padding-top: 220px; max-width: 900px; margin: auto; display: none; }
         .active-page { display: block; }
         
         header { 
@@ -35,6 +30,7 @@
             text-align: center; z-index: 1000; border-bottom: 2px solid #00c6ff;
             display: flex; flex-direction: column; align-items: center; gap: 2px;
         }
+
         .main-logo { width: 180px; height: 120px; margin-bottom: 5px; }
         .sub-heading { color: #ffffff; font-size: 14px; font-weight: bold; letter-spacing: 2px; margin: 0; }
         
@@ -43,7 +39,6 @@
             font-size: 25px; cursor: pointer; background: #00c6ff; 
             padding: 5px 12px; border-radius: 4px; color: #000;
         }
-
         .sidebar { 
             position: fixed; top: 0; left: -260px; width: 260px; height: 100%; 
             background: #0a0f18; transition: 0.3s; z-index: 1500; padding-top: 60px; 
@@ -51,44 +46,42 @@
         }
         .sidebar a { display: block; padding: 15px 25px; color: #fff; text-decoration: none; border-bottom: 1px solid #1a1a1a; cursor: pointer; }
         .sidebar a:hover { background: #00c6ff; color: #000; }
-        .sidebar a i { margin-right: 15px; width: 20px; text-align: center; color: #00c6ff; }
-        
-        /* Sidebar/Modal Overlay */
-        .overlay { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 1400; }
+        .overlay { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 1400; }
 
         .container { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 10px; }
         input, select { 
-            width: 100%; padding: 12px; margin: 10px 0; border: none; border-bottom: 1px solid #333; 
+            width: 100%; padding: 12px; margin: 10px 0; border:none; border-bottom: 1px solid #333; 
             background: transparent; color: #fff; outline:none;
         }
-        option { background: #1c2e4a; color: white; }
+        select option { background: #1c2e4a; }
+
         button { width: 100%; padding: 12px; background: #00c6ff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
         .dashboard { display: flex; gap: 10px; margin-bottom: 20px; }
         .card { flex: 1; background: #fff; color: #000; padding: 15px; border-radius: 8px; text-align: center; }
-        
         .table-wrap { overflow-x: auto; background: #fff; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; color: #000; min-width: 900px; }
-        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; color: #000; min-width: 800px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; font-size: 12px; }
         th { background: #243b55; color: #fff; }
 
-        /* Progress Bar Styling */
-        .progress-bg { background: #eee; height: 8px; border-radius: 4px; width: 100%; margin-top: 5px; overflow: hidden; }
-        .progress-fill { background: #00c853; height: 100%; border-radius: 4px; transition: 0.5s; }
+        /* Progress Bar */
+        .prog-bg { background: #eee; height: 8px; border-radius: 5px; width: 60px; display: inline-block; }
+        .prog-fill { background: #00c853; height: 100%; border-radius: 5px; }
 
-        .btn-msg { text-decoration: none; font-size: 10px; padding: 4px 6px; border-radius: 4px; background: #25D366; color: #fff; font-weight: bold; }
-        .btn-edit, .btn-del { background: #f0f0f0; border:none; padding: 6px; cursor: pointer; border-radius: 4px; color: #333; }
+        /* Reminder Icons */
+        .remind-btn { text-decoration: none; font-size: 16px; padding: 4px; }
 
-        #editModal {
+        #editModal, #deleteModal, #successModal, #invalidModal, #1Modal, #2Modal {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #111; padding: 25px; border-radius: 12px; z-index: 2000;
+            background: #1c2e4a; padding: 25px; border-radius: 12px; z-index: 2000;
             display: none; width: 90%; max-width: 350px; border: 1px solid #00c6ff; text-align: center;
         }
+
+        #toast { position: fixed; top: 50px; right: 40px; padding: 15px 25px; border-radius: 5px; display: none; z-index: 3000; font-weight: bold; }
 
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
         .blink-green { color: #00ff00 !important; animation: blink 1s linear infinite; font-weight: bold; }
         .blink-red { color: #ff0000 !important; animation: blink 1s linear infinite; font-weight: bold; }
-        #toast { position: fixed; top: 50px; right: 40px; padding: 15px 25px; border-radius: 5px; display: none; z-index: 6000; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -97,58 +90,63 @@
 
 <div id="loginPage">
     <div class="login-box">
-        <h2 style="color:#00c6ff; margin-bottom:20px;">AKURA ADMIN</h2>
+        <h2 style="text-align:center; margin-bottom:20px;">Admin Login</h2>
         <input id="user" placeholder="Username">
         <input id="pass" type="password" placeholder="Password">
-        <button onclick="login()">ENTER SYSTEM</button>
+        <button onclick="login()">LOGIN</button>
     </div>
 </div>
+
+<div id="successModal"><h2>Success!</h2><button onclick="loginDone2()">Continue</button></div>
+<div id="invalidModal"><h2>Invalid Login</h2><button onclick="closeInvalid()">Retry</button></div>
+<div id="1Modal"><h2>Incorrect Username</h2><button onclick="closeInvalid()">Retry</button></div>
+<div id="2Modal"><h2>Incorrect Password</h2><button onclick="closeInvalid()">Retry</button></div>
 
 <div id="app">
     <div class="menu-btn" onclick="toggleMenu(true)">☰</div>
     <div class="overlay" id="overlay" onclick="toggleMenu(false)"></div>
 
     <div class="sidebar" id="sidebar">
-        <a onclick="showPage('formPage')"><i class="fas fa-plus-circle"></i> Add New Sale</a>
-        <a onclick="showPage('tablePage')"><i class="fas fa-table"></i> Records Ledger</a>
-        <a onclick="showPage('chartPage')"><i class="fas fa-chart-pie"></i> Business Health</a>
-        <a onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> Download PDF</a>
-        <a onclick="logout()" style="color: #ff4d4d; margin-top: 20px;"><i class="fas fa-power-off"></i> Logout</a>
+        <a onclick="showPage('formPage')">➕ Add New Record</a>
+        <a onclick="showPage('tablePage')">📊 View Records</a>
+        <a onclick="showPage('chartPage')">📈 Statistics Chart</a>
+        <a onclick="downloadPDF()">⬇️ Download PDF</a>
+        <a onclick="logout()" style="color: #ff4d4d; margin-top: 20px;">🚪 Logout</a>
     </div>
 
     <header>
         <img src="akura.png" alt="AKURA" class="main-logo">
         <h3 style="color:#00c6ff; margin: 0;">AKURA GENERAL ENTERPRISE</h3>
-        <p class="sub-heading">PROFESSIONAL CASHBOOK</p>
+        <p class="sub-heading">CASHBOOK</p>
     </header>
 
     <div id="formPage" class="page">
         <div class="container">
-            <h3>REGISTER TRANSACTION</h3>
+            <h3>REGISTER SALE</h3>
             <input id="custName" placeholder="Customer Name">
-            <input id="custPhone" placeholder="WhatsApp/Phone Number">
-            <select id="msgPref">
-                <option value="whatsapp">Prefer WhatsApp</option>
-                <option value="sms">Prefer SMS</option>
+            <input id="custPhone" placeholder="Phone Number (e.g. 234...)">
+            <select id="msgType">
+                <option value="whatsapp">WhatsApp Remind</option>
+                <option value="sms">SMS Remind</option>
             </select>
-            <input id="prodName" placeholder="Product/Service">
-            <input id="totalAmt" type="number" placeholder="Total Amount (₦)">
+            <input id="prodName" placeholder="Service">
+            <input id="totalAmt" type="number" placeholder="Service Amount (₦)">
             <input id="paidAmt" type="number" placeholder="Amount Paid (₦)">
-            <button onclick="saveRecord()">CONFIRM SALE</button>
+            <button onclick="saveRecord()">SAVE RECORD</button>
         </div>
     </div>
 
     <div id="tablePage" class="page">
         <div class="dashboard">
-            <div class="card">TOTAL CASH<br><b id="sumPaid" style="color:green">₦0</b></div>
-            <div class="card">OUTSTANDING<br><b id="sumDebt" style="color:red">₦0</b></div>
+            <div class="card">TOTAL PAID<br><b id="sumPaid" style="color:green">₦0</b></div>
+            <div class="card">TOTAL DEBT<br><b id="sumDebt" style="color:red">₦0</b></div>
         </div>
-        <input id="searchBox" placeholder="Search customer or service..." onkeyup="filterTable()">
+        <input id="searchBox" placeholder="Search..." onkeyup="filterTable()">
         <div class="table-wrap">
-            <table id="recordsTable">
+            <table>
                 <thead>
                     <tr>
-                        <th>SN</th><th>CLIENT</th><th>SERVICE</th><th>TOTAL</th><th>PROGRESS</th><th>DEBT</th><th>DATE</th><th>NOTIFY</th><th>ACTION</th>
+                        <th>SN</th><th>NAME</th><th>SERVICE</th><th>PROG</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>DATE</th><th>REMIND</th><th>ACTION</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -157,45 +155,73 @@
     </div>
 
     <div id="chartPage" class="page">
-        <div class="container" style="background:black; border: 1px solid #333; text-align: center;">
-            <h4 style="margin-bottom:20px; color:#00c6ff;">Financial Ratio Analysis</h4>
-            <div style="height: 350px; position: relative;">
-                <canvas id="myChart"></canvas>
-            </div>
+        <div class="container" style="background:black; max-width: 450px; border:1px solid #333;">
+            <h3 style="text-align:center; color:#00c6ff">Health Chart</h3>
+            <canvas id="myChart"></canvas>
         </div>
     </div>
 </div>
 
 <div id="editModal">
-    <h3>Update Debt Balance</h3>
-    <p id="editLabel" style="font-size:12px; margin:10px 0; color:#aaa;"></p>
+    <h3>Update Debt</h3>
+    <p id="editLabel" style="font-size:12px; margin-top:5px; color:#aaa;"></p>
     <input id="newDebtInput" type="number" placeholder="Enter Remaining Debt">
     <button onclick="confirmEdit()">UPDATE</button>
     <button onclick="closeEdit()" style="background:#444; color:white;">CANCEL</button>
 </div>
 
-<script>
-    const AUTH_USER = "Admin", AUTH_PASS = "1234";
-    let records = JSON.parse(localStorage.getItem("akura_records")) || [];
-    let editIdx = null, chartObj = null;
+<div id="deleteModal">
+    <h3>Delete?</h3>
+    <p id="delTargetName" style="color:red"></p>
+    <button onclick="executeDelete()" style="background:red">YES</button>
+    <button onclick="closeDelete()">NO</button>
+</div>
 
-    function toast(m, b="#00c853") {
-        const t = document.getElementById("toast"); t.innerText = m; t.style.background = b; t.style.display = "block";
+<script>
+    const AUTH_USER = "Admin";
+    const AUTH_PASS = "1234";
+    let records = JSON.parse(localStorage.getItem("akura_records")) || [];
+    let editIdx = null;
+    let deleteIdx = null;
+    let chartObj = null;
+
+    function toast(msg, bg="#00c853") {
+        const t = document.getElementById("toast");
+        t.innerText = msg; t.style.background = bg; t.style.display = "block";
         setTimeout(() => t.style.display="none", 2500);
     }
+
+    if(localStorage.getItem("isLoggedIn") === "true") loginDone();
 
     function login() {
         if(user.value === AUTH_USER && pass.value === AUTH_PASS) {
             localStorage.setItem("isLoggedIn", "true");
-            loginDone();
-        } else { toast("Access Denied", "red"); }
+            document.getElementById("successModal").style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        } 
+        else if(user.value != AUTH_USER && pass.value === AUTH_PASS) {
+            document.getElementById("1Modal").style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        } else if(user.value === AUTH_USER && pass.value !=AUTH_PASS) {
+            document.getElementById("2Modal").style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        } else {
+            document.getElementById("invalidModal").style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        }
     }
+
     function loginDone() {
         document.getElementById("loginPage").style.display = "none";
         document.getElementById("app").style.display = "block";
         showPage('tablePage');
     }
-    if(localStorage.getItem("isLoggedIn") === "true") loginDone();
+
+    function loginDone2() {
+        closeInvalid();
+        loginDone();
+    }
+
     function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
 
     function toggleMenu(open) {
@@ -212,111 +238,154 @@
     }
 
     function saveRecord() {
-        const total = Number(totalAmt.value), paid = Number(paidAmt.value);
-        if(!custName.value || total <= 0) return toast("Invalid Entry", "red");
+        const total = Number(totalAmt.value);
+        const paid = Number(paidAmt.value);
+        if(!custName.value || total <= 0) return alert("Valid entry required");
+
         records.push({
-            name: custName.value, phone: custPhone.value, pref: msgPref.value,
-            product: prodName.value, total: total, paid: paid, debt: total - paid,
-            date: new Date().toLocaleDateString(), timestamp: Date.now()
+            name: custName.value,
+            phone: custPhone.value,
+            pref: msgType.value,
+            product: prodName.value,
+            total: total,
+            paid: paid,
+            debt: total - paid,
+            date: new Date().toLocaleDateString()
         });
+
         localStorage.setItem("akura_records", JSON.stringify(records));
-        toast("Sale Registered!");
-        ["custName","custPhone","prodName","totalAmt","paidAmt"].forEach(id => document.getElementById(id).value = "");
+        custName.value = custPhone.value = prodName.value = totalAmt.value = paidAmt.value = "";
+        toast("✓ Record Saved!");
         showPage('tablePage');
     }
 
     function renderTable() {
         const tbody = document.getElementById("tableBody");
         tbody.innerHTML = "";
-        let sP = 0, sD = 0;
+        let sPaid = 0, sDebt = 0;
 
         records.forEach((r, i) => {
-            sP += r.paid; sD += r.debt;
-            const progress = (r.paid / r.total) * 100;
-            const isLate = (Date.now() - r.timestamp) > 604800000 && r.debt > 0;
+            sPaid += r.paid; sDebt += r.debt;
+            let percent = Math.round((r.paid / r.total) * 100);
             
-            let msg = `Hello ${r.name}, this is Akura General Enterprise. Reminder for debt: N${r.debt}.`;
-            let link = r.pref === 'whatsapp' ? `https://wa.me/${r.phone}?text=${encodeURIComponent(msg)}` : `sms:${r.phone}?body=${encodeURIComponent(msg)}`;
+            // Auto message logic
+            let message = encodeURIComponent(`Hello ${r.name}, this is a reminder from Akura General Enterprise regarding your balance of ₦${r.debt} for ${r.product}. Thank you.`);
+            let remindLink = r.pref === 'whatsapp' ? `https://wa.me/${r.phone}?text=${message}` : `sms:${r.phone}?body=${message}`;
 
             tbody.innerHTML += `
                 <tr>
                     <td>${i+1}</td>
-                    <td><b>${r.name}</b></td>
+                    <td>${r.name}</td>
                     <td>${r.product}</td>
-                    <td>₦${r.total}</td>
                     <td>
-                        <div style="font-size:9px">${Math.round(progress)}%</div>
-                        <div class="progress-bg"><div class="progress-fill" style="width:${progress}%"></div></div>
+                        <div class="prog-bg"><div class="prog-fill" style="width:${percent}%"></div></div>
+                        <div style="font-size:9px">${percent}%</div>
                     </td>
+                    <td>₦${r.total}</td>
+                    <td>₦${r.paid}</td>
                     <td style="color:${r.debt > 0 ? 'red' : 'green'}">₦${r.debt}</td>
                     <td>${r.date}</td>
                     <td>
-                        ${r.debt > 0 ? `<a href="${link}" class="btn-msg" style="${isLate ? 'background:#d32f2f' : ''}">${isLate ? '⏰' : ''} ${r.pref === 'whatsapp' ? 'WA' : 'SMS'}</a>` : '✅'}
+                        ${r.debt > 0 ? `<a href="${remindLink}" target="_blank" class="remind-btn">${r.pref === 'whatsapp' ? '💬' : '📱'}</a>` : '✅'}
                     </td>
                     <td>
-                        <button class="btn-edit" onclick="openEdit(${i})"><i class="fas fa-edit"></i></button>
-                        <button class="btn-del" onclick="deleteRec(${i})"><i class="fas fa-trash"></i></button>
+                        <button class="btn-edit" onclick="openEdit(${i})">✏️</button>
+                        <button class="btn-del" onclick="removeRec(${i})">❌</button>
                     </td>
                 </tr>`;
         });
-        document.getElementById("sumPaid").innerText = "₦" + sP;
-        document.getElementById("sumDebt").innerText = "₦" + sD;
+        document.getElementById("sumPaid").innerText = "₦" + sPaid;
+        document.getElementById("sumDebt").innerText = "₦" + sDebt;
         danger();
+    }
+
+    function renderChart() {
+        const ctx = document.getElementById('myChart').getContext('2d');
+        let p = 0, d = 0;
+        records.forEach(r => { p += r.paid; d += r.debt; });
+
+        if(chartObj) chartObj.destroy();
+        chartObj = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Total Paid', 'Total Debt'],
+                datasets: [{ 
+                    data: [p, d], 
+                    backgroundColor: ['#00c853', '#e74c3c'],
+                    borderColor: '#000',
+                    borderWidth: 2
+                }]
+            },
+            options: { plugins: { legend: { labels: { color: '#fff' } } } }
+        });
     }
 
     function openEdit(i) {
         editIdx = i;
-        document.getElementById("editLabel").innerText = `Adjusting balance for ${records[i].name}`;
+        document.getElementById("editLabel").innerText = `Updating ${records[i].name}`;
         document.getElementById("newDebtInput").value = records[i].debt;
         document.getElementById("editModal").style.display = "block";
         document.getElementById("overlay").style.display = "block";
     }
 
-    function closeEdit() { document.getElementById("editModal").style.display = "none"; document.getElementById("overlay").style.display = "none"; }
-
     function confirmEdit() {
-        const newD = Number(newDebtInput.value);
-        records[editIdx].debt = newD;
-        records[editIdx].paid = records[editIdx].total - newD;
+        const newDebt = Number(newDebtInput.value);
+        records[editIdx].debt = newDebt;
+        records[editIdx].paid = records[editIdx].total - newDebt;
         localStorage.setItem("akura_records", JSON.stringify(records));
-        closeEdit(); renderTable(); toast("Ledger Updated", "orange");
+        closeEdit(); renderTable(); toast("✓ Updated", "orange");
     }
 
-    function deleteRec(i) { if(confirm("Confirm deletion?")) { records.splice(i, 1); localStorage.setItem("akura_records", JSON.stringify(records)); renderTable(); } }
+    function removeRec(i) {
+        deleteIdx = i;
+        document.getElementById("delTargetName").innerText = records[i].name;
+        document.getElementById("deleteModal").style.display = "block";
+        document.getElementById("overlay").style.display = "block";
+    }
+
+    function executeDelete() {
+        records.splice(deleteIdx, 1);
+        localStorage.setItem("akura_records", JSON.stringify(records));
+        renderTable(); closeDelete(); toast("✓ Deleted", "red");
+    }
+
+    function closeDelete() { document.getElementById("deleteModal").style.display = "none"; document.getElementById("overlay").style.display = "none"; }
+    function closeEdit() { document.getElementById("editModal").style.display = "none"; document.getElementById("overlay").style.display = "none"; }
+    function closeInvalid() { 
+        document.getElementById("invalidModal").style.display = "none"; 
+        document.getElementById("successModal").style.display = "none";
+        document.getElementById("1Modal").style.display = "none";
+        document.getElementById("2Modal").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+    }
 
     function filterTable() {
-        let v = searchBox.value.toLowerCase();
-        document.querySelectorAll("#tableBody tr").forEach(tr => tr.style.display = tr.innerText.toLowerCase().includes(v) ? "" : "none");
+        let val = searchBox.value.toLowerCase();
+        document.querySelectorAll("#tableBody tr").forEach(tr => { tr.style.display = tr.innerText.toLowerCase().includes(val) ? "" : "none"; });
     }
 
     function danger() {
-        let p = document.getElementById("sumPaid"), d = document.getElementById("sumDebt");
-        let pV = Number(p.innerText.replace(/[^\d.]/g, '')), dV = Number(d.innerText.replace(/[^\d.]/g, ''));
+        let p = document.getElementById("sumPaid");
+        let d = document.getElementById("sumDebt");
+        let paidVal = Number(p.textContent.replace(/[^\d.]/g, ''));
+        let debtVal = Number(d.textContent.replace(/[^\d.]/g, ''));
         p.classList.remove("blink-green"); d.classList.remove("blink-red");
-        if (pV > dV && dV !== 0) p.classList.add("blink-green");
-        else if (pV < dV) d.classList.add("blink-red");
-    }
-
-    function renderChart() {
-        const ctx = document.getElementById('myChart').getContext('2d');
-        let tP = 0, tD = 0; records.forEach(r => { tP += r.paid; tD += r.debt; });
-        if(chartObj) chartObj.destroy();
-        chartObj = new Chart(ctx, {
-            type: 'doughnut',
-            data: { labels: ['Paid', 'Debt'], datasets: [{ data: [tP, tD], backgroundColor: ['#00c853', '#ff4d4d'], borderWidth: 0 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#fff' } } } }
-        });
+        if(paidVal > debtVal && debtVal > 0) p.classList.add("blink-green");
+        if(debtVal > paidVal) d.classList.add("blink-red");
     }
 
     function downloadPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.text("AKURA GENERAL ENTERPRISE - LEDGER", 10, 10);
+        doc.text("AKURA GENERAL ENTERPRISE", 105, 15, { align: "center" });
         doc.autoTable({
-            head: [['SN', 'NAME', 'SERVICE', 'TOTAL', 'PAID', 'DEBT', 'DATE']],
-            body: records.map((r, i) => [i + 1, r.name, r.product, r.total, r.paid, r.debt, r.date])
+            startY: 30,
+            head: [['SN', 'CUSTOMER', 'SERVICE', 'AMOUNT', 'PAID', 'DEBT', 'DATE']],
+            body: records.map((r, i) => [i+1, r.name, r.product, `N${r.total}`, `N${r.paid}`, `N${r.debt}`, r.date]),
+            headStyles: { fillColor: [20, 198, 255] }
         });
-        doc.save("Akura_Ledger.pdf");
+        doc.save("Akura_Report.pdf");
+        toast("✓ PDF Downloaded", "blue");
     }
 </script>
 </body>
