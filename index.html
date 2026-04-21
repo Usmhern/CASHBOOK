@@ -292,6 +292,7 @@
         document.getElementById("sumDebt").innerText = "₦" + sD;
    danger();
     }*/
+
 function renderTable() {
     const tbody = document.getElementById("tableBody");
     tbody.innerHTML = "";
@@ -301,7 +302,7 @@ function renderTable() {
         sPaid += r.paid; 
         sDebt += r.debt;
 
-        // Calculate Percentage (Ensure we don't divide by zero)
+        // Calculate Percentage
         let percentage = r.total > 0 ? Math.round((r.paid / r.total) * 100) : 0;
         
         // Determine bar color based on completion
@@ -325,16 +326,15 @@ function renderTable() {
                 <td>${r.date}</td>
                 <td>
                     <button style="width:auto; background:#eee; padding:5px 8px" onclick="openEdit(${i})">✏️</button>
-            <button style="width:auto; background:#eee; color:white; padding:5px 8px" onclick="askDelete(${i})">❌</button></td></tr>`;
-    </td>
-        
+                    <button style="width:auto; background:#eee; color:white; padding:5px 8px" onclick="askDelete(${i})">❌</button>
+                </td>
+            </tr>`;
     });
 
     document.getElementById("sumPaid").innerText = "₦" + sPaid.toLocaleString();
     document.getElementById("sumDebt").innerText = "₦" + sDebt.toLocaleString();
     danger();
 }
-    
     
 function filterTable() {
         let val = searchBox.value.toLowerCase();
