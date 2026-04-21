@@ -469,7 +469,7 @@ function executeDelete() {
         }
     });
 }*/
-    function renderChart() {
+  /*  function renderChart() {
     const ctx = document.getElementById('myChart').getContext('2d');
     let p = 0, d = 0;
     records.forEach(r => { p += r.paid; d += r.debt; });
@@ -495,6 +495,70 @@ function executeDelete() {
                             size: 14
                         }
                     }
+                }
+            }
+        }
+    });
+    }
+    */
+
+    function renderChart() {
+    const ctx = document.getElementById('myChart').getContext('2d');
+    
+    // 1. Group data by date
+    const dailyData = {};
+    records.forEach(r => {
+        if (!dailyData[r.date]) {
+            dailyData[r.date] = { paid: 0, debt: 0 };
+        }
+        dailyData[r.date].paid += r.paid;
+        dailyData[r.date].debt += r.debt;
+    });
+
+    // 2. Prepare Labels (Dates) and Data (Sums)
+    const labels = Object.keys(dailyData);
+    const paidPoints = labels.map(date => dailyData[date].paid);
+    const debtPoints = labels.map(date => dailyData[date].debt);
+
+    if(chartObj) chartObj.destroy();
+    
+    chartObj = new Chart(ctx, {
+        type: 'line', // Changed to Line
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Daily Income (₦)',
+                    data: paidPoints,
+                    borderColor: '#00c853',
+                    backgroundColor: 'rgba(0, 200, 83, 0.2)',
+                    fill: true, // Adds a nice shaded area under the line
+                    tension: 0.3 // Makes the line curved and smooth
+                },
+                {
+                    label: 'Daily Debt (₦)',
+                    data: debtPoints,
+                    borderColor: '#ff4d4d',
+                    backgroundColor: 'rgba(255, 77, 77, 0.2)',
+                    fill: true,
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { labels: { color: '#fff' } }
+            },
+            scales: {
+                x: { 
+                    ticks: { color: '#fff' }, 
+                    grid: { color: '#333' } 
+                },
+                y: { 
+                    ticks: { color: '#fff' }, 
+                    grid: { color: '#333' },
+                    beginAtZero: true 
                 }
             }
         }
