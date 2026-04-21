@@ -9,6 +9,34 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
     <style>
+        /* Progress Bar Container */
+.progress-container {
+    width: 100%;
+    background-color: #333;
+    border-radius: 10px;
+    height: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* The actual moving bar */
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
+    transition: width 0.5s ease-in-out;
+}
+
+/* Percentage text inside or next to bar */
+.progress-text {
+    font-size: 10px;
+    color: #000;
+    font-weight: bold;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    line-height: 12px;
+}
+        
         /* 1. Define the animation keyframes */
 @keyframes blink {
     0% { opacity: 1; }
@@ -134,8 +162,18 @@
         <div class="table-wrap">
             <table>
                 <thead>
-                    <tr><th>SN</th><th>NAME</th><th>PRODUCT</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>DATE</th><th>ACTION</th></tr>
-                </thead>
+    <tr>
+        <th>SN</th>
+        <th>NAME</th>
+        <th>SERVICE</th>
+        <th>AMOUNT</th>
+        <th>PAID</th>
+        <th>DEBT</th>
+        <th>PROGRESS</th> <th>DATE</th>
+        <th>ACTION</th>
+    </tr>
+</thead>
+
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
@@ -240,7 +278,7 @@
         showPage('tablePage');
     }
 
-    function renderTable() {
+   /* function renderTable() {
         const tbody = document.getElementById("tableBody");
         tbody.innerHTML = "";
         let sP = 0, sD = 0;
@@ -253,7 +291,51 @@
         document.getElementById("sumPaid").innerText = "₦" + sP;
         document.getElementById("sumDebt").innerText = "₦" + sD;
    danger();
-    }
+    }*/
+function renderTable() {
+    const tbody = document.getElementById("tableBody");
+    tbody.innerHTML = "";
+    let sPaid = 0, sDebt = 0;
+
+    records.forEach((r, i) => {
+        sPaid += r.paid; 
+        sDebt += r.debt;
+
+        // Calculate Percentage (Ensure we don't divide by zero)
+        let percentage = r.total > 0 ? Math.round((r.paid / r.total) * 100) : 0;
+        
+        // Determine bar color based on completion
+        let barColor = percentage === 100 ? "#00c853" : "#00c6ff";
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${i+1}</td>
+                <td>${r.name}</td>
+                <td>${r.product}</td>
+                <td>₦${r.total.toLocaleString()}</td>
+                <td>₦${r.paid.toLocaleString()}</td>
+                <td style="color:${r.debt > 0 ? 'red' : 'green'}">₦${r.debt.toLocaleString()}</td>
+                <td>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: ${percentage}%; background: ${barColor};">
+                            <span class="progress-text">${percentage}%</span>
+                        </div>
+                    </div>
+                </td>
+                <td>${r.date}</td>
+                <td>
+                    <button style="width:auto; background:#eee; padding:5px 8px" onclick="openEdit(${i})">✏️</button>
+            <button style="width:auto; background:#eee; color:white; padding:5px 8px" onclick="askDelete(${i})">❌</button></td></tr>`;
+    </td>
+            </tr>`;
+    });
+
+    document.getElementById("sumPaid").innerText = "₦" + sPaid.toLocaleString();
+    document.getElementById("sumDebt").innerText = "₦" + sDebt.toLocaleString();
+    danger();
+}
+    
+    
 function filterTable() {
         let val = searchBox.value.toLowerCase();
         document.querySelectorAll("#tableBody tr").forEach(tr => {
