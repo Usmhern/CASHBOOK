@@ -138,6 +138,8 @@
         <a onclick="showPage('formPage')">➕ Add New Record</a>
         <a onclick="showPage('tablePage')">📊 View Records</a>
         <a onclick="showPage('chartPage')">📈 Statistics Chart</a>
+        <a onclick="showPage('savingsPage')">💰 Savings/Deposits</a>
+        <a onclick="showPage('stockPage')">📦 Inventory/Stock</a>
         <a onclick="downloadPDF()">🧾 Download PDF</a>
         <a onclick="logout()" style="color: #ff4d4d; margin-top: 20px;">🚪 Logout</a>
     </div>
@@ -191,6 +193,41 @@
     <h3 id="modalTitle"></h3>
     <p id="modalMsg" style="color:#ccc; font-size:14px; margin-bottom:15px;"></p>
     <div id="modalActionArea"></div>
+
+
+    <div id="savingsPage" class="page">
+    <h3>CASH SAVINGS / DEPOSITS</h3>
+    <input id="savName" placeholder="Customer Name">
+    <input id="savAmount" type="number" placeholder="Amount (₦)">
+    <select id="savType" style="width:100%; padding:10px; margin:10px 0; border-radius:5px;">
+        <option value="Deposit">Deposit (+)</option>
+        <option value="Withdrawal">Withdrawal (-)</option>
+    </select>
+    <button onclick="saveDeposit()">UPDATE SAVINGS</button>
+</div>
+
+<div id="stockPage" class="page">
+    <h3>INVENTORY & STOCK</h3>
+    <input id="stkItem" placeholder="Product Name">
+    <input id="stkQty" type="number" placeholder="Quantity">
+    <input id="stkPrice" type="number" placeholder="Price per piece">
+    <button onclick="addStock()">ADD TO STOCK</button>
+
+    <div class="table-wrap" style="margin-top:20px;">
+        <table id="stockTable">
+            <thead>
+                <tr>
+                    <th>ITEM</th>
+                    <th>QTY</th>
+                    <th>PRICE</th>
+                    <th>ACTION</th>
+                </tr>
+            </thead>
+            <tbody id="stockBody"></tbody>
+        </table>
+    </div>
+</div>
+    
 </div>
 
 <script>
@@ -265,6 +302,9 @@
         toggleMenu(false);
         if(id === 'tablePage') renderTable();
         if(id === 'chartPage') renderChart();
+        if(id === 'stockPage') renderStockTable();
+        if(id === 'savingsPage') renderSavingsTable();
+           
     }
 
     // RECORDS
@@ -434,7 +474,102 @@ function filterTable() {
         d.classList.add("blink-red");
     }
     }
-                                                                                                       
+
+
+    // --- NEW DATA ARRAYS ---
+let savings = JSON.parse(localStorage.getItem("akura_savings")) || [];
+let inventory = JSON.parse(localStorage.getItem("akura_stock")) || [];
+
+// --- SAVINGS LOGIC ---
+function saveDeposit() {
+    const name = document.getElementById("savName").value;
+    const amount = Number(document.getElementById("savAmount").value);
+    const type = document.getElementById("savType").value;
+    
+    if(!name || amount <= 0) return showToast("Enter valid details", "red");
+
+    // Subtract if withdrawal, Add if deposit
+    const finalAmount = type === "Withdrawal" ? -amount : amount;
+
+    savings.push({ 
+        name: name, 
+        amount: finalAmount, 
+        type: type,
+        date: new Date().toLocaleString() 
+    });
+
+    localStorage.setItem("akura_savings", JSON.stringify(savings));
+    document.getElementById("savName").value = "";
+    document.getElementById("savAmount").value = "";
+    showToast("Savings Updated", "blue");
+    renderSavingsTable();
+}
+
+function renderSavingsTable() {
+    const tbody = document.getElementById("savingsBody");
+    tbody.innerHTML = "";
+    savings.forEach((s, i) => {
+        const color = s.amount < 0 ? "red" : "green";
+        tbody.innerHTML += `
+            <tr>
+                <td>${s.date}</td>
+                <td>${s.name}</td>
+                <td>${s.type}</td>
+                <td style="color:${color}">₦${Math.abs(s.amount).toLocaleString()}</td>
+            </tr>`;
+    });
+}
+
+// --- INVENTORY LOGIC ---
+function addStock() {
+    const item = document.getElementById("stkItem").value;
+    const qty = Number(document.getElementById("stkQty").value);
+    const price = Number(document.getElementById("stkPrice").value);
+
+    if(!item || qty <= 0) return showToast("Fill all fields", "red");
+
+    inventory.push({ item, qty, price });
+    localStorage.setItem("akura_stock", JSON.stringify(inventory));
+    
+    // Clear inputs
+    document.getElementById("stkItem").value = "";
+    document.getElementById("stkQty").value = "";
+    document.getElementById("stkPrice").value = "";
+    
+    renderStockTable();
+    showToast("Stock Added", "green");
+}
+
+function sellOne(index) {
+    if (inventory[index].qty > 0) {
+        inventory[index].qty -= 1;
+        
+        // Notification if empty
+        if (inventory[index].qty === 0) {
+            openModal("OUT OF STOCK", `${inventory[index].item} is now empty!`, "🚫", "#ff0000", `<button onclick="closeAllModals()">OK</button>`);
+        }
+        
+        localStorage.setItem("akura_stock", JSON.stringify(inventory));
+        renderStockTable();
+    } else {
+        showToast("Error: Item Empty", "red");
+    }
+}
+
+function renderStockTable() {
+    const tbody = document.getElementById("stockBody");
+    tbody.innerHTML = "";
+    inventory.forEach((item, i) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${item.item}</td>
+                <td><b>${item.qty}</b></td>
+                <td>₦${item.price.toLocaleString()}</td>
+                <td><button style="width:auto; padding:5px; background:#ff4d4d;" onclick="sellOne(${i})">SELL 1</button></td>
+            </tr>`;
+    });
+            }
+                         
 </script>
 </body>
 </html>
