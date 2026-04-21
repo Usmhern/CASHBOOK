@@ -119,6 +119,27 @@
             position: fixed; top: 50px; right: 40px; padding: 15px 25px; 
             border-radius: 5px; display: none; z-index: 3000; font-weight: bold;
         }
+
+        /* Define the blinking motion */
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
+
+.blink-green {
+    color: #00ff00 !important; /* Brighter green for text */
+    animation: blink 1s linear infinite;
+    text-shadow: 0 0 5px rgba(0,255,0,0.5);
+}
+
+.blink-red {
+    color: #ff0000 !important; /* Brighter red for text */
+    animation: blink 1s linear infinite;
+    text-shadow: 0 0 5px rgba(255,0,0,0.5);
+}
+
+        
     </style>
 </head>
 <body>
@@ -167,8 +188,8 @@
 
     <div id="tablePage" class="page">
         <div class="dashboard">
-            <div class="card">Total Paid<br><b id="sumPaid" style="color:green">₦0</b></div>
-            <div class="card">Total Debt<br><b id="sumDebt" style="color:red">₦0</b></div>
+            <div class="card">TOTAL PAID<br><b id="sumPaid" style="color:green">₦0</b></div>
+            <div class="card">TOTAL DEBT<br><b id="sumDebt" style="color:red">₦0</b></div>
         </div>
         <input id="searchBox" placeholder="Search by name or product..." onkeyup="filterTable()">
         <div class="table-wrap">
@@ -385,6 +406,7 @@ function executeDelete() {
         document.querySelectorAll("#tableBody tr").forEach(tr => {
             tr.style.display = tr.innerText.toLowerCase().includes(val) ? "" : "none";
         });
+        danger();
     }
 
     // PDF Generator
@@ -426,6 +448,28 @@ function executeDelete() {
             }
         });
     }
+    function danger() {
+    let p = document.getElementById("sumPaid");
+    let d = document.getElementById("sumDebt");
+
+    // Remove the Currency symbol and commas, then convert to Number
+    let paidVal = Number(p.textContent.replace(/[^\d.]/g, ''));
+    let debtVal = Number(d.textContent.replace(/[^\d.]/g, ''));
+
+    // Reset classes
+    p.classList.remove("blink-green");
+    d.classList.remove("blink-red");
+
+    if (paidVal > debtVal && debtVal !== 0) {
+        p.classList.add("blink-green");
+    } 
+    else if (paidVal < debtVal) {
+        d.classList.add("blink-red");
+    }
+}
+
+    
+                        
 </script>
     <div id="deleteModal" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1c2e4a; padding: 25px; border-radius: 12px; z-index: 2100; width: 90%; max-width: 320px; border: 1px solid #ff4d4d; text-align: center;">
     <div style="font-size: 40px; color: #ff4d4d; margin-bottom: 10px;">⚠️</div>
