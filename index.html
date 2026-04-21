@@ -208,7 +208,7 @@
     </div>
 
     <div id="chartPage" class="page">
-        <div class="container" style="background:white; max-width: 450px;">
+        <div class="container" style="background: transparent; max-width: 430px;">
             <canvas id="myChart"></canvas>
         </div>
     </div>
@@ -437,21 +437,30 @@ function executeDelete() {
         toast(",✓ PDF Downloaded", "blue");
         toggleMenu(false);
     }
-
-    function renderChart() {
-        const ctx = document.getElementById('myChart').getContext('2d');
-        let p = 0, d = 0;
-        records.forEach(r => { p += r.paid; d += r.debt; });
-
-        if(chartObj) chartObj.destroy();
-        chartObj = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Total Income', 'Total Debt'],
-                datasets: [{ data: [p, d], backgroundColor: ['#00c853', '#e74c3c'] }]
+function renderChart(){
+   chartObj = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Total Income', 'Total Debt'],
+        datasets: [{ 
+            data: [p, d], 
+            backgroundColor: ['#00c853', '#e74c3c'],
+            borderColor: ['#ffffff', '#ffffff'], // Set border color to white
+            borderWidth: 2                      // Set thickness in pixels
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                labels: {
+                    color: 'white' // Since your container is white, make text readable
+                }
             }
-        });
+        }
     }
+});
+}
     function danger() {
     let p = document.getElementById("sumPaid");
     let d = document.getElementById("sumDebt");
