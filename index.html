@@ -271,21 +271,23 @@
         renderSavingsTable();
     }
 
-    function renderSavingsTable() {
-        const b = document.getElementById("savingsBody"); b.innerHTML = "";
-        savings.forEach((s, i) => {
-            b.innerHTML += `
-            <tr>
-                <td>${s.date}</td>
-                <td>${s.name}</td>
-                <td>${s.type}</td>
-                <td style="color:${s.amount < 0 ? 'red':'green'}">₦${Math.abs(s.amount).toLocaleString()}</td>
-                <td>
-                    <button style="width:auto; padding:5px; background:#ff4d4d; color:white;" onclick="removeSaving(${i})">🗑️</button>
-                </td>
-            </tr>`;
-        });
-    }
+ // --- UPDATED RENDER FUNCTIONS WITH NEW BUTTON CALLS ---
+function renderSavingsTable() {
+    const b = document.getElementById("savingsBody"); b.innerHTML = "";
+    savings.forEach((s, i) => {
+        b.innerHTML += `
+        <tr>
+            <td>${s.date}</td>
+            <td>${s.name}</td>
+            <td>${s.type}</td>
+            <td style="color:${s.amount < 0 ? 'red':'green'}">₦${Math.abs(s.amount).toLocaleString()}</td>
+            <td>
+                <button style="width:auto; padding:5px 10px; background:#ff4d4d; color:white;" onclick="askDeleteSaving(${i})">🗑️</button>
+            </td>
+        </tr>`;
+    });
+
+    
 
     // --- ENHANCED STOCK LOGIC ---
     function addStock() {
@@ -346,20 +348,23 @@
     }
 
     function renderStockTable() {
-        const b = document.getElementById("stockBody"); b.innerHTML = "";
-        inventory.forEach((item, i) => {
-            b.innerHTML += `
-            <tr>
-                <td>${item.item}</td>
-                <td style="color:${item.qty === 0 ? 'red' : 'black'}"><b>${item.qty}</b></td>
-                <td>₦${item.price.toLocaleString()}</td>
-                <td>
-                    <button style="width:auto; padding:5px 10px; background:#28a745; color:white;" onclick="sellOne(${i})">SELL</button>
-                    <button style="width:auto; padding:5px 10px; background:#007bff; color:white;" onclick="openRestockPanel(${i})">➕ RESTOCK</button>
-                </td>
-            </tr>`;
-        });
-    }
+    const b = document.getElementById("stockBody"); b.innerHTML = "";
+    inventory.forEach((item, i) => {
+        b.innerHTML += `
+        <tr>
+            <td>${item.item}</td>
+            <td style="color:${item.qty === 0 ? 'red' : 'black'}"><b>${item.qty}</b></td>
+            <td>₦${item.price.toLocaleString()}</td>
+            <td>
+                <div style="display: flex; gap: 5px;">
+                    <button style="width:auto; padding:5px 8px; background:#28a745; color:white;" onclick="sellOne(${i})">SELL</button>
+                    <button style="width:auto; padding:5px 8px; background:#ee; color:white;" onclick="openRestockPanel(${i})">➕</button>
+                    <button style="width:auto; padding:5px 8px; background:#ff4d4d; color:white;" onclick="askDeleteStock(${i})">X</button>
+                </div>
+            </td>
+        </tr>`;
+    });
+}
 
     // Ensure initial load works
     window.onload = () => {
@@ -368,9 +373,7 @@
             renderSavingsTable();
             renderStockTable();
         }
-    }
-
-    
+    }  
 
     const ADMIN_USER = "Admin";
     const ADMIN_PASS = "123456";
@@ -616,62 +619,50 @@ function filterTable() {
     }
     }
 
-
-function deleteSaving(idx) {
-    if(confirm("Delete this saving entry?")) {
-        savings.splice(idx, 1);
-        localStorage.setItem("akura_savings", JSON.stringify(savings));
-        renderSavingsTable();
-        showToast("Entry Deleted", "#ff4d4d");
-    }
+// --- SAVINGS DELETE MODAL ---
+function askDeleteSaving(idx) {
+    const entry = savings[idx];
+    openModal(
+        "Confirm Delete", 
+        `Remove record for ${entry.name} (₦${Math.abs(entry.amount).toLocaleString()})?`, 
+        "🗑️", 
+        "#ff4d4d", 
+        `<button style="background:red; color:white;" onclick="confirmDeleteSaving(${idx})">YES, DELETE</button>
+         <button style="background:#444; color:white;" onclick="closeAllModals()">CANCEL</button>`
+    );
 }
 
-function renderSavingsTable() {
-    const b = document.getElementById("savingsBody"); 
-    b.innerHTML = "";
-    savings.forEach((s, i) => {
-        b.innerHTML += `
-        <tr>
-            <td>${s.date}</td>
-            <td>${s.name}</td>
-            <td>${s.type}</td>
-            <td style="color:${s.amount < 0 ? 'red':'green'}">₦${Math.abs(s.amount).toLocaleString()}</td>
-            <td>
-                <button style="width:auto; padding:5px 10px; background:#ff4d4d; color:white; border-radius:4px;" onclick="deleteSaving(${i})">🗑️ Delete</button>
-            </td>
-        </tr>`;
-    });
+function confirmDeleteSaving(idx) {
+    savings.splice(idx, 1);
+    localStorage.setItem("akura_savings", JSON.stringify(savings));
+    renderSavingsTable();
+    closeAllModals();
+    showToast("Entry Removed", "red");
 }
 
-    function deleteStock(idx) {
-    const itemName = inventory[idx].item;
-    if(confirm(`Are you sure you want to remove "${itemName}" from inventory?`)) {
-        inventory.splice(idx, 1);
-        localStorage.setItem("akura_stock", JSON.stringify(inventory));
-        renderStockTable();
-        showToast("Item Removed", "#ff4d4d");
-    }
+// --- STOCK DELETE MODAL ---
+function askDeleteStock(idx) {
+    const item = inventory[idx];
+    openModal(
+        "Delete Item", 
+        `Are you sure you want to remove ${item.item} from the inventory completely?`, 
+        "⚠️", 
+        "#ff4d4d", 
+        `<button style="background:red; color:white;" onclick="confirmDeleteStock(${idx})">YES, REMOVE</button>
+         <button style="background:#444; color:white;" onclick="closeAllModals()">CANCEL</button>`
+    );
 }
 
-function renderStockTable() {
-    const b = document.getElementById("stockBody"); 
-    b.innerHTML = "";
-    inventory.forEach((item, i) => {
-        b.innerHTML += `
-        <tr>
-            <td>${item.item}</td>
-            <td style="color:${item.qty === 0 ? 'red' : 'inherit'}"><b>${item.qty}</b></td>
-            <td>₦${item.price.toLocaleString()}</td>
-            <td>
-                <div style="display: flex; gap: 5px;">
-                    <button style="width:auto; padding:5px 8px; background:#28a745; color:white;" onclick="sellOne(${i})">SELL</button>
-                    <button style="width:auto; padding:5px 8px; background:#007bff; color:white;" onclick="openRestockPanel(${i})">➕</button>
-                    <button style="width:auto; padding:5px 8px; background:#ff4d4d; color:white;" onclick="deleteStock(${i})">🗑️</button>
-                </div>
-            </td>
-        </tr>`;
-    });
+function confirmDeleteStock(idx) {
+    inventory.splice(idx, 1);
+    localStorage.setItem("akura_stock", JSON.stringify(inventory));
+    renderStockTable();
+    closeAllModals();
+    showToast("Stock Deleted", "red");
 }
+
+
+
 
 </script>
 </body>
