@@ -317,7 +317,7 @@
     function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
 
     // --- SAVINGS LOGIC ---
-    function saveDeposit() {
+function saveDeposit() {
     const n = document.getElementById("savName").value;
     const a = Number(document.getElementById("savAmount").value);
     const t = document.getElementById("savType").value;
@@ -328,18 +328,18 @@
     savings.push({ 
         name: n, 
         amount: final, 
+        originalAmount: Math.abs(final), // Store the starting amount
         type: t, 
-        date: new Date().toLocaleString() // Includes time
+        date: new Date().toLocaleString(),
+        withdrawHistory: [] 
     });
     
     localStorage.setItem("akura_savings", JSON.stringify(savings));
     renderSavingsTable();
     showToast("Savings Updated", "blue");
 
-    // --- CLEAR INPUTS HERE ---
     document.getElementById("savName").value = "";
     document.getElementById("savAmount").value = "";
-    document.getElementById("savType").value = "Deposit"; // Reset to default
 }
 
 
@@ -348,11 +348,17 @@ function renderSavingsTable() {
     b.innerHTML = "";
     
     savings.forEach((s, i) => {
-        // Build the withdrawal list HTML
+        // 1. Create the "In" label for the original deposit amount
+        // We use Math.abs to ensure it shows as positive even if recorded as a deposit
+        let inBalanceHtml = `<div style="color: #00c853; font-weight: bold; margin-bottom: 4px;">
+                                In: ₦${Math.abs(s.originalAmount || s.amount + (s.totalWithdrawn || 0)).toLocaleString()}
+                             </div>`;
+
+        // 2. Build the withdrawal list HTML (The "Out" section)
         let historyHtml = "";
         if (s.withdrawHistory && s.withdrawHistory.length > 0) {
             historyHtml = s.withdrawHistory.map(log => 
-                `<div style="font-size: 11px; color: #cc6600; border-top: 1px solid #eee; margin-top: 2px;">
+                `<div style="font-size: 11px; color: #ff4d4d; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2px; margin-top: 2px;">
                     ${log}
                 </div>`
             ).join("");
@@ -361,13 +367,15 @@ function renderSavingsTable() {
         b.innerHTML += `
         <tr>
             <td style="vertical-align: top;">
-                <b>${s.date}</b>
+                ${inBalanceHtml}
+                <span style="font-size: 10px; color: #aaa;">Date: ${s.date}</span>
                 ${historyHtml}
             </td>
             <td>${s.name}</td>
             <td>${s.type}</td>
-            <td style="color:${s.amount < 0 ? 'red':'green'}">
+            <td style="color:${s.amount < 0 ? 'red':'#00c6ff'}">
                 <b>₦${s.amount.toLocaleString()}</b>
+                <div style="font-size: 10px; color: #888;">Rem. Balance</div>
             </td>
             <td>
                 <div style="display:flex; gap:5px;">
@@ -378,6 +386,7 @@ function renderSavingsTable() {
         </tr>`;
     });
 }
+
 
 
 
@@ -583,23 +592,20 @@ function addStock() {
     const amountInput = document.getElementById("drawAmt");
     const amountToDraw = Number(amountInput.value);
     
-    if (amountToDraw <= 0) return showToast("Enter a valid amount", "red");
-    if (amountToDraw > savings[idx].amount) return showToast("Insufficient balance", "red");
+    if (amountToDraw <= 0 || amountToDraw > savings[idx].amount) {
+        return showToast("Insufficient balance", "red");
+    }
 
     const timestamp = new Date().toLocaleString();
     
-    // 1. Subtract the amount
+    // 1. Update balance
     savings[idx].amount -= amountToDraw;
 
-    // 2. Initialize history array if it's the first withdrawal
-    if (!Array.isArray(savings[idx].withdrawHistory)) {
-        savings[idx].withdrawHistory = [];
-    }
-
-    // 3. Add this withdrawal to the history list
+    // 2. Add to "Out" history
+    if (!savings[idx].withdrawHistory) savings[idx].withdrawHistory = [];
     savings[idx].withdrawHistory.push(`Out: ₦${amountToDraw.toLocaleString()} (${timestamp})`);
 
-    // 4. Save and Update UI
+    // 3. Save and Refresh
     localStorage.setItem("akura_savings", JSON.stringify(savings));
     amountInput.value = "";
     closeAllModals();
