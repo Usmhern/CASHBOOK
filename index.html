@@ -252,13 +252,14 @@
         });
         document.getElementById("sumPaid").innerText = "₦" + sP;
         document.getElementById("sumDebt").innerText = "₦" + sD;
+   danger();
     }
 function filterTable() {
         let val = searchBox.value.toLowerCase();
         document.querySelectorAll("#tableBody tr").forEach(tr => {
             tr.style.display = tr.innerText.toLowerCase().includes(val) ? "" : "none";
         });
-        
+        danger();
             }
     
     // EDIT/DELETE POPUPS
@@ -276,6 +277,7 @@ function filterTable() {
         localStorage.setItem("akura_records", JSON.stringify(records));
         closeAllModals(); renderTable();
         showToast("✓ Debt Updated", "orange");
+        danger();
     }
 
     function askDelete(i) {
