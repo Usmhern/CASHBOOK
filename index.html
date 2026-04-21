@@ -208,7 +208,7 @@
     </div>
 
     <div id="chartPage" class="page">
-        <div class="container" style="background: white; max-width: 450px;">
+        <div class="container" style="background:black; max-width: 450px; border:1px solid #333;">
             <canvas id="myChart"></canvas>
         </div>
     </div>
@@ -437,7 +437,7 @@ function executeDelete() {
         toast(",✓ PDF Downloaded", "blue");
         toggleMenu(false);
     }
-function renderChart() {
+/*function renderChart() {
     const ctx = document.getElementById('myChart').getContext('2d');
     let p = 0, d = 0;
     records.forEach(r => { p += r.paid; d += r.debt; });
@@ -466,7 +466,39 @@ function renderChart() {
             maintainAspectRatio: true
         }
     });
-}
+}*/
+    function renderChart() {
+    const ctx = document.getElementById('myChart').getContext('2d');
+    let p = 0, d = 0;
+    records.forEach(r => { p += r.paid; d += r.debt; });
+
+    if(chartObj) chartObj.destroy();
+    chartObj = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Total Paid', 'Total Debt'],
+            datasets: [{ 
+                data: [p, d], 
+                backgroundColor: ['#00c853', '#e74c3c'],
+                borderColor: '#000', // Black border between segments looks sleek
+                borderWidth: 2
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#fff', // This makes the text labels white
+                        font: {
+                            size: 14
+                        }
+                    }
+                }
+            }
+        }
+    });
+    }
+    
 
     function danger() {
     let p = document.getElementById("sumPaid");
