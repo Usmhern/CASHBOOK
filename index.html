@@ -10,7 +10,7 @@
 
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background:#141e30; color:#fff; min-height:100vh; overflow-x: hidden; }
+        body { background:black; color:#fff; min-height:100vh; overflow-x: hidden; }
 
         /* HEADER STYLES */
         header { 
@@ -31,7 +31,7 @@
         .active-page { display: block; }
 
         /* SIDEBAR */
-        .menu-btn { position: fixed; top: 70px; left: 15px; z-index: 1100; font-size: 24px; cursor: pointer; background: #00c6ff; padding: 5px 12px; border-radius: 4px; color: #000; }
+        .menu-btn { position: fixed; top: 80px; left: 15px; z-index: 1100; font-size: 24px; cursor: pointer; background: #00c6ff; padding: 5px 12px; border-radius: 4px; color: #000; }
         .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: #0a0f18; transition: 0.3s; z-index: 1500; padding-top: 80px; }
         .sidebar a { display: block; padding: 15px 25px; color: #fff; text-decoration: none; border-bottom: 1px solid #1a1a1a; cursor: pointer; }
         .sidebar a:hover { background: #00c6ff; color: #000; }
@@ -39,7 +39,7 @@
 
         /* UI ELEMENTS */
         input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 5px; border: none; outline: none; }
-        input { background: #0a0f18; color: #fff; border: 1px solid #333; }
+        input { background: transparent; color: #fff; border-bottom: 1px solid #333; border-top:none; border-left:none; border-right:none;}
         button { background: #00c6ff; font-weight: bold; cursor: pointer; color: #000; }
         
         /* TABLE & DASHBOARD */
