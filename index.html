@@ -245,149 +245,31 @@
     </div>
 </div>
 
-<script>
-    // ... (Keep your existing Login and Setup code) ...
-
-    let savings = JSON.parse(localStorage.getItem("akura_savings")) || [];
-    let inventory = JSON.parse(localStorage.getItem("akura_stock")) || [];
-
-    // --- ENHANCED SAVINGS LOGIC ---
-    function saveDeposit() {
-        const n = document.getElementById("savName").value;
-        const a = Number(document.getElementById("savAmount").value);
-        const t = document.getElementById("savType").value;
-        if(!n || a <= 0) return showToast("Enter details", "red");
-        
-        const final = t === "Withdrawal" ? -a : a;
-        savings.push({ name: n, amount: final, type: t, date: new Date().toLocaleDateString() });
-        localStorage.setItem("akura_savings", JSON.stringify(savings));
-        renderSavingsTable();
-        showToast("Savings Updated", "blue");
-    }
-
-    function removeSaving(idx) {
-        savings.splice(idx, 1);
-        localStorage.setItem("akura_savings", JSON.stringify(savings));
-        renderSavingsTable();
-    }
-
- // --- UPDATED RENDER FUNCTIONS WITH NEW BUTTON CALLS ---
-function renderSavingsTable() {
-    const b = document.getElementById("savingsBody"); b.innerHTML = "";
-    savings.forEach((s, i) => {
-        b.innerHTML += `
-        <tr>
-            <td>${s.date}</td>
-            <td>${s.name}</td>
-            <td>${s.type}</td>
-            <td style="color:${s.amount < 0 ? 'red':'green'}">₦${Math.abs(s.amount).toLocaleString()}</td>
-            <td>
-                <button style="width:auto; padding:5px 10px; background:#ff4d4d; color:white;" onclick="askDeleteSaving(${i})">🗑️</button>
-            </td>
-        </tr>`;
-    });
-
-    
-
-    // --- ENHANCED STOCK LOGIC ---
-    function addStock() {
-        const i = document.getElementById("stkItem").value, 
-              q = Number(document.getElementById("stkQty").value), 
-              p = Number(document.getElementById("stkPrice").value);
-        if(!i || q <= 0) return;
-        inventory.push({ item: i, qty: q, price: p });
-        localStorage.setItem("akura_stock", JSON.stringify(inventory));
-        renderStockTable();
-        showToast("Stock Added", "green");
-    }
-
-    function sellOne(idx) {
-        if(inventory[idx].qty > 0) {
-            inventory[idx].qty--;
-            localStorage.setItem("akura_stock", JSON.stringify(inventory));
-            renderStockTable();
-            
-            if(inventory[idx].qty === 0) {
-                openModal(
-                    "STOCK EXHAUSTED", 
-                    `${inventory[idx].item} is finished! Would you like to restock now?`, 
-                    "🚫", 
-                    "red", 
-                    `<button onclick="openRestockPanel(${idx})">ADD STOCK NOW</button>
-                     <button style="background:#444; color:white" onclick="closeAllModals()">LATER</button>`
-                );
-            }
-        }
-    }
-
-    function openRestockPanel(idx) {
-        const item = inventory[idx];
-        openModal(
-            "RESTOCK ITEM", 
-            `Updating: ${item.item}`, 
-            "➕", 
-            "#00c6ff", 
-            `<input id="resQty" type="number" placeholder="New Quantity to Add" style="background:#000; color:#fff; border:1px solid #333">
-             <input id="resPrice" type="number" value="${item.price}" placeholder="Update Price" style="background:#000; color:#fff; border:1px solid #333">
-             <button onclick="confirmRestock(${idx})">UPDATE STOCK</button>`
-        );
-    }
-
-    function confirmRestock(idx) {
-        const newQty = Number(document.getElementById("resQty").value);
-        const newPrice = Number(document.getElementById("resPrice").value);
-        
-        if(newQty > 0) {
-            inventory[idx].qty += newQty;
-            inventory[idx].price = newPrice;
-            localStorage.setItem("akura_stock", JSON.stringify(inventory));
-            renderStockTable();
-            closeAllModals();
-            showToast("Stock Updated!", "green");
-        }
-    }
-
-    function renderStockTable() {
-    const b = document.getElementById("stockBody"); b.innerHTML = "";
-    inventory.forEach((item, i) => {
-        b.innerHTML += `
-        <tr>
-            <td>${item.item}</td>
-            <td style="color:${item.qty === 0 ? 'red' : 'black'}"><b>${item.qty}</b></td>
-            <td>₦${item.price.toLocaleString()}</td>
-            <td>
-                <div style="display: flex; gap: 5px;">
-                    <button style="width:auto; padding:5px 8px; background:#28a745; color:white;" onclick="sellOne(${i})">SELL</button>
-                    <button style="width:auto; padding:5px 8px; background:#ee; color:white;" onclick="openRestockPanel(${i})">➕</button>
-                    <button style="width:auto; padding:5px 8px; background:#ff4d4d; color:white;" onclick="askDeleteStock(${i})">X</button>
-                </div>
-            </td>
-        </tr>`;
-    });
-}
-
-    // Ensure initial load works
-    window.onload = () => {
-        if(localStorage.getItem("isLoggedIn") === "true") {
-            renderTable();
-            renderSavingsTable();
-            renderStockTable();
-        }
-    }  
-
+    <script>
+    // --- APP DATA ---
     const ADMIN_USER = "Admin";
     const ADMIN_PASS = "123456";
     let records = JSON.parse(localStorage.getItem("akura_records")) || [];
+    let savings = JSON.parse(localStorage.getItem("akura_savings")) || [];
+    let inventory = JSON.parse(localStorage.getItem("akura_stock")) || [];
     let deleteIdx = null, editIdx = null, chartObj = null;
 
-    // Toast Logic
+    // --- INITIALIZATION ---
+    window.onload = () => {
+        if(localStorage.getItem("isLoggedIn") === "true") {
+            document.getElementById("loginPage").style.display = "none";
+            document.getElementById("app").style.display = "block";
+            showPage('tablePage');
+        }
+    };
+
+    // --- UTILITY FUNCTIONS ---
     function showToast(msg, bg) {
         const t = document.getElementById("toast");
         t.innerText = msg; t.style.background = bg; t.style.display = "block";
         setTimeout(() => t.style.display="none", 2500);
     }
 
-    // Custom Modal System
     function openModal(title, msg, icon, borderColor, actionHtml) {
         document.getElementById("modalTitle").innerText = title;
         document.getElementById("modalMsg").innerText = msg;
@@ -405,36 +287,6 @@ function renderSavingsTable() {
         toggleMenu(false);
     }
 
-    // LOGIN LOGIC
-    function checkLogin() {
-        const u = document.getElementById("user").value;
-        const p = document.getElementById("pass").value;
-
-        if (u === ADMIN_USER && p === ADMIN_PASS) {
-            openModal("✓ Successful", "Identity Verified.", "✅", "#00c853", `<button onclick="enterApp()">OK</button>`);
-        } else if (u === ADMIN_USER && p !== ADMIN_PASS) {
-            openModal("🔐 Password Incorrect", "Please check your password.", "❌", "#ff4d4d", `<button onclick="closeAllModals()">RETRY</button>`);
-        } else if (u !== ADMIN_USER && p === ADMIN_PASS) {
-            openModal("👤 Username Incorrect", "Please check your username.", "❌", "#ff4d4d", `<button onclick="closeAllModals()">RETRY</button>`);
-        } else {
-            openModal("Incorrect Details", "Both fields are wrong.", "❌", "#ff4d4d", `<button onclick="closeAllModals()">RETRY</button>`);
-        }
-    }
-
-    function enterApp() {
-        localStorage.setItem("isLoggedIn", "true");
-        location.reload();
-    }
-
-    if(localStorage.getItem("isLoggedIn") === "true") {
-        document.getElementById("loginPage").style.display = "none";
-        document.getElementById("app").style.display = "block";
-        showPage('tablePage');
-    }
-
-    function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
-
-    // NAV
     function toggleMenu(open) {
         document.getElementById("sidebar").style.left = open ? "0" : "-260px";
         document.getElementById("overlay").style.display = open ? "block" : "none";
@@ -448,92 +300,175 @@ function renderSavingsTable() {
         if(id === 'chartPage') renderChart();
         if(id === 'stockPage') renderStockTable();
         if(id === 'savingsPage') renderSavingsTable();
-           
     }
 
-    // RECORDS
+    // --- LOGIN LOGIC ---
+    function checkLogin() {
+        const u = document.getElementById("user").value;
+        const p = document.getElementById("pass").value;
+        if (u === ADMIN_USER && p === ADMIN_PASS) {
+            localStorage.setItem("isLoggedIn", "true");
+            location.reload();
+        } else {
+            showToast("Invalid Credentials", "red");
+        }
+    }
+
+    function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
+
+    // --- SAVINGS LOGIC ---
+    function saveDeposit() {
+        const n = document.getElementById("savName").value;
+        const a = Number(document.getElementById("savAmount").value);
+        const t = document.getElementById("savType").value;
+        if(!n || a <= 0) return showToast("Enter details", "red");
+        
+        const final = t === "Withdrawal" ? -a : a;
+        savings.push({ name: n, amount: final, type: t, date: new Date().toLocaleDateString() });
+        localStorage.setItem("akura_savings", JSON.stringify(savings));
+        renderSavingsTable();
+        showToast("Savings Updated", "blue");
+    }
+
+    function renderSavingsTable() {
+        const b = document.getElementById("savingsBody"); b.innerHTML = "";
+        savings.forEach((s, i) => {
+            b.innerHTML += `
+            <tr>
+                <td>${s.date}</td>
+                <td>${s.name}</td>
+                <td>${s.type}</td>
+                <td style="color:${s.amount < 0 ? 'red':'green'}">₦${Math.abs(s.amount).toLocaleString()}</td>
+                <td>
+                    <button style="width:auto; padding:5px 10px; background:#ff4d4d; color:white;" onclick="deleteSaving(${i})">🗑️</button>
+                </td>
+            </tr>`;
+        });
+    }
+
+    function deleteSaving(idx) {
+        const entry = savings[idx];
+        openModal("Confirm Delete", `Remove record for ${entry.name}?`, "🗑️", "#ff4d4d", 
+        `<button style="background:red; color:white;" onclick="confirmDeleteSaving(${idx})">YES, DELETE</button>
+         <button style="background:#444; color:white;" onclick="closeAllModals()">CANCEL</button>`);
+    }
+
+    function confirmDeleteSaving(idx) {
+        savings.splice(idx, 1);
+        localStorage.setItem("akura_savings", JSON.stringify(savings));
+        renderSavingsTable();
+        closeAllModals();
+        showToast("Entry Removed", "red");
+    }
+
+    // --- STOCK LOGIC ---
+    function addStock() {
+        const i = document.getElementById("stkItem").value, 
+              q = Number(document.getElementById("stkQty").value), 
+              p = Number(document.getElementById("stkPrice").value);
+        if(!i || q <= 0) return showToast("Fill all fields", "red");
+        inventory.push({ item: i, qty: q, price: p });
+        localStorage.setItem("akura_stock", JSON.stringify(inventory));
+        renderStockTable();
+        showToast("Stock Added", "green");
+    }
+
+    function renderStockTable() {
+        const b = document.getElementById("stockBody"); b.innerHTML = "";
+        inventory.forEach((item, i) => {
+            b.innerHTML += `
+            <tr>
+                <td>${item.item}</td>
+                <td style="color:${item.qty === 0 ? 'red' : 'black'}"><b>${item.qty}</b></td>
+                <td>₦${item.price.toLocaleString()}</td>
+                <td>
+                    <div style="display: flex; gap: 5px;">
+                        <button style="width:auto; padding:5px 8px; background:#28a745; color:white;" onclick="sellOne(${i})">SELL</button>
+                        <button style="width:auto; padding:5px 8px; background:#00c6ff; color:white;" onclick="openRestockPanel(${i})">➕</button>
+                        <button style="width:auto; padding:5px 8px; background:#ff4d4d; color:white;" onclick="deleteStock(${i})">X</button>
+                    </div>
+                </td>
+            </tr>`;
+        });
+    }
+
+    function sellOne(idx) {
+        if(inventory[idx].qty > 0) {
+            inventory[idx].qty--;
+            localStorage.setItem("akura_stock", JSON.stringify(inventory));
+            renderStockTable();
+            if(inventory[idx].qty === 0) {
+                openModal("STOCK EXHAUSTED", `${inventory[idx].item} is finished! Restock?`, "🚫", "red", 
+                `<button onclick="openRestockPanel(${idx})">RESTOCK NOW</button>
+                 <button style="background:#444; color:white" onclick="closeAllModals()">LATER</button>`);
+            }
+        }
+    }
+
+    function openRestockPanel(idx) {
+        const item = inventory[idx];
+        openModal("RESTOCK ITEM", `Updating: ${item.item}`, "➕", "#00c6ff", 
+        `<input id="resQty" type="number" placeholder="Qty to Add" style="background:#000; color:#fff; border:1px solid #333">
+         <input id="resPrice" type="number" value="${item.price}" style="background:#000; color:#fff; border:1px solid #333">
+         <button onclick="confirmRestock(${idx})">UPDATE</button>`);
+    }
+
+    function confirmRestock(idx) {
+        const q = Number(document.getElementById("resQty").value);
+        const p = Number(document.getElementById("resPrice").value);
+        if(q > 0) {
+            inventory[idx].qty += q;
+            inventory[idx].price = p;
+            localStorage.setItem("akura_stock", JSON.stringify(inventory));
+            renderStockTable();
+            closeAllModals();
+            showToast("Updated", "green");
+        }
+    }
+
+    function deleteStock(idx) {
+        openModal("Delete Item", `Remove ${inventory[idx].item}?`, "⚠️", "#ff4d4d", 
+        `<button style="background:red; color:white;" onclick="confirmDeleteStock(${idx})">YES, REMOVE</button>
+         <button style="background:#444; color:white;" onclick="closeAllModals()">CANCEL</button>`);
+    }
+
+    function confirmDeleteStock(idx) {
+        inventory.splice(idx, 1);
+        localStorage.setItem("akura_stock", JSON.stringify(inventory));
+        renderStockTable();
+        closeAllModals();
+        showToast("Deleted", "red");
+    }
+
+    // --- RECORD LOGIC ---
     function saveRecord() {
         const total = Number(totalAmt.value), paid = Number(paidAmt.value);
         if(!custName.value || total <= 0) return alert("Fill fields correctly");
         records.push({ name: custName.value, product: prodName.value, total: total, paid: paid, debt: total - paid, date: new Date().toLocaleDateString() });
         localStorage.setItem("akura_records", JSON.stringify(records));
         custName.value = prodName.value = totalAmt.value = paidAmt.value = "";
-        showToast("✓ Record Saved", "green");
+        showToast("✓ Saved", "green");
         showPage('tablePage');
     }
 
-   /* function renderTable() {
+    function renderTable() {
         const tbody = document.getElementById("tableBody");
         tbody.innerHTML = "";
-        let sP = 0, sD = 0;
+        let sPaid = 0, sDebt = 0;
         records.forEach((r, i) => {
-            sP += r.paid; sD += r.debt;
-            tbody.innerHTML += `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.product}</td><td>₦${r.total}</td><td>₦${r.paid}</td><td style="color:red">₦${r.debt}</td><td>${r.date}</td>
-            <td><button style="width:auto; background:#eee; padding:5px 8px" onclick="openEdit(${i})">✏️</button>
-            <button style="width:auto; background:#eee; color:white; padding:5px 8px" onclick="askDelete(${i})">❌</button></td></tr>`;
+            sPaid += r.paid; sDebt += r.debt;
+            let percentage = r.total > 0 ? Math.round((r.paid / r.total) * 100) : 0;
+            let barColor = percentage === 100 ? "#00c853" : "#00c6ff";
+            tbody.innerHTML += `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.product}</td><td>₦${r.total.toLocaleString()}</td><td>₦${r.paid.toLocaleString()}</td><td style="color:${r.debt > 0 ? 'red' : 'green'}">₦${r.debt.toLocaleString()}</td><td><div class="progress-container"><div class="progress-bar" style="width:${percentage}%; background:${barColor};"><span class="progress-text">${percentage}%</span></div></div></td><td>${r.date}</td><td><button style="width:auto; background:#eee; padding:5px 8px" onclick="openEdit(${i})">✏️</button><button style="width:auto; background:#eee; padding:5px 8px" onclick="askDelete(${i})">❌</button></td></tr>`;
         });
-        document.getElementById("sumPaid").innerText = "₦" + sP;
-        document.getElementById("sumDebt").innerText = "₦" + sD;
-   danger();
-    }*/
-
-function renderTable() {
-    const tbody = document.getElementById("tableBody");
-    tbody.innerHTML = "";
-    let sPaid = 0, sDebt = 0;
-
-    records.forEach((r, i) => {
-        sPaid += r.paid; 
-        sDebt += r.debt;
-
-        // Calculate Percentage
-        let percentage = r.total > 0 ? Math.round((r.paid / r.total) * 100) : 0;
-        
-        // Determine bar color based on completion
-        let barColor = percentage === 100 ? "#00c853" : "#00c6ff";
-
-        tbody.innerHTML += `
-            <tr>
-                <td>${i+1}</td>
-                <td>${r.name}</td>
-                <td>${r.product}</td>
-                <td>₦${r.total.toLocaleString()}</td>
-                <td>₦${r.paid.toLocaleString()}</td>
-                <td style="color:${r.debt > 0 ? 'red' : 'green'}">₦${r.debt.toLocaleString()}</td>
-                <td>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: ${percentage}%; background: ${barColor};">
-                            <span class="progress-text">${percentage}%</span>
-                        </div>
-                    </div>
-                </td>
-                <td>${r.date}</td>
-                <td>
-                    <button style="width:auto; background:#eee; padding:5px 8px" onclick="openEdit(${i})">✏️</button>
-                    <button style="width:auto; background:#eee; color:white; padding:5px 8px" onclick="askDelete(${i})">❌</button>
-                </td>
-            </tr>`;
-    });
-
-    document.getElementById("sumPaid").innerText = "₦" + sPaid.toLocaleString();
-    document.getElementById("sumDebt").innerText = "₦" + sDebt.toLocaleString();
-    danger();
-}
-    
-function filterTable() {
-        let val = searchBox.value.toLowerCase();
-        document.querySelectorAll("#tableBody tr").forEach(tr => {
-            tr.style.display = tr.innerText.toLowerCase().includes(val) ? "" : "none";
-        });
+        document.getElementById("sumPaid").innerText = "₦" + sPaid.toLocaleString();
+        document.getElementById("sumDebt").innerText = "₦" + sDebt.toLocaleString();
         danger();
-            }
-    
-    // EDIT/DELETE POPUPS
+    }
+
     function openEdit(i) {
         editIdx = i;
-        const currentDebt = records[i].debt;
-        openModal("Edit Debt", "Adjust remaining balance.", "✏️", "#ffa500", 
-        `<input id="newD" type="number" value="${currentDebt}" style="background:#000; color:#fff; border:1px solid #333; margin-bottom:10px;"><button onclick="saveEdit()">UPDATE</button>`);
+        openModal("Edit Debt", "Adjust balance.", "✏️", "#ffa500", `<input id="newD" type="number" value="${records[i].debt}" style="background:#000; color:#fff; border:1px solid #333; margin-bottom:10px;"><button onclick="saveEdit()">UPDATE</button>`);
     }
 
     function saveEdit() {
@@ -542,47 +477,28 @@ function filterTable() {
         records[editIdx].paid = records[editIdx].total - nD;
         localStorage.setItem("akura_records", JSON.stringify(records));
         closeAllModals(); renderTable();
-        showToast("✓ Debt Updated", "orange");
-        danger();
+        showToast("Updated", "orange");
     }
 
     function askDelete(i) {
         deleteIdx = i;
-        openModal("Are you sure?", `Delete ${records[i].name}?`, "⚠️", "#ff4d4d", `<button style="background:red; color:white;" onclick="confirmDelete()">YES, DELETE</button>`);
+        openModal("Confirm Delete", `Delete record for ${records[i].name}?`, "⚠️", "#ff4d4d", `<button style="background:red; color:white;" onclick="confirmDelete()">YES, DELETE</button>`);
     }
 
     function confirmDelete() {
         records.splice(deleteIdx, 1);
         localStorage.setItem("akura_records", JSON.stringify(records));
         closeAllModals(); renderTable();
-        showToast("✓ Deleted", "red");
+        showToast("Deleted", "red");
     }
 
-
-    // PDF Generator
-    function downloadPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        doc.setFontSize(20);
-        doc.text("AKURA GENERAL ENTERPRISE", 105, 15, { align: "center" });
-        doc.setFontSize(10);
-        doc.text(`CASHBOOK REPORT - ${new Date().toLocaleDateString()}`, 105, 22, { align: "center" });
-
-        const data = records.map((r, i) => [i+1, r.name, r.product, `N${r.total}`, `N${r.paid}`, `N${r.debt}`, r.date]);
-        
-        doc.autoTable({
-            startY: 30,
-            head: [['SN', 'CUSTOMER', 'SERVICE', 'AMOUNT', 'PAID', 'DEBT', 'DATE']],
-            body: data,
-            theme: 'grid',
-            headStyles: { fillColor: [20, 198, 255], textColor: [0,0,0] }
+    function filterTable() {
+        let val = searchBox.value.toLowerCase();
+        document.querySelectorAll("#tableBody tr").forEach(tr => {
+            tr.style.display = tr.innerText.toLowerCase().includes(val) ? "" : "none";
         });
+    }
 
-        doc.save("Akura_Report.pdf");
-        showToast("✓ PDF Downloaded", "blue");
-        toggleMenu(false);
-                                            }
     function renderChart() {
         const ctx = document.getElementById('myChart').getContext('2d');
         let p = 0, d = 0;
@@ -592,78 +508,22 @@ function filterTable() {
     }
 
     function danger() {
-    let p = document.getElementById("sumPaid");
-    let d = document.getElementById("sumDebt");
+        let p = document.getElementById("sumPaid"), d = document.getElementById("sumDebt");
+        let paidVal = Number(p.textContent.replace(/[^\d.]/g, '')), debtVal = Number(d.textContent.replace(/[^\d.]/g, ''));
+        p.classList.remove("blink-green"); d.classList.remove("blink-red");
+        if (debtVal > paidVal && debtVal > 0) d.classList.add("blink-red");
+        else if (debtVal === 0 && paidVal > 0) p.classList.add("blink-green");
+    }
 
-    // Remove the Currency symbol and commas, then convert to Number
-    let paidVal = Number(p.textContent.replace(/[^\d.]/g, ''));
-    let debtVal = Number(d.textContent.replace(/[^\d.]/g, ''));
-
-    // Reset classes to ensure we start from a clean state
-    p.classList.remove("blink-green");
-    d.classList.remove("blink-red");
-
-    // 1. If Debt exists and is higher than Paid amount, trigger Red Alert
-    if (debtVal > paidVal && debtVal > 0) {
-        d.classList.add("blink-red");
-    } 
+    function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("AKURA GENERAL ENTERPRISE CASHBOOK", 105, 15, { align: "center" });
+        const data = records.map((r, i) => [i+1, r.name, r.product, r.total, r.paid, r.debt, r.date]);
+        doc.autoTable({ startY: 25, head: [['SN', 'NAME', 'SERVICE', 'TOTAL', 'PAID', 'DEBT', 'DATE']], body: data });
+        doc.save("Akura_Report.pdf");
+    }
+                   </script>
     
-    // 2. If all debt is cleared and there is income, trigger Green Success
-    else if (debtVal === 0 && paidVal > 0) {
-        p.classList.add("blink-green");
-    }
-    
-    // 3. If debt is significant (e.g., over ₦50,000), blink regardless of income
-    else if (debtVal >= 50000) {
-        d.classList.add("blink-red");
-    }
-    }
-
-// --- SAVINGS DELETE MODAL ---
-function askDeleteSaving(idx) {
-    const entry = savings[idx];
-    openModal(
-        "Confirm Delete", 
-        `Remove record for ${entry.name} (₦${Math.abs(entry.amount).toLocaleString()})?`, 
-        "🗑️", 
-        "#ff4d4d", 
-        `<button style="background:red; color:white;" onclick="confirmDeleteSaving(${idx})">YES, DELETE</button>
-         <button style="background:#444; color:white;" onclick="closeAllModals()">CANCEL</button>`
-    );
-}
-
-function confirmDeleteSaving(idx) {
-    savings.splice(idx, 1);
-    localStorage.setItem("akura_savings", JSON.stringify(savings));
-    renderSavingsTable();
-    closeAllModals();
-    showToast("Entry Removed", "red");
-}
-
-// --- STOCK DELETE MODAL ---
-function askDeleteStock(idx) {
-    const item = inventory[idx];
-    openModal(
-        "Delete Item", 
-        `Are you sure you want to remove ${item.item} from the inventory completely?`, 
-        "⚠️", 
-        "#ff4d4d", 
-        `<button style="background:red; color:white;" onclick="confirmDeleteStock(${idx})">YES, REMOVE</button>
-         <button style="background:#444; color:white;" onclick="closeAllModals()">CANCEL</button>`
-    );
-}
-
-function confirmDeleteStock(idx) {
-    inventory.splice(idx, 1);
-    localStorage.setItem("akura_stock", JSON.stringify(inventory));
-    renderStockTable();
-    closeAllModals();
-    showToast("Stock Deleted", "red");
-}
-
-
-
-
-</script>
 </body>
 </html>
