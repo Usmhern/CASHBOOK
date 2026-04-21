@@ -10,7 +10,7 @@
 
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background:#141e30; color:#fff; min-height:100vh; }
+        body { background:#141e30; color:#fff; min-height:100vh; overflow-x: hidden; }
 
         /* HEADER STYLES */
         header { 
@@ -18,16 +18,16 @@
             padding: 10px; text-align: center; z-index: 1000; border-bottom: 2px solid #00c6ff;
             display: flex; flex-direction: column; align-items: center;
         }
-        .main-logo { width: 50px; height: auto; margin-bottom: 5px; }
-        .sub-heading { color: #ffffff; font-size: 12px; font-weight: bold; letter-spacing: 3px; }
+        .main-logo { width: 60px; height: auto; margin-bottom: 5px; }
+        .sub-heading { color: #ffffff; font-size: 14px; font-weight: bold; letter-spacing: 3px; }
 
-        /* AUTH PAGES */
+        /* LOGIN PAGE */
         #loginPage { display: flex; height: 100vh; justify-content: center; align-items: center; background: #141e30; }
-        .login-box { background:#1c2e4a; padding:30px; border-radius:12px; width:320px; text-align: center; }
+        .login-box { background:#1c2e4a; padding:30px; border-radius:12px; width:320px; text-align: center; border: 1px solid #333; }
         
         /* APP STRUCTURE */
         #app { display: none; }
-        .page { display: none; padding: 20px; padding-top: 150px; max-width: 900px; margin: auto; }
+        .page { display: none; padding: 20px; padding-top: 160px; max-width: 900px; margin: auto; }
         .active-page { display: block; }
 
         /* SIDEBAR */
@@ -38,22 +38,25 @@
         .overlay { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 1400; }
 
         /* UI ELEMENTS */
-        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 5px; border: none; }
+        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 5px; border: none; outline: none; }
         input { background: #0a0f18; color: #fff; border: 1px solid #333; }
         button { background: #00c6ff; font-weight: bold; cursor: pointer; color: #000; }
-        .btn-finger { background: #4a4e69; color: white; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
         
-        /* TABLE & CARDS */
+        /* TABLE & DASHBOARD */
         .dashboard { display: flex; gap: 10px; margin-bottom: 20px; }
         .card { flex: 1; background: #fff; color: #000; padding: 15px; border-radius: 8px; text-align: center; }
-        .table-wrap { overflow-x: auto; background: #fff; border-radius: 8px; margin-top: 10px; }
+        .table-wrap { overflow-x: auto; background: #fff; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; color: #000; min-width: 600px; }
         th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 13px; }
         th { background: #243b55; color: #fff; }
 
-        /* MODALS */
-        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1c2e4a; padding: 25px; border-radius: 12px; z-index: 2000; display: none; width: 90%; max-width: 350px; text-align: center; border: 1px solid #00c6ff; }
-        #toast { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 5px; display: none; z-index: 3000; }
+        /* MODALS (Login & Actions) */
+        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1c2e4a; padding: 25px; border-radius: 12px; z-index: 2000; display: none; width: 90%; max-width: 320px; text-align: center; border-width: 2px; border-style: solid; }
+        .modal h3 { margin-bottom: 10px; }
+        .modal-icon { font-size: 40px; margin-bottom: 10px; }
+
+        /* TOAST */
+        #toast { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 5px; display: none; z-index: 3000; font-weight: bold; color: #fff; }
     </style>
 </head>
 <body>
@@ -62,22 +65,20 @@
 
 <div id="loginPage">
     <div class="login-box">
-        <img src="logo.png" style="width: 60px; margin-bottom: 10px;">
+        <img src="akura.png" class="main-logo" style="width: 80px;">
         <h2 style="margin-bottom:20px;">Admin Login</h2>
         <input id="user" placeholder="Username">
         <input id="pass" type="password" placeholder="Password">
-        <button onclick="login()">LOGIN</button>
-        <button class="btn-finger" onclick="fingerprintLogin()"><span>☝️</span> Use Fingerprint</button>
-        <p id="fpStatus" style="font-size: 10px; color: #888; margin-top: 10px;"></p>
+        <button onclick="checkLogin()">LOGIN</button>
     </div>
 </div>
 
 <div id="app">
     <div class="menu-btn" onclick="toggleMenu(true)">☰</div>
-    <div class="overlay" id="overlay" onclick="closeModals()"></div>
+    <div class="overlay" id="overlay" onclick="closeAllModals()"></div>
 
     <header>
-        <img src="logo.png" class="main-logo">
+        <img src="akura.png" class="main-logo">
         <h3 style="color:#00c6ff">AKURA GENERAL ENTERPRISE</h3>
         <p class="sub-heading">CASHBOOK</p>
     </header>
@@ -123,75 +124,66 @@
     </div>
 </div>
 
-<div id="editModal" class="modal">
-    <h3>Update Debt</h3>
-    <input id="newDebtInput" type="number">
-    <button onclick="confirmEdit()">UPDATE</button>
-    <button onclick="closeModals()" style="background:#444; color:white;">CANCEL</button>
-</div>
-
-<div id="deleteModal" class="modal" style="border-color: #ff4d4d;">
-    <div style="font-size: 40px; color: #ff4d4d;">⚠️</div>
-    <h3>Are you sure?</h3>
-    <p id="delInfo" style="font-size: 13px; color: #ccc; margin: 10px 0;"></p>
-    <button onclick="executeDelete()" style="background: #ff4d4d; color: white;">YES, DELETE</button>
-    <button onclick="closeModals()" style="background: #444; color: white;">CANCEL</button>
+<div id="alertModal" class="modal">
+    <div id="modalIcon" class="modal-icon"></div>
+    <h3 id="modalTitle"></h3>
+    <p id="modalMsg" style="color:#ccc; font-size:14px; margin-bottom:15px;"></p>
+    <div id="modalActionArea"></div>
 </div>
 
 <script>
     const ADMIN_USER = "Admin";
     const ADMIN_PASS = "1234";
     let records = JSON.parse(localStorage.getItem("akura_records")) || [];
-    let editIdx = null, deleteIdx = null, chartObj = null;
+    let deleteIdx = null, editIdx = null, chartObj = null;
 
-    // FINGERPRINT SETUP
-    async function fingerprintLogin() {
-        const status = document.getElementById("fpStatus");
-        if (!window.PublicKeyCredential) {
-            status.innerText = "Biometrics not supported on this browser.";
-            return;
-        }
-
-        // Check if a "Fingerprint Key" was previously saved
-        const hasKey = localStorage.getItem("fp_registered");
-
-        if (!hasKey) {
-            // First time: Register the fingerprint using the password
-            if (user.value === ADMIN_USER && pass.value === ADMIN_PASS) {
-                alert("Verifying your identity to enable fingerprint...");
-                localStorage.setItem("fp_registered", "true");
-                status.innerText = "Fingerprint enabled! Click it again to login.";
-            } else {
-                alert("Please login with your password first to enable fingerprint.");
-            }
-        } else {
-            // Log in using local validation (Simulated WebAuthn prompt)
-            try {
-                // In a real production app, you'd call navigator.credentials.get()
-                // For this peer-based tool, we use a verification prompt
-                loginDone();
-                toast("Logged in via Biometrics", "#00c6ff");
-            } catch (e) {
-                status.innerText = "Fingerprint failed.";
-            }
-        }
-    }
-
-    function toast(msg, bg="#00c853") {
+    // Toast Logic
+    function showToast(msg, bg) {
         const t = document.getElementById("toast");
         t.innerText = msg; t.style.background = bg; t.style.display = "block";
         setTimeout(() => t.style.display="none", 2500);
     }
 
-    if(localStorage.getItem("isLoggedIn") === "true") loginDone();
-
-    function login() {
-        if(user.value === ADMIN_USER && pass.value === ADMIN_PASS) loginDone();
-        else alert("Wrong Credentials");
+    // Custom Modal System
+    function openModal(title, msg, icon, borderColor, actionHtml) {
+        document.getElementById("modalTitle").innerText = title;
+        document.getElementById("modalMsg").innerText = msg;
+        document.getElementById("modalIcon").innerText = icon;
+        const modal = document.getElementById("alertModal");
+        modal.style.borderColor = borderColor;
+        modal.style.display = "block";
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("modalActionArea").innerHTML = actionHtml;
     }
 
-    function loginDone() {
+    function closeAllModals() {
+        document.getElementById("alertModal").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+        toggleMenu(false);
+    }
+
+    // LOGIN LOGIC
+    function checkLogin() {
+        const u = document.getElementById("user").value;
+        const p = document.getElementById("pass").value;
+
+        if (u === ADMIN_USER && p === ADMIN_PASS) {
+            openModal("✓ Successful", "Identity Verified.", "✅", "#00c853", `<button onclick="enterApp()">OK</button>`);
+        } else if (u === ADMIN_USER && p !== ADMIN_PASS) {
+            openModal("🔐 Password Incorrect", "Please check your password.", "❌", "#ff4d4d", `<button onclick="closeAllModals()">RETRY</button>`);
+        } else if (u !== ADMIN_USER && p === ADMIN_PASS) {
+            openModal("👤 Username Incorrect", "Please check your username.", "❌", "#ff4d4d", `<button onclick="closeAllModals()">RETRY</button>`);
+        } else {
+            openModal("X Incorrect Details", "Both fields are wrong.", "❌", "#ff4d4d", `<button onclick="closeAllModals()">RETRY</button>`);
+        }
+    }
+
+    function enterApp() {
         localStorage.setItem("isLoggedIn", "true");
+        location.reload();
+    }
+
+    if(localStorage.getItem("isLoggedIn") === "true") {
         document.getElementById("loginPage").style.display = "none";
         document.getElementById("app").style.display = "block";
         showPage('tablePage');
@@ -199,14 +191,10 @@
 
     function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
 
+    // NAV
     function toggleMenu(open) {
         document.getElementById("sidebar").style.left = open ? "0" : "-260px";
         document.getElementById("overlay").style.display = open ? "block" : "none";
-    }
-
-    function closeModals() {
-        document.querySelectorAll('.modal').forEach(m => m.style.display = "none");
-        toggleMenu(false);
     }
 
     function showPage(id) {
@@ -217,57 +205,58 @@
         if(id === 'chartPage') renderChart();
     }
 
+    // RECORDS
     function saveRecord() {
         const total = Number(totalAmt.value), paid = Number(paidAmt.value);
-        if(!custName.value || total <= 0) return alert("Missing data");
+        if(!custName.value || total <= 0) return alert("Fill fields correctly");
         records.push({ name: custName.value, product: prodName.value, total: total, paid: paid, debt: total - paid, date: new Date().toLocaleDateString() });
         localStorage.setItem("akura_records", JSON.stringify(records));
         custName.value = prodName.value = totalAmt.value = paidAmt.value = "";
-        toast("Saved!");
+        showToast("✓ Record Saved", "#00c853");
         showPage('tablePage');
     }
 
     function renderTable() {
         const tbody = document.getElementById("tableBody");
         tbody.innerHTML = "";
-        let sPaid = 0, sDebt = 0;
+        let sP = 0, sD = 0;
         records.forEach((r, i) => {
-            sPaid += r.paid; sDebt += r.debt;
+            sP += r.paid; sD += r.debt;
             tbody.innerHTML += `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.product}</td><td>N${r.total}</td><td>N${r.paid}</td><td style="color:red">N${r.debt}</td><td>${r.date}</td>
             <td><button style="width:auto; background:orange; padding:5px 8px" onclick="openEdit(${i})">✏️</button>
             <button style="width:auto; background:red; color:white; padding:5px 8px" onclick="askDelete(${i})">❌</button></td></tr>`;
         });
-        document.getElementById("sumPaid").innerText = "₦" + sPaid;
-        document.getElementById("sumDebt").innerText = "₦" + sDebt;
+        document.getElementById("sumPaid").innerText = "₦" + sP;
+        document.getElementById("sumDebt").innerText = "₦" + sD;
     }
 
+    // EDIT/DELETE POPUPS
     function openEdit(i) {
         editIdx = i;
-        document.getElementById("newDebtInput").value = records[i].debt;
-        document.getElementById("editModal").style.display = "block";
-        document.getElementById("overlay").style.display = "block";
+        const currentDebt = records[i].debt;
+        openModal("Edit Debt", "Adjust remaining balance.", "✏️", "#ffa500", 
+        `<input id="newD" type="number" value="${currentDebt}" style="background:#000; color:#fff; border:1px solid #333; margin-bottom:10px;"><button onclick="saveEdit()">UPDATE</button>`);
     }
 
-    function confirmEdit() {
-        const nD = Number(newDebtInput.value);
+    function saveEdit() {
+        const nD = Number(document.getElementById("newD").value);
         records[editIdx].debt = nD;
         records[editIdx].paid = records[editIdx].total - nD;
         localStorage.setItem("akura_records", JSON.stringify(records));
-        closeModals(); renderTable();
+        closeAllModals(); renderTable();
+        showToast("✓ Debt Updated", "#ffa500");
     }
 
     function askDelete(i) {
         deleteIdx = i;
-        document.getElementById("delInfo").innerText = "Delete " + records[i].name + "?";
-        document.getElementById("deleteModal").style.display = "block";
-        document.getElementById("overlay").style.display = "block";
+        openModal("Are you sure?", `Delete ${records[i].name}?`, "⚠️", "#ff4d4d", `<button style="background:red; color:white;" onclick="confirmDelete()">YES, DELETE</button>`);
     }
 
-    function executeDelete() {
+    function confirmDelete() {
         records.splice(deleteIdx, 1);
         localStorage.setItem("akura_records", JSON.stringify(records));
-        closeModals(); renderTable();
-        toast("Deleted", "#ff4d4d");
+        closeAllModals(); renderTable();
+        showToast("✓ Deleted", "#ff4d4d");
     }
 
     function downloadPDF() {
@@ -277,6 +266,7 @@
         const data = records.map((r, i) => [i+1, r.name, r.product, r.total, r.paid, r.debt, r.date]);
         doc.autoTable({ head: [['SN', 'Name', 'Product', 'Total', 'Paid', 'Debt', 'Date']], body: data });
         doc.save("Akura_Cashbook.pdf");
+        showToast("PDF Downloaded", "#2196F3");
         toggleMenu(false);
     }
 
