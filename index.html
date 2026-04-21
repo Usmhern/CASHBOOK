@@ -468,7 +468,7 @@ function executeDelete() {
     });
 }*/
     function renderChart() {
-    const ctx = document.getElementById('myChart').getContext('2d');
+    const ctx = document.getElementById('myChart').getContext('3d');
     let p = 0, d = 0;
     records.forEach(r => { p += r.paid; d += r.debt; });
 
@@ -479,7 +479,7 @@ function executeDelete() {
             labels: ['Total Paid', 'Total Debt'],
             datasets: [{ 
                 data: [p, d], 
-                backgroundColor: ['#00c853', '#e74c3c'],
+                backgroundColor: ['#0bf', 'orange'],
                 borderColor: '#000', // Black border between segments looks sleek
                 borderWidth: 2
             }]
