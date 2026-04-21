@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,65 +15,73 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
         body { background:black; color:#fff; min-height:100vh; overflow-x: hidden; }
 
-        /* Auth Page */
+        /* Auth Pages */
         #loginPage { 
             display: flex; height: 100vh; justify-content: center; align-items: center; 
             background: linear-gradient(to right, #141e30, #243b55);
         }
-        .login-box { background:#1c2e4a; padding:30px; border-radius:12px; width:320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center;}
+        .login-box { background:#1c2e4a; padding:30px; border-radius:12px; width:320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         
-        /* Layout */
+        /* App Structure */
         #app { display: none; }
         .page { display: none; padding: 20px; padding-top: 220px; max-width: 900px; margin: auto; }
         .active-page { display: block; }
         
+        /* Header & Sidebar - RESTORED TO YOUR ORIGINAL */
         header { 
             position: fixed; top: 0; width: 100%; background: #000; padding: 10px; 
             text-align: center; z-index: 1000; border-bottom: 2px solid #00c6ff;
-            display: flex; flex-direction: column; align-items: center;
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
         }
-        .main-logo { width: 140px; height: auto; margin-bottom: 5px; }
 
-        /* Sidebar */
-        .menu-btn { position: fixed; top: 20px; left: 20px; z-index: 1100; font-size: 25px; cursor: pointer; color: #00c6ff; }
+        .main-logo { width: 180px; height: 120px; margin-bottom: 5px; }
+
+        .sub-heading { color: #ffffff; font-size: 14px; font-weight: bold; letter-spacing: 2px; margin: 0; }
+        
+        .menu-btn { 
+            position: fixed; top: 60px; left: 17px; z-index: 1100; 
+            font-size: 25px; cursor: pointer; background: #00c6ff; 
+            padding: 5px 12px; border-radius: 4px; color: #000;
+        }
+
         .sidebar { 
             position: fixed; top: 0; left: -260px; width: 260px; height: 100%; 
-            background: #0a0f18; transition: 0.3s; z-index: 1500; padding-top: 60px; border-right: 1px solid #333;
+            background: #0a0f18; transition: 0.3s; z-index: 1500; padding-top: 60px; 
+            border-right: 1px solid #333;
         }
         .sidebar a { display: block; padding: 15px 25px; color: #fff; text-decoration: none; border-bottom: 1px solid #1a1a1a; cursor: pointer; }
         .sidebar a:hover { background: #00c6ff; color: #000; }
-        .sidebar a i { margin-right: 10px; color: #00c6ff; }
+        .sidebar a i { margin-right: 10px; color: #00c6ff; width: 20px; text-align: center; }
         .overlay { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 1400; }
 
-        /* UI Components */
-        .container { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        /* Forms & Inputs */
+        .container { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 10px; }
         input, select { 
             width: 100%; padding: 12px; margin: 10px 0; border: none; border-bottom: 1px solid #333; 
-            background: transparent; color: #fff; outline: none; 
+            background: transparent; color: #fff; outline:none;
         }
         option { background: #1c2e4a; color: white; }
-        button { width: 100%; padding: 12px; background: #00c6ff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        button:hover { background: #0088cc; }
+        button { width: 100%; padding: 12px; background: #00c6ff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        button:hover { opacity: 0.8; }
 
-        /* Dashboard Cards */
-        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .card { background: #fff; color: #000; padding: 15px; border-radius: 8px; text-align: center; }
-        .card b { font-size: 1.2rem; }
-
-        /* Table Style */
+        /* Table Dashboard */
+        .dashboard { display: flex; gap: 10px; margin-bottom: 20px; }
+        .card { flex: 1; background: #fff; color: #000; padding: 15px; border-radius: 8px; text-align: center; }
         .table-wrap { overflow-x: auto; background: #fff; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; color: #000; min-width: 600px; }
         th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 13px; }
         th { background: #243b55; color: #fff; }
 
-        /* Animations */
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        .blink-green { color: #00aa00 !important; animation: blink 1s infinite; font-weight: bold; }
-        .blink-red { color: #cc0000 !important; animation: blink 1s infinite; font-weight: bold; }
+        /* Actions */
+        .btn-msg { text-decoration: none; font-size: 11px; font-weight: bold; padding: 4px 8px; border-radius: 4px; background: #eee; color: #333; }
+        .btn-edit, .btn-del { background: #eee; color: #333; padding: 5px 10px; border-radius: 4px; border:none; cursor: pointer; }
 
-        #toast { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 5px; display: none; z-index: 3000; font-weight: bold; }
-        
-        .btn-msg { text-decoration: none; font-size: 10px; padding: 5px; border-radius: 3px; background: #eee; color: #333; font-weight: bold; }
+        /* Blinking Logic */
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        .blink-green { color: #00ff00 !important; animation: blink 1s linear infinite; text-shadow: 0 0 5px rgba(0,255,0,0.5); font-weight: bold; }
+        .blink-red { color: #ff0000 !important; animation: blink 1s linear infinite; text-shadow: 0 0 5px rgba(255,0,0,0.5); font-weight: bold; }
+
+        #toast { position: fixed; top: 50px; right: 40px; padding: 15px 25px; border-radius: 5px; display: none; z-index: 3000; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -82,44 +90,44 @@
 
 <div id="loginPage">
     <div class="login-box">
-        <h2 style="margin-bottom:15px;">Akura Admin</h2>
+        <h2 style="text-align:center; margin-bottom:20px;">Admin Login</h2>
         <input id="user" placeholder="Username">
         <input id="pass" type="password" placeholder="Password">
-        <button onclick="login()">ENTER SYSTEM</button>
+        <button onclick="login()">LOGIN</button>
     </div>
 </div>
 
 <div id="app">
-    <header>
-        <img src="akura.png" alt="AKURA" class="main-logo">
-        <h3 style="color:#00c6ff;">AKURA GENERAL ENTERPRISE</h3>
-        <p style="font-size:12px; letter-spacing:2px;">BUSINESS CASHBOOK</p>
-    </header>
-
     <div class="menu-btn" onclick="toggleMenu(true)">☰</div>
     <div class="overlay" id="overlay" onclick="toggleMenu(false)"></div>
 
     <div class="sidebar" id="sidebar">
         <a onclick="showPage('formPage')"><i class="fas fa-plus"></i> Add New Sale</a>
-        <a onclick="showPage('expensePage')"><i class="fas fa-minus-circle"></i> Record Expense</a>
+        <a onclick="showPage('expensePage')"><i class="fas fa-wallet"></i> Record Expense</a>
         <a onclick="showPage('tablePage')"><i class="fas fa-table"></i> View Records</a>
         <a onclick="showPage('chartPage')"><i class="fas fa-chart-line"></i> Statistics</a>
         <a onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> Download PDF</a>
-        <a onclick="exportData()"><i class="fas fa-file-export"></i> Backup Data</a>
-        <a onclick="logout()" style="color:#ff4d4d;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <a onclick="exportData()"><i class="fas fa-database"></i> Backup Data</a>
+        <a onclick="logout()" style="color: #ff4d4d;"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
+
+    <header>
+        <img src="akura.png" alt="AKURA" class="main-logo">
+        <h3 style="color:#00c6ff; margin: 0;">AKURA GENERAL ENTERPRISE</h3>
+        <p class="sub-heading">CASHBOOK</p>
+    </header>
 
     <div id="formPage" class="page">
         <div class="container">
-            <h3><i class="fas fa-cart-plus"></i> REGISTER NEW SALE</h3>
+            <h3>REGISTER SALE</h3>
             <input id="custName" placeholder="Customer Name">
             <input id="custPhone" placeholder="Phone Number (e.g. 23480...)">
             <select id="msgPref">
                 <option value="whatsapp">Prefer WhatsApp Notification</option>
                 <option value="sms">Prefer SMS Notification</option>
             </select>
-            <input id="prodName" placeholder="Service / Product">
-            <input id="totalAmt" type="number" placeholder="Total Amount (₦)">
+            <input id="prodName" placeholder="Service">
+            <input id="totalAmt" type="number" placeholder="Service Amount (₦)">
             <input id="paidAmt" type="number" placeholder="Amount Paid (₦)">
             <button onclick="saveRecord()">SAVE RECORD</button>
         </div>
@@ -127,19 +135,19 @@
 
     <div id="expensePage" class="page">
         <div class="container">
-            <h3><i class="fas fa-wallet"></i> RECORD EXPENSE</h3>
-            <input id="expDesc" placeholder="Description (e.g. Electricity, Fuel)">
+            <h3>RECORD EXPENSE</h3>
+            <input id="expDesc" placeholder="Expense Description">
             <input id="expAmt" type="number" placeholder="Amount (₦)">
-            <button onclick="saveExpense()" style="background:orange; color:#000;">SAVE EXPENSE</button>
+            <button onclick="saveExpense()" style="background:orange; color:black;">SAVE EXPENSE</button>
         </div>
     </div>
 
     <div id="tablePage" class="page">
         <div class="dashboard">
-            <div class="card">PAID<br><b id="sumPaid">₦0</b></div>
-            <div class="card">DEBT<br><b id="sumDebt">₦0</b></div>
+            <div class="card">TOTAL PAID<br><b id="sumPaid" style="color:green">₦0</b></div>
+            <div class="card">TOTAL DEBT<br><b id="sumDebt" style="color:red">₦0</b></div>
         </div>
-        <input id="searchBox" placeholder="Search customer or service..." onkeyup="filterTable()">
+        <input id="searchBox" placeholder="Search by name or product..." onkeyup="filterTable()">
         <div class="table-wrap">
             <table>
                 <thead>
@@ -166,12 +174,18 @@
     let expenses = JSON.parse(localStorage.getItem("akura_expenses")) || [];
     let chartObj = null;
 
-    // Auth
+    function toast(msg, bg="#00c853") {
+        const t = document.getElementById("toast");
+        t.innerText = msg; t.style.background = bg; t.style.display = "block";
+        setTimeout(() => t.style.display="none", 2500);
+    }
+
+    // Auth Logic
     function login() {
         if(user.value === AUTH_USER && pass.value === AUTH_PASS) {
             localStorage.setItem("isLoggedIn", "true");
             loginDone();
-        } else { toast("Invalid Credentials", "red"); }
+        } else { toast("Invalid Login", "red"); }
     }
     function loginDone() {
         document.getElementById("loginPage").style.display = "none";
@@ -194,13 +208,13 @@
         if(id === 'chartPage') renderChart();
     }
 
-    // Logic: Save Sale
+    // Save Logic
     function saveRecord() {
-        const t = Number(totalAmt.value), p = Number(paidAmt.value);
-        if(!custName.value || t <= 0) return toast("Enter valid details", "red");
+        const total = Number(totalAmt.value), paid = Number(paidAmt.value);
+        if(!custName.value || total <= 0) return toast("Invalid Entry", "red");
         records.push({
             name: custName.value, phone: custPhone.value, pref: msgPref.value,
-            product: prodName.value, total: t, paid: p, debt: t - p,
+            product: prodName.value, total: total, paid: paid, debt: total - paid,
             date: new Date().toLocaleDateString()
         });
         localStorage.setItem("akura_records", JSON.stringify(records));
@@ -209,39 +223,42 @@
         showPage('tablePage');
     }
 
-    // Logic: Save Expense
     function saveExpense() {
-        const a = Number(expAmt.value);
-        if(!expDesc.value || a <= 0) return toast("Invalid Expense", "red");
-        expenses.push({ desc: expDesc.value, amount: a, date: new Date().toLocaleDateString() });
+        const amt = Number(expAmt.value);
+        if(!expDesc.value || amt <= 0) return toast("Invalid Expense", "red");
+        expenses.push({ desc: expDesc.value, amount: amt, date: new Date().toLocaleDateString() });
         localStorage.setItem("akura_expenses", JSON.stringify(expenses));
         toast("Expense Saved!", "orange");
         expDesc.value = ""; expAmt.value = "";
     }
 
-    // Logic: Render Table
+    // Render Logic
     function renderTable() {
         const tbody = document.getElementById("tableBody");
         tbody.innerHTML = "";
-        let sP = 0, sD = 0;
+        let sPaid = 0, sDebt = 0;
+
         records.forEach((r, i) => {
-            sP += r.paid; sD += r.debt;
-            let msg = `Hello ${r.name}, this is a reminder from Akura General Enterprise for your balance of N${r.debt}.`;
+            sPaid += r.paid; sDebt += r.debt;
+            let msg = `Hello ${r.name}, reminder for balance: ₦${r.debt}. - Akura Enterprise`;
             let link = r.pref === 'whatsapp' ? `https://wa.me/${r.phone}?text=${encodeURIComponent(msg)}` : `sms:${r.phone}?body=${encodeURIComponent(msg)}`;
             
-            tbody.innerHTML += `<tr>
-                <td>${r.name}</td><td>${r.product}</td><td>₦${r.paid}</td>
-                <td style="color:${r.debt > 0 ? 'red' : 'green'}">₦${r.debt}</td>
-                <td><a href="${link}" class="btn-msg">${r.pref.toUpperCase()}</a></td>
-                <td><button style="width:auto; padding:2px 5px;" onclick="deleteRec(${i})">❌</button></td>
-            </tr>`;
+            tbody.innerHTML += `
+                <tr>
+                    <td><b>${r.name}</b></td>
+                    <td>${r.product}</td>
+                    <td>₦${r.paid}</td>
+                    <td style="color:${r.debt > 0 ? 'red' : 'green'}">₦${r.debt}</td>
+                    <td><a href="${link}" class="btn-msg">${r.pref === 'whatsapp' ? 'WA' : 'SMS'}</a></td>
+                    <td><button class="btn-del" onclick="deleteRec(${i})">❌</button></td>
+                </tr>`;
         });
-        document.getElementById("sumPaid").innerText = "₦" + sP;
-        document.getElementById("sumDebt").innerText = "₦" + sD;
+        document.getElementById("sumPaid").innerText = "₦" + sPaid;
+        document.getElementById("sumDebt").innerText = "₦" + sDebt;
         danger();
     }
 
-    function deleteRec(i) { if(confirm("Delete record?")) { records.splice(i, 1); localStorage.setItem("akura_records", JSON.stringify(records)); renderTable(); } }
+    function deleteRec(i) { if(confirm("Delete this?")) { records.splice(i, 1); localStorage.setItem("akura_records", JSON.stringify(records)); renderTable(); } }
 
     function filterTable() {
         let val = searchBox.value.toLowerCase();
@@ -250,16 +267,14 @@
         });
     }
 
-    // Logic: Blinking Background
     function danger() {
         let p = document.getElementById("sumPaid"), d = document.getElementById("sumDebt");
-        let pVal = Number(p.innerText.replace(/[^\d.]/g, '')), dVal = Number(d.innerText.replace(/[^\d.]/g, ''));
+        let pV = Number(p.innerText.replace(/[^\d.]/g, '')), dV = Number(d.innerText.replace(/[^\d.]/g, ''));
         p.classList.remove("blink-green"); d.classList.remove("blink-red");
-        if (pVal > dVal && dVal !== 0) p.classList.add("blink-green");
-        else if (pVal < dVal) d.classList.add("blink-red");
+        if (pV > dV && dV !== 0) p.classList.add("blink-green");
+        else if (pV < dV) d.classList.add("blink-red");
     }
 
-    // Logic: Chart
     function renderChart() {
         const ctx = document.getElementById('myChart').getContext('2d');
         const daily = {};
@@ -269,7 +284,7 @@
             type: 'line',
             data: {
                 labels: Object.keys(daily),
-                datasets: [{ label: 'Income Trend', data: Object.values(daily), borderColor: '#00c6ff', tension: 0.3, fill: true, backgroundColor: 'rgba(0,198,255,0.1)' }]
+                datasets: [{ label: 'Income', data: Object.values(daily), borderColor: '#00c6ff', fill: true, backgroundColor: 'rgba(0,198,255,0.1)' }]
             },
             options: { plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' } } } }
         });
@@ -277,24 +292,17 @@
 
     function exportData() {
         const blob = new Blob([JSON.stringify({records, expenses})], {type: "application/json"});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = "Akura_Backup.json"; a.click();
-    }
-
-    function toast(m, b="#00c853") {
-        const t = document.getElementById("toast"); t.innerText = m; t.style.background = b; t.style.display = "block";
-        setTimeout(() => t.style.display="none", 2500);
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "Akura_Backup.json"; a.click();
     }
 
     function downloadPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         doc.text("AKURA GENERAL ENTERPRISE - REPORT", 10, 10);
-        const data = records.map(r => [r.name, r.product, r.paid, r.debt, r.date]);
-        doc.autoTable({ head: [['Name', 'Service', 'Paid', 'Debt', 'Date']], body: data });
+        doc.autoTable({ head: [['Name', 'Service', 'Paid', 'Debt', 'Date']], body: records.map(r => [r.name, r.product, r.paid, r.debt, r.date]) });
         doc.save("Report.pdf");
     }
 </script>
 </body>
-    </html>
+                    </html>
     
