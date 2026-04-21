@@ -330,21 +330,31 @@
         showToast("Savings Updated", "blue");
     }
 
-    function renderSavingsTable() {
-        const b = document.getElementById("savingsBody"); b.innerHTML = "";
-        savings.forEach((s, i) => {
-            b.innerHTML += `
-            <tr>
-                <td>${s.date}</td>
-                <td>${s.name}</td>
-                <td>${s.type}</td>
-                <td style="color:${s.amount < 0 ? 'red':'green'}">₦${Math.abs(s.amount).toLocaleString()}</td>
-                <td>
+function renderSavingsTable() {
+    const b = document.getElementById("savingsBody"); 
+    b.innerHTML = "";
+    savings.forEach((s, i) => {
+        // Show withdrawal history if it exists
+        let historyHtml = s.withdrawals ? `<br><small style="color:gray">Last Out: ${s.withdrawDate}</small>` : "";
+        
+        b.innerHTML += `
+        <tr>
+            <td>${s.date}${historyHtml}</td>
+            <td>${s.name}</td>
+            <td>${s.type}</td>
+            <td style="color:${s.amount < 0 ? 'red':'green'}">
+                <b>₦${s.amount.toLocaleString()}</b>
+            </td>
+            <td>
+                <div style="display:flex; gap:5px;">
+                    ${s.amount > 0 ? `<button style="width:auto; padding:5px 8px; background:#ffa500; color:white;" onclick="openWithdrawPanel(${i})">💸 Withdraw</button>` : ''}
                     <button style="width:auto; padding:5px 10px; background:#ff4d4d; color:white;" onclick="deleteSaving(${i})">🗑️</button>
-                </td>
-            </tr>`;
-        });
-    }
+                </div>
+            </td>
+        </tr>`;
+    });
+}
+
 
     function deleteSaving(idx) {
         const entry = savings[idx];
@@ -523,6 +533,39 @@
         doc.autoTable({ startY: 25, head: [['SN', 'NAME', 'SERVICE', 'TOTAL', 'PAID', 'DEBT', 'DATE']], body: data });
         doc.save("Akura_Report.pdf");
     }
+        function openWithdrawPanel(idx) {
+    const entry = savings[idx];
+    openModal(
+        "PARTIAL WITHDRAWAL",
+        `Current Balance for ${entry.name}: ₦${entry.amount.toLocaleString()}`,
+        "💰",
+        "#ffa500",
+        `<input id="drawAmt" type="number" placeholder="Amount to withdraw" style="background:#000; color:#fff; border:1px solid #333">
+         <button onclick="confirmPartialWithdraw(${idx})">CONFIRM WITHDRAWAL</button>
+         <button style="background:#444; color:white" onclick="closeAllModals()">CANCEL</button>`
+    );
+}
+
+function confirmPartialWithdraw(idx) {
+    const amountToDraw = Number(document.getElementById("drawAmt").value);
+    const entry = savings[idx];
+
+    if (amountToDraw <= 0 || amountToDraw > entry.amount) {
+        return showToast("Invalid amount or insufficient balance", "red");
+    }
+
+    // Update the existing entry
+    const timestamp = new Date().toLocaleString();
+    entry.amount -= amountToDraw; // Subtract from balance
+    entry.withdrawals = true;     // Flag to show history
+    entry.withdrawDate = `₦${amountToDraw.toLocaleString()} on ${timestamp}`;
+
+    localStorage.setItem("akura_savings", JSON.stringify(savings));
+    renderSavingsTable();
+    closeAllModals();
+    showToast(`Withdrawn: ₦${amountToDraw.toLocaleString()}`, "orange");
+                                   }
+    
                    </script>
     
 </body>
