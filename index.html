@@ -196,25 +196,42 @@
 
 </div>
     <div id="savingsPage" class="page">
-    <h3>CASH SAVINGS / DEPOSITS</h3>
-    <input id="savName" placeholder="Customer Name">
-    <input id="savAmount" type="number" placeholder="Amount (₦)">
-    <select id="savType" style="width:100%; padding:10px; margin:10px 0; border-radius:5px;">
-        <option value="Deposit">Deposit (+)</option>
-        <option value="Withdrawal">Withdrawal (-)</option>
-    </select>
-    <button onclick="saveDeposit()">UPDATE SAVINGS</button>
+    <div style="background:rgba(255,255,255,0.05); padding: 25px; border-radius: 10px;">
+        <h3>CASH SAVINGS / DEPOSITS</h3>
+        <input id="savName" placeholder="Customer Name">
+        <input id="savAmount" type="number" placeholder="Amount (₦)">
+        <select id="savType">
+            <option value="Deposit">Deposit (+)</option>
+            <option value="Withdrawal">Withdrawal (-)</option>
+        </select>
+        <button onclick="saveDeposit()">UPDATE SAVINGS</button>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>DATE</th>
+                    <th>CUSTOMER</th>
+                    <th>TYPE</th>
+                    <th>AMOUNT</th>
+                    <th>ACTION</th>
+                </tr>
+            </thead>
+            <tbody id="savingsBody"></tbody>
+        </table>
+    </div>
 </div>
 
 <div id="stockPage" class="page">
-    <h3>INVENTORY & STOCK</h3>
-    <input id="stkItem" placeholder="Product Name">
-    <input id="stkQty" type="number" placeholder="Quantity">
-    <input id="stkPrice" type="number" placeholder="Price per piece">
-    <button onclick="addStock()">ADD TO STOCK</button>
-
-    <div class="table-wrap" style="margin-top:20px;">
-        <table id="stockTable">
+    <div style="background:rgba(255,255,255,0.05); padding: 25px; border-radius: 10px;">
+        <h3>INVENTORY & STOCK</h3>
+        <input id="stkItem" placeholder="Product Name">
+        <input id="stkQty" type="number" placeholder="Quantity">
+        <input id="stkPrice" type="number" placeholder="Price per piece">
+        <button onclick="addStock()">ADD TO STOCK</button>
+    </div>
+    <div class="table-wrap">
+        <table>
             <thead>
                 <tr>
                     <th>ITEM</th>
@@ -229,6 +246,132 @@
 </div>
 
 <script>
+    // ... (Keep your existing Login and Setup code) ...
+
+    let savings = JSON.parse(localStorage.getItem("akura_savings")) || [];
+    let inventory = JSON.parse(localStorage.getItem("akura_stock")) || [];
+
+    // --- ENHANCED SAVINGS LOGIC ---
+    function saveDeposit() {
+        const n = document.getElementById("savName").value;
+        const a = Number(document.getElementById("savAmount").value);
+        const t = document.getElementById("savType").value;
+        if(!n || a <= 0) return showToast("Enter details", "red");
+        
+        const final = t === "Withdrawal" ? -a : a;
+        savings.push({ name: n, amount: final, type: t, date: new Date().toLocaleDateString() });
+        localStorage.setItem("akura_savings", JSON.stringify(savings));
+        renderSavingsTable();
+        showToast("Savings Updated", "blue");
+    }
+
+    function removeSaving(idx) {
+        savings.splice(idx, 1);
+        localStorage.setItem("akura_savings", JSON.stringify(savings));
+        renderSavingsTable();
+    }
+
+    function renderSavingsTable() {
+        const b = document.getElementById("savingsBody"); b.innerHTML = "";
+        savings.forEach((s, i) => {
+            b.innerHTML += `
+            <tr>
+                <td>${s.date}</td>
+                <td>${s.name}</td>
+                <td>${s.type}</td>
+                <td style="color:${s.amount < 0 ? 'red':'green'}">₦${Math.abs(s.amount).toLocaleString()}</td>
+                <td>
+                    <button style="width:auto; padding:5px; background:#ff4d4d; color:white;" onclick="removeSaving(${i})">🗑️</button>
+                </td>
+            </tr>`;
+        });
+    }
+
+    // --- ENHANCED STOCK LOGIC ---
+    function addStock() {
+        const i = document.getElementById("stkItem").value, 
+              q = Number(document.getElementById("stkQty").value), 
+              p = Number(document.getElementById("stkPrice").value);
+        if(!i || q <= 0) return;
+        inventory.push({ item: i, qty: q, price: p });
+        localStorage.setItem("akura_stock", JSON.stringify(inventory));
+        renderStockTable();
+        showToast("Stock Added", "green");
+    }
+
+    function sellOne(idx) {
+        if(inventory[idx].qty > 0) {
+            inventory[idx].qty--;
+            localStorage.setItem("akura_stock", JSON.stringify(inventory));
+            renderStockTable();
+            
+            if(inventory[idx].qty === 0) {
+                openModal(
+                    "STOCK EXHAUSTED", 
+                    `${inventory[idx].item} is finished! Would you like to restock now?`, 
+                    "🚫", 
+                    "red", 
+                    `<button onclick="openRestockPanel(${idx})">ADD STOCK NOW</button>
+                     <button style="background:#444; color:white" onclick="closeAllModals()">LATER</button>`
+                );
+            }
+        }
+    }
+
+    function openRestockPanel(idx) {
+        const item = inventory[idx];
+        openModal(
+            "RESTOCK ITEM", 
+            `Updating: ${item.item}`, 
+            "➕", 
+            "#00c6ff", 
+            `<input id="resQty" type="number" placeholder="New Quantity to Add" style="background:#000; color:#fff; border:1px solid #333">
+             <input id="resPrice" type="number" value="${item.price}" placeholder="Update Price" style="background:#000; color:#fff; border:1px solid #333">
+             <button onclick="confirmRestock(${idx})">UPDATE STOCK</button>`
+        );
+    }
+
+    function confirmRestock(idx) {
+        const newQty = Number(document.getElementById("resQty").value);
+        const newPrice = Number(document.getElementById("resPrice").value);
+        
+        if(newQty > 0) {
+            inventory[idx].qty += newQty;
+            inventory[idx].price = newPrice;
+            localStorage.setItem("akura_stock", JSON.stringify(inventory));
+            renderStockTable();
+            closeAllModals();
+            showToast("Stock Updated!", "green");
+        }
+    }
+
+    function renderStockTable() {
+        const b = document.getElementById("stockBody"); b.innerHTML = "";
+        inventory.forEach((item, i) => {
+            b.innerHTML += `
+            <tr>
+                <td>${item.item}</td>
+                <td style="color:${item.qty === 0 ? 'red' : 'black'}"><b>${item.qty}</b></td>
+                <td>₦${item.price.toLocaleString()}</td>
+                <td>
+                    <button style="width:auto; padding:5px 10px; background:#28a745; color:white;" onclick="sellOne(${i})">SELL</button>
+                    <button style="width:auto; padding:5px 10px; background:#007bff; color:white;" onclick="openRestockPanel(${i})">➕ RESTOCK</button>
+                </td>
+            </tr>`;
+        });
+    }
+
+    // Ensure initial load works
+    window.onload = () => {
+        if(localStorage.getItem("isLoggedIn") === "true") {
+            renderTable();
+            renderSavingsTable();
+            renderStockTable();
+        }
+    }
+
+    
+
     const ADMIN_USER = "Admin";
     const ADMIN_PASS = "123456";
     let records = JSON.parse(localStorage.getItem("akura_records")) || [];
@@ -474,100 +617,62 @@ function filterTable() {
     }
 
 
-    // --- NEW DATA ARRAYS ---
-let savings = JSON.parse(localStorage.getItem("akura_savings")) || [];
-let inventory = JSON.parse(localStorage.getItem("akura_stock")) || [];
-
-// --- SAVINGS LOGIC ---
-function saveDeposit() {
-    const name = document.getElementById("savName").value;
-    const amount = Number(document.getElementById("savAmount").value);
-    const type = document.getElementById("savType").value;
-    
-    if(!name || amount <= 0) return showToast("Enter valid details", "red");
-
-    // Subtract if withdrawal, Add if deposit
-    const finalAmount = type === "Withdrawal" ? -amount : amount;
-
-    savings.push({ 
-        name: name, 
-        amount: finalAmount, 
-        type: type,
-        date: new Date().toLocaleString() 
-    });
-
-    localStorage.setItem("akura_savings", JSON.stringify(savings));
-    document.getElementById("savName").value = "";
-    document.getElementById("savAmount").value = "";
-    showToast("Savings Updated", "blue");
-    renderSavingsTable();
+function deleteSaving(idx) {
+    if(confirm("Delete this saving entry?")) {
+        savings.splice(idx, 1);
+        localStorage.setItem("akura_savings", JSON.stringify(savings));
+        renderSavingsTable();
+        showToast("Entry Deleted", "#ff4d4d");
+    }
 }
 
 function renderSavingsTable() {
-    const tbody = document.getElementById("savingsBody");
-    tbody.innerHTML = "";
+    const b = document.getElementById("savingsBody"); 
+    b.innerHTML = "";
     savings.forEach((s, i) => {
-        const color = s.amount < 0 ? "red" : "green";
-        tbody.innerHTML += `
-            <tr>
-                <td>${s.date}</td>
-                <td>${s.name}</td>
-                <td>${s.type}</td>
-                <td style="color:${color}">₦${Math.abs(s.amount).toLocaleString()}</td>
-            </tr>`;
+        b.innerHTML += `
+        <tr>
+            <td>${s.date}</td>
+            <td>${s.name}</td>
+            <td>${s.type}</td>
+            <td style="color:${s.amount < 0 ? 'red':'green'}">₦${Math.abs(s.amount).toLocaleString()}</td>
+            <td>
+                <button style="width:auto; padding:5px 10px; background:#ff4d4d; color:white; border-radius:4px;" onclick="deleteSaving(${i})">🗑️ Delete</button>
+            </td>
+        </tr>`;
     });
 }
 
-// --- INVENTORY LOGIC ---
-function addStock() {
-    const item = document.getElementById("stkItem").value;
-    const qty = Number(document.getElementById("stkQty").value);
-    const price = Number(document.getElementById("stkPrice").value);
-
-    if(!item || qty <= 0) return showToast("Fill all fields", "red");
-
-    inventory.push({ item, qty, price });
-    localStorage.setItem("akura_stock", JSON.stringify(inventory));
-    
-    // Clear inputs
-    document.getElementById("stkItem").value = "";
-    document.getElementById("stkQty").value = "";
-    document.getElementById("stkPrice").value = "";
-    
-    renderStockTable();
-    showToast("Stock Added", "green");
-}
-
-function sellOne(index) {
-    if (inventory[index].qty > 0) {
-        inventory[index].qty -= 1;
-        
-        // Notification if empty
-        if (inventory[index].qty === 0) {
-            openModal("OUT OF STOCK", `${inventory[index].item} is now empty!`, "🚫", "#ff0000", `<button onclick="closeAllModals()">OK</button>`);
-        }
-        
+    function deleteStock(idx) {
+    const itemName = inventory[idx].item;
+    if(confirm(`Are you sure you want to remove "${itemName}" from inventory?`)) {
+        inventory.splice(idx, 1);
         localStorage.setItem("akura_stock", JSON.stringify(inventory));
         renderStockTable();
-    } else {
-        showToast("Error: Item Empty", "red");
+        showToast("Item Removed", "#ff4d4d");
     }
 }
 
 function renderStockTable() {
-    const tbody = document.getElementById("stockBody");
-    tbody.innerHTML = "";
+    const b = document.getElementById("stockBody"); 
+    b.innerHTML = "";
     inventory.forEach((item, i) => {
-        tbody.innerHTML += `
-            <tr>
-                <td>${item.item}</td>
-                <td><b>${item.qty}</b></td>
-                <td>₦${item.price.toLocaleString()}</td>
-                <td><button style="width:auto; padding:5px; background:#ff4d4d;" onclick="sellOne(${i})">SELL 1</button></td>
-            </tr>`;
+        b.innerHTML += `
+        <tr>
+            <td>${item.item}</td>
+            <td style="color:${item.qty === 0 ? 'red' : 'inherit'}"><b>${item.qty}</b></td>
+            <td>₦${item.price.toLocaleString()}</td>
+            <td>
+                <div style="display: flex; gap: 5px;">
+                    <button style="width:auto; padding:5px 8px; background:#28a745; color:white;" onclick="sellOne(${i})">SELL</button>
+                    <button style="width:auto; padding:5px 8px; background:#007bff; color:white;" onclick="openRestockPanel(${i})">➕</button>
+                    <button style="width:auto; padding:5px 8px; background:#ff4d4d; color:white;" onclick="deleteStock(${i})">🗑️</button>
+                </div>
+            </td>
+        </tr>`;
     });
-            }
-                         
+}
+
 </script>
 </body>
 </html>
