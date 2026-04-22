@@ -312,7 +312,7 @@ function showPage(id) {
 }
 
   
-  function checkLogin() {
+/*  function checkLogin() {
         const u = document.getElementById("user").value;
         const p = document.getElementById("pass").value;
         if (u === ADMIN_USER && p === ADMIN_PASS) {
@@ -330,7 +330,82 @@ function showPage(id) {
 
     function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
 
+*/
 
+        // --- 1. CONFIG ---
+
+
+// --- 2. THE LOGIN CHECKER ---
+function checkLogin() {
+    const u = document.getElementById("user").value;
+    const p = document.getElementById("pass").value;
+
+    // Condition A: Success
+    if (u === ADMIN_USER && p === ADMIN_PASS) {
+        showLoginFeedback(
+            "✓ Access Granted", 
+            "Identity Verified. Preparing your dashboard...", 
+            "✅", 
+            "#00c853", 
+            `<button onclick="executeLogin()" style="background:#00c853; color:white; padding:12px; border:none; border-radius:8px; cursor:pointer; width:100%; font-weight:bold;">ENTER SYSTEM</button>`
+        );
+    } 
+    // Condition B: Wrong Password
+    else if (u === ADMIN_USER && p !== ADMIN_PASS) {
+        showLoginFeedback(
+            "🔐 Security Alert", 
+            "The password entered is incorrect.", 
+            "❌", 
+            "#ff4d4d", 
+            `<button onclick="closeAuthModal()" style="background:#444; color:white; padding:10px; border:none; border-radius:8px; cursor:pointer; width:100%;">TRY AGAIN</button>`
+        );
+    } 
+    // Condition C: Wrong Username
+    else if (u !== ADMIN_USER && p === ADMIN_PASS) {
+        showLoginFeedback(
+            "👤 Unknown User", 
+            "This username is not registered in Akura system.", 
+            "❌", 
+            "#ff4d4d", 
+            `<button onclick="closeAuthModal()" style="background:#444; color:white; padding:10px; border:none; border-radius:8px; cursor:pointer; width:100%;">TRY AGAIN</button>`
+        );
+    } 
+    // Condition D: Everything Wrong
+    else {
+        showLoginFeedback(
+            "Access Denied", 
+            "Invalid credentials. Please contact Admin.", 
+            "❌", 
+            "#ff4d4d", 
+            `<button onclick="closeAuthModal()" style="background:#444; color:white; padding:10px; border:none; border-radius:8px; cursor:pointer; width:100%;">RETRY</button>`
+        );
+    }
+}
+
+// --- 3. THE NEW FEEDBACK FUNCTION (Different Name) ---
+function showLoginFeedback(title, msg, icon, color, actionHtml) {
+    document.getElementById("authTitle").innerText = title;
+    document.getElementById("authMsg").innerText = msg;
+    document.getElementById("authIcon").innerText = icon;
+    document.getElementById("authActionArea").innerHTML = actionHtml;
+    
+    const modal = document.getElementById("authFeedbackModal");
+    modal.style.borderColor = color;
+    modal.style.display = "block";
+    document.getElementById("authOverlay").style.display = "block";
+}
+
+// --- 4. UTILITY FUNCTIONS ---
+function executeLogin() {
+    localStorage.setItem("isLoggedIn", "true");
+    location.reload(); // Refresh to enter the app
+}
+
+function closeAuthModal() {
+    document.getElementById("authFeedbackModal").style.display = "none";
+    document.getElementById("authOverlay").style.display = "none";
+}
+        
 
     // --- SAVINGS LOGIC ---
 function saveDeposit() {
@@ -818,6 +893,13 @@ function renderInventoryChart() {
     });
 }  
 </script>
+    <div id="authOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000;"></div>
+<div id="authFeedbackModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:320px; background:#1a1a1a; border:2px solid #333; border-radius:15px; padding:20px; z-index:2001; text-align:center; color:white; font-family:sans-serif;">
+    <div id="authIcon" style="font-size:40px; margin-bottom:10px;"></div>
+    <h2 id="authTitle" style="margin:0; font-size:20px;"></h2>
+    <p id="authMsg" style="color:#aaa; font-size:14px; margin:15px 0;"></p>
+    <div id="authActionArea"></div>
+</div>
     
 </body>
 </html>
