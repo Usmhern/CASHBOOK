@@ -339,7 +339,7 @@ function showPage(id) {
     }*/
 
 // 1. Updated Login Logic
-function checkLogin() {
+/*function checkLogin() {
     const u = document.getElementById("user").value;
     const p = document.getElementById("pass").value;
 
@@ -373,7 +373,51 @@ function enterApp() {
 }
         
         
-    
+    */
+
+        // --- LOGIN SYSTEM (FIXED) ---
+function checkLogin() {
+    const u = document.getElementById("user").value.trim();
+    const p = document.getElementById("pass").value.trim();
+
+    if (!u || !p) {
+        openModal("⚠️ Missing Info", "Enter username and password.", "❌", "#ff9800",
+        `<button onclick="closeAllModals()">OK</button>`);
+        return;
+    }
+
+    if (u === ADMIN_USER && p === ADMIN_PASS) {
+        // Save login immediately
+        localStorage.setItem("isLoggedIn", "true");
+
+        // Show success modal
+        openModal(
+            "✅ Login Successful",
+            "Welcome back!",
+            "✔️",
+            "#00c853",
+            `<button onclick="enterApp()">CONTINUE</button>`
+        );
+    } else {
+        openModal(
+            "❌ Login Failed",
+            "Invalid username or password.",
+            "⚠️",
+            "#ff4d4d",
+            `<button onclick="closeAllModals()">TRY AGAIN</button>`
+        );
+    }
+}
+
+// --- ENTER APP (IMPROVED) ---
+function enterApp() {
+    closeAllModals();
+
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("app").style.display = "block";
+
+    showPage('tablePage');
+}
     function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
     // --- SAVINGS LOGIC ---
 function saveDeposit() {
