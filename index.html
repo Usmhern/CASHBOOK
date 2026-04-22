@@ -182,11 +182,16 @@
     </div>
 
     <div id="chartPage" class="page">
-        <div style="background:black; padding: 20px; border-radius: 10px;">
-            <canvas id="myChart"></canvas>
-        </div>
+    <div style="background:black; padding: 20px; border-radius: 10px; margin-bottom:20px;">
+        <h3>Sales vs Debt (Records)</h3>
+        <canvas id="myChart"></canvas>
+    </div>
+    <div style="background:black; padding: 20px; border-radius: 10px;">
+        <h3>Inventory Performance (Total Units Sold)</h3>
+        <canvas id="inventoryChart"></canvas>
     </div>
 </div>
+
 
 <div id="alertModal" class="modal">
     <div id="modalIcon" class="modal-icon"></div>
@@ -294,27 +299,44 @@
         document.getElementById("overlay").style.display = open ? "block" : "none";
     }
 
-    function showPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-        document.getElementById(id).classList.add('active-page');
-        toggleMenu(false);
-        if(id === 'tablePage') renderTable();
-        if(id === 'chartPage') renderChart();
-        if(id === 'stockPage') renderStockTable();
-        if(id === 'savingsPage') renderSavingsTable();
-    }
+// Update your showPage function to trigger this
+function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+    document.getElementById(id).classList.add('active-page');
+    toggleMenu(false);
+    if(id === 'tablePage') renderTable();
+    if(id === 'chartPage') { renderChart(); renderInventoryChart(); } // Added here
+    if(id === 'stockPage') renderStockTable();
+    if(id === 'savingsPage') renderSavingsTable();
+}
 
     // --- LOGIN LOGIC ---
-    function checkLogin() {
+    /*function checkLogin() {
         const u = document.getElementById("user").value;
         const p = document.getElementById("pass").value;
         if (u === ADMIN_USER && p === ADMIN_PASS) {
             localStorage.setItem("isLoggedIn", "true");
             location.reload();
         } else {
-            showToast("Invalid Credentials", "red");
+            showToast("X Invalid Credentials", "red");
         }
+    }*/
+        // LOGIN LOGIC
+function checkLogin() {
+    const u = document.getElementById("user").value;
+    const p = document.getElementById("pass").value;
+
+    if (u === ADMIN_USER && p === ADMIN_PASS) {
+        openModal("✓ Successful", "Identity Verified.", "✅", "#00c853", `<button onclick="enterApp()">OK</button>`);
+    } else if (u === ADMIN_USER && p !== ADMIN_PASS) {
+        openModal("🔐 Password Incorrect", "Please check your password.", "❌", "#ff4d4d", `<button onclick="closeAllModals()">RETRY</button>`);
+    } else if (u !== ADMIN_USER && p === ADMIN_PASS) {
+        openModal("👤 Username Incorrect", "Please check your username.", "❌", "#ff4d4d", `<button onclick="closeAllModals()">RETRY</button>`);
+    } else {
+        openModal("Incorrect Details", "Both fields are wrong.", "❌", "#ff4d4d", `<button onclick="closeAllModals()">RETRY</button>`);
     }
+}
+        
 
     function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
 
@@ -338,7 +360,7 @@ function saveDeposit() {
     
     localStorage.setItem("akura_savings", JSON.stringify(savings));
     renderSavingsTable();
-    showToast("Savings Updated", "blue");
+    showToast("✓ Savings Updated", "blue");
 
     document.getElementById("savName").value = "";
     document.getElementById("savAmount").value = "";
@@ -390,7 +412,7 @@ function renderSavingsTable() {
         localStorage.setItem("akura_savings", JSON.stringify(savings));
         renderSavingsTable();
         closeAllModals();
-        showToast("Entry Removed", "red");
+        showToast("✓ Entry Removed", "red");
     }
 
     // --- STOCK LOGIC ---
@@ -404,7 +426,7 @@ function addStock() {
     inventory.push({ item: i, qty: q, price: p });
     localStorage.setItem("akura_stock", JSON.stringify(inventory));
     renderStockTable();
-    showToast("Stock Added", "green");
+    showToast("✓ Stock Added", "green");
 
     // --- CLEAR INPUTS HERE ---
     document.getElementById("stkItem").value = "";
@@ -413,7 +435,7 @@ function addStock() {
 }
 
 
-    function renderStockTable() {
+  /*  function renderStockTable() {
         const b = document.getElementById("stockBody"); b.innerHTML = "";
         inventory.forEach((item, i) => {
             b.innerHTML += `
@@ -430,20 +452,73 @@ function addStock() {
                 </td>
             </tr>`;
         });
+    }*/
+/*RENDER STOCK*/
+        function renderStockTable() {
+    const b = document.getElementById("stockBody"); 
+    b.innerHTML = "";
+    let totalInventoryValue = 0;
+
+    inventory.forEach((item, i) => {
+        const revenue = item.totalRevenue || 0;
+        totalInventoryValue += (item.qty * item.price);
+
+        b.innerHTML += `
+        <tr>
+            <td>${item.item}</td>
+            <td style="color:${item.qty === 0 ? 'red' : 'black'}"><b>${item.qty}</b></td>
+            <td>₦${item.price.toLocaleString()}</td>
+            <td style="color:green">₦${revenue.toLocaleString()}</td> <td>
+                <div style="display: flex; gap: 5px;">
+                    <button style="width:auto; padding:5px 8px; background:#28a745; color:white;" onclick="sellOne(${i})">SELL</button>
+                    <button style="width:auto; padding:5px 8px; background:#00c6ff; color:white;" onclick="openRestockPanel(${i})">➕</button>
+                    <button style="width:auto; padding:5px 8px; background:#ff4d4d; color:white;" onclick="askDeleteStock(${i})">X</button>
+                </div>
+            </td>
+        </tr>`;
+    });
+        }
+        
+    // --- UPDATED SELL LOGIC ---
+function sellOne(idx) {
+    const item = inventory[idx];
+    if (item.qty <= 0) {
+        return openModal("OUT OF STOCK", `${item.item} is finished!`, "🚫", "red", 
+        `<button onclick="openRestockPanel(${idx})">RESTOCK NOW</button>`);
     }
 
-    function sellOne(idx) {
-        if(inventory[idx].qty > 0) {
-            inventory[idx].qty--;
-            localStorage.setItem("akura_stock", JSON.stringify(inventory));
-            renderStockTable();
-            if(inventory[idx].qty === 0) {
-                openModal("STOCK EXHAUSTED", `${inventory[idx].item} is finished! Restock?`, "🚫", "red", 
-                `<button onclick="openRestockPanel(${idx})">RESTOCK NOW</button>
-                 <button style="background:#444; color:white" onclick="closeAllModals()">LATER</button>`);
-            }
-        }
+    openModal(
+        "SELL ITEM",
+        `Selling: ${item.item} (Available: ${item.qty})`,
+        "💰",
+        "#28a745",
+        `<input id="sellQty" type="number" placeholder="Enter quantity to sell" style="background:#000; color:#fff; border:1px solid #333">
+         <button onclick="confirmSell(${idx})">CONFIRM SALE</button>`
+    );
+}
+
+function confirmSell(idx) {
+    const qtyInput = document.getElementById("sellQty");
+    const qtyToSell = Number(qtyInput.value);
+    const item = inventory[idx];
+
+    if (qtyToSell <= 0 || qtyToSell > item.qty) {
+        return showToast("X Invalid quantity", "red");
     }
+
+    // Update Stock
+    item.qty -= qtyToSell;
+    
+    // Track total sales for statistics (Initialize if not exists)
+    item.totalSold = (item.totalSold || 0) + qtyToSell;
+    item.totalRevenue = (item.totalRevenue || 0) + (qtyToSell * item.price);
+
+    localStorage.setItem("akura_stock", JSON.stringify(inventory));
+    renderStockTable();
+    closeAllModals();
+    showToast(`✓ Sold ${qtyToSell} ${item.item}`, "green");
+}
+
 
     function openRestockPanel(idx) {
         const item = inventory[idx];
@@ -462,7 +537,7 @@ function addStock() {
             localStorage.setItem("akura_stock", JSON.stringify(inventory));
             renderStockTable();
             closeAllModals();
-            showToast("Updated", "green");
+            showToast("✓ Updated", "green");
         }
     }
 
@@ -477,7 +552,7 @@ function addStock() {
         localStorage.setItem("akura_stock", JSON.stringify(inventory));
         renderStockTable();
         closeAllModals();
-        showToast("Deleted", "red");
+        showToast("✓ Deleted", "red");
     }
 
     // --- RECORD LOGIC ---
@@ -517,7 +592,7 @@ function addStock() {
         records[editIdx].paid = records[editIdx].total - nD;
         localStorage.setItem("akura_records", JSON.stringify(records));
         closeAllModals(); renderTable();
-        showToast("Updated", "orange");
+        showToast("✓ Updated", "orange");
     }
 
     function askDelete(i) {
@@ -529,7 +604,7 @@ function addStock() {
         records.splice(deleteIdx, 1);
         localStorage.setItem("akura_records", JSON.stringify(records));
         closeAllModals(); renderTable();
-        showToast("Deleted", "red");
+        showToast("✓ Deleted", "red");
     }
 
     function filterTable() {
@@ -581,7 +656,7 @@ function confirmPartialWithdraw(idx) {
     const amt = Number(amtInput.value);
     
     if (amt <= 0 || amt > savings[idx].amount) {
-        return showToast("Invalid amount or insufficient balance", "red");
+        return showToast("X Insufficient balance", "red");
     }
 
     const timestamp = new Date().toLocaleString();
@@ -600,7 +675,7 @@ function confirmPartialWithdraw(idx) {
     amtInput.value = "";
     closeAllModals();
     renderSavingsTable();
-    showToast(`Withdrawn: ₦${amt.toLocaleString()}`, "orange");
+    showToast(`✓ Withdrawn: ₦${amt.toLocaleString()}`, "orange");
 }
     
 
@@ -644,6 +719,7 @@ function downloadSingleSavingPDF(idx) {
     });
 
     doc.save(`Statement_${s.name}.pdf`);
+    showToast("✓ Report Downloaded", "purple");
 }
 
 // --- DOWNLOAD ALL SAVINGS AS ONE MERGED STATEMENT ---
@@ -678,7 +754,7 @@ function downloadAllSavingsPDF() {
     });
 
     doc.save("Akura_Complete_Savings.pdf");
-    showToast("Master Report Generated", "green");
+    showToast("✓ Master Report Generated", "green");
              }
 
     function downloadSingleSavingPDF(idx) {
@@ -727,7 +803,30 @@ function downloadAllSavingsPDF() {
     doc.save(`Statement_${s.name}.pdf`);
 }
 
-             
+           let invChartObj = null;
+
+function renderInventoryChart() {
+    const ctx = document.getElementById('inventoryChart').getContext('2d');
+    const labels = inventory.map(item => item.item);
+    const salesData = inventory.map(item => item.totalSold || 0);
+
+    if(invChartObj) invChartObj.destroy();
+    
+    invChartObj = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Units Sold',
+                data: salesData,
+                backgroundColor: '#00c6ff'
+            }]
+        },
+        options: {
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}  
 </script>
     
 </body>
