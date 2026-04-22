@@ -205,7 +205,7 @@
             <option value="Withdrawal">Withdrawal (-)</option>
         </select>
         <button onclick="saveDeposit()">UPDATE SAVINGS</button>&nbsp; &nbsp;
-              <button onclick="downloadAllSavingsPDF()" style="background: #28a745; color: white; width: auto;">📥 Download All Statements</button>
+             <center> <button onclick="downloadAllSavingsPDF()" style="background: #28a745; color: white; width: auto;">📥 Download All Statements</button></center>
     </div>
         
     <div class="table-wrap">
@@ -346,38 +346,31 @@ function saveDeposit() {
 
 
 function renderSavingsTable() {
+
     const b = document.getElementById("savingsBody"); 
     b.innerHTML = "";
     
     savings.forEach((s, i) => {
-        let inBalance = s.originalAmount || (s.amount + (s.totalWithdrawn || 0));
-        let inBalanceHtml = `<div style="color: #00c853; font-weight: bold; margin-bottom: 4px;">In: ₦${inBalance.toLocaleString()}</div>`;
-
-        let historyHtml = "";
-        if (s.withdrawHistory && s.withdrawHistory.length > 0) {
-            historyHtml = s.withdrawHistory.map(log => 
-                `<div style="font-size: 11px; color: #ff4d4d; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2px; margin-top: 2px;">${log}</div>`
-            ).join("");
-        }
+        let original = s.originalAmount || s.amount;
+        let historyHtml = (s.withdrawHistory || []).map(log => 
+            `<div style="font-size: 11px; color: #ff4d4d; border-top: 1px solid #333; margin-top: 2px;">${log}</div>`
+        ).join("");
         
         b.innerHTML += `
         <tr>
             <td style="vertical-align: top;">
-                ${inBalanceHtml}
+                <div style="color: #00c853; font-weight: bold;">In: ₦${original.toLocaleString()}</div>
                 <span style="font-size: 10px; color: #aaa;">Date: ${s.date}</span>
                 ${historyHtml}
             </td>
             <td>${s.name}</td>
             <td>${s.type}</td>
-            <td style="color:#00c6ff">
-                <b>₦${s.amount.toLocaleString()}</b>
-                <div style="font-size: 10px; color: #888;">Rem. Balance</div>
-            </td>
+            <td style="color:#00c6ff"><b>₦${s.amount.toLocaleString()}</b></td>
             <td>
-                <div style="display:flex; gap:5px;">
-                    ${s.amount > 0 ? `<button style="width:auto; padding:5px 8px; background:#ffa500; color:white;" onclick="openWithdrawPanel(${i})">💸</button>` : ''}
-                    <button style="width:auto; padding:5px 8px; background:#17a2b8; color:white;" onclick="downloadSingleSavingPDF(${i})">📄</button>
-                    <button style="width:auto; padding:5px 8px; background:#ff4d4d; color:white;" onclick="deleteSaving(${i})">🗑️</button>
+                <div style="display:flex; gap:10px;">
+                    ${s.amount > 0 ? `<button style="width:auto; padding:5px 8px; background:#ffa500;" onclick="openWithdrawPanel(${i})">💸 Withdraw</button>` : ''}
+                    <button style="width:auto; padding:5px 8px; background:#17a2b8;" onclick="downloadSingleSavingPDF(${i})">📄 Download</button>
+                    <button style="width:auto; padding:5px 8px; background:#ff4d4d;" onclick="askDeleteSaving(${i})">🗑️ Delete</button>
                 </div>
             </td>
         </tr>`;
@@ -570,10 +563,10 @@ function addStock() {
         doc.autoTable({ startY: 25, head: [['SN', 'NAME', 'SERVICE', 'TOTAL', 'PAID', 'DEBT', 'DATE']], body: data });
         doc.save("Akura_Report.pdf");
     }
-        function openWithdrawPanel(idx) {
+function openWithdrawPanel(idx) {
     const entry = savings[idx];
     openModal(
-        "PARTIAL WITHDRAWAL",
+        "WITHDRAWAL",
         `Current Balance for ${entry.name}: ₦${entry.amount.toLocaleString()}`,
         "💰",
         "#ffa500",
@@ -583,31 +576,35 @@ function addStock() {
     );
 }
 
-        function confirmPartialWithdraw(idx) {
-    const amountInput = document.getElementById("drawAmt");
-    const amountToDraw = Number(amountInput.value);
+function confirmPartialWithdraw(idx) {
+    const amtInput = document.getElementById("drawAmt");
+    const amt = Number(amtInput.value);
     
-    if (amountToDraw <= 0 || amountToDraw > savings[idx].amount) {
-        return showToast("Insufficient balance", "red");
+    if (amt <= 0 || amt > savings[idx].amount) {
+        return showToast("Invalid amount or insufficient balance", "red");
     }
 
     const timestamp = new Date().toLocaleString();
     
-    // 1. Update balance
-    savings[idx].amount -= amountToDraw;
+    // Track original amount if not already set
+    if (!savings[idx].originalAmount) {
+        savings[idx].originalAmount = savings[idx].amount;
+    }
 
-    // 2. Add to "Out" history
+    // Update balance and history
+    savings[idx].amount -= amt;
     if (!savings[idx].withdrawHistory) savings[idx].withdrawHistory = [];
-    savings[idx].withdrawHistory.push(`Out: ₦${amountToDraw.toLocaleString()} (${timestamp})`);
+    savings[idx].withdrawHistory.push(`Out: ₦${amt.toLocaleString()} (${timestamp})`);
 
-    // 3. Save and Refresh
     localStorage.setItem("akura_savings", JSON.stringify(savings));
-    amountInput.value = "";
+    amtInput.value = "";
     closeAllModals();
     renderSavingsTable();
-    showToast(`Withdrawn: ₦${amountToDraw.toLocaleString()}`, "orange");
+    showToast(`Withdrawn: ₦${amt.toLocaleString()}`, "orange");
 }
+    
 
+    
         // --- DOWNLOAD SINGLE ROW STATEMENT ---
 function downloadSingleSavingPDF(idx) {
     const { jsPDF } = window.jspdf;
@@ -657,7 +654,7 @@ function downloadAllSavingsPDF() {
     doc.setFontSize(18);
     doc.setTextColor(0, 198, 255);
     doc.text("AKURA GENERAL ENTERPRISE", 105, 15, { align: "center" });
-    doc.text("COMPLETE SAVINGS MASTER REPORT", 105, 25, { align: "center" });
+    doc.text("COMPLETE SAVINGS  REPORT", 105, 25, { align: "center" });
 
     const tableData = [];
     savings.forEach(s => {
@@ -674,7 +671,7 @@ function downloadAllSavingsPDF() {
 
     doc.autoTable({
         startY: 35,
-        head: [['Date', 'Customer', 'Type', 'Amount', 'Final Balance']],
+        head: [['DATE', 'CUSTOMER', 'TYPE', 'AMOUNT', 'FINAL BALANCE']],
         body: tableData,
         headStyles: { fillColor: [40, 167, 69] }, // Green for Savings Master
         styles: { fontSize: 9 }
@@ -683,6 +680,53 @@ function downloadAllSavingsPDF() {
     doc.save("Akura_Complete_Savings.pdf");
     showToast("Master Report Generated", "green");
              }
+
+    function downloadSingleSavingPDF(idx) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const s = savings[idx];
+    
+    // Header
+    doc.setFontSize(18);
+    doc.setTextColor(0, 198, 255);
+    doc.text("AKURA GENERAL ENTERPRISE", 105, 15, { align: "center" });
+    
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Savings Statement: ${s.name}`, 14, 25);
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 32);
+
+    const rows = [];
+    // Start with the Initial Deposit
+    let initialAmt = s.originalAmount || s.amount;
+    rows.push([s.date, "Initial Deposit", `+N${initialAmt.toLocaleString()}`, `N${initialAmt.toLocaleString()}`]);
+    
+    // Add Withdrawal History
+    let runningBalance = initialAmt;
+    if (s.withdrawHistory) {
+        s.withdrawHistory.forEach(log => {
+            // Extract the number from the "Out: ₦1,000 (Date)" string
+            let amtStr = log.split('₦')[1].split(' ')[0].replace(/,/g, '');
+            let amt = parseFloat(amtStr);
+            runningBalance -= amt;
+            
+            // Extract date from log
+            let datePart = log.split('(')[1].replace(')', '');
+            rows.push([datePart, "Withdrawal", `-N${amt.toLocaleString()}`, `N${runningBalance.toLocaleString()}`]);
+        });
+    }
+
+    doc.autoTable({
+        startY: 40,
+        head: [['DATE', 'TRANSACTION', 'AMOUNT', 'BALANCE']],
+        body: rows,
+        headStyles: { fillColor: [0, 198, 255] },
+        styles: { fontSize: 9 }
+    });
+
+    doc.save(`Statement_${s.name}.pdf`);
+}
+
              
 </script>
     
