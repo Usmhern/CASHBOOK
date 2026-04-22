@@ -244,6 +244,7 @@
                     <th>ITEM</th>
                     <th>QUANTITY</th>
                     <th>PRICE</th>
+                    <th>SALES</th>
                     <th>ACTION</th>
                 </tr>
             </thead>
@@ -311,7 +312,7 @@ function showPage(id) {
 }
 
     // --- LOGIN LOGIC ---
-    /*function checkLogin() {
+    function checkLogin() {
         const u = document.getElementById("user").value;
         const p = document.getElementById("pass").value;
         if (u === ADMIN_USER && p === ADMIN_PASS) {
@@ -320,22 +321,9 @@ function showPage(id) {
         } else {
             showToast("X Invalid Credentials", "red");
         }
-    }*/
-        // LOGIN LOGIC
-function checkLogin() {
-    const u = document.getElementById("user").value;
-    const p = document.getElementById("pass").value;
-
-    if (u === ADMIN_USER && p === ADMIN_PASS) {
-        openModal("✓ Successful", "Identity Verified.", "✅", "#00c853", `<button onclick="enterApp()">OK</button>`);
-    } else if (u === ADMIN_USER && p !== ADMIN_PASS) {
-        openModal("🔐 Password Incorrect", "Please check your password.", "❌", "#ff4d4d", `<button onclick="closeAllModals()">RETRY</button>`);
-    } else if (u !== ADMIN_USER && p === ADMIN_PASS) {
-        openModal("👤 Username Incorrect", "Please check your username.", "❌", "#ff4d4d", `<button onclick="closeAllModals()">RETRY</button>`);
-    } else {
-        openModal("Incorrect Details", "Both fields are wrong.", "❌", "#ff4d4d", `<button onclick="closeAllModals()">RETRY</button>`);
     }
-}
+        // LOGIN LOGIC
+
         
 
     function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
@@ -470,8 +458,8 @@ function addStock() {
             <td>₦${item.price.toLocaleString()}</td>
             <td style="color:green">₦${revenue.toLocaleString()}</td> <td>
                 <div style="display: flex; gap: 5px;">
-                    <button style="width:auto; padding:5px 8px; background:#28a745; color:white;" onclick="sellOne(${i})">SELL</button>
-                    <button style="width:auto; padding:5px 8px; background:#00c6ff; color:white;" onclick="openRestockPanel(${i})">➕</button>
+                    <button style="width:auto; padding:5px 8px; background:#blue; color:white;" onclick="sellOne(${i})">SELL</button>
+                    <button style="width:auto; padding:5px 8px; background:#eee; color:white;" onclick="openRestockPanel(${i})">➕</button>
                     <button style="width:auto; padding:5px 8px; background:#ff4d4d; color:white;" onclick="askDeleteStock(${i})">X</button>
                 </div>
             </td>
@@ -635,7 +623,7 @@ function confirmSell(idx) {
         const doc = new jsPDF();
         doc.text("AKURA GENERAL ENTERPRISE CASHBOOK", 105, 15, { align: "center" });
         const data = records.map((r, i) => [i+1, r.name, r.product, r.total, r.paid, r.debt, r.date]);
-        doc.autoTable({ startY: 25, head: [['SN', 'NAME', 'SERVICE', 'TOTAL', 'PAID', 'DEBT', 'DATE']], body: data });
+        doc.autoTable({ startY: 25, head: [['SN', 'NAME', 'SERVICE', 'AMOUNT', 'PAID', 'DEBT', 'DATE']], body: data });
         doc.save("Akura_Report.pdf");
     }
 function openWithdrawPanel(idx) {
@@ -757,51 +745,7 @@ function downloadAllSavingsPDF() {
     showToast("✓ Master Report Generated", "green");
              }
 
-    function downloadSingleSavingPDF(idx) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const s = savings[idx];
     
-    // Header
-    doc.setFontSize(18);
-    doc.setTextColor(0, 198, 255);
-    doc.text("AKURA GENERAL ENTERPRISE", 105, 15, { align: "center" });
-    
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    doc.text(`Savings Statement: ${s.name}`, 14, 25);
-    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 32);
-
-    const rows = [];
-    // Start with the Initial Deposit
-    let initialAmt = s.originalAmount || s.amount;
-    rows.push([s.date, "Initial Deposit", `+N${initialAmt.toLocaleString()}`, `N${initialAmt.toLocaleString()}`]);
-    
-    // Add Withdrawal History
-    let runningBalance = initialAmt;
-    if (s.withdrawHistory) {
-        s.withdrawHistory.forEach(log => {
-            // Extract the number from the "Out: ₦1,000 (Date)" string
-            let amtStr = log.split('₦')[1].split(' ')[0].replace(/,/g, '');
-            let amt = parseFloat(amtStr);
-            runningBalance -= amt;
-            
-            // Extract date from log
-            let datePart = log.split('(')[1].replace(')', '');
-            rows.push([datePart, "Withdrawal", `-N${amt.toLocaleString()}`, `N${runningBalance.toLocaleString()}`]);
-        });
-    }
-
-    doc.autoTable({
-        startY: 40,
-        head: [['DATE', 'TRANSACTION', 'AMOUNT', 'BALANCE']],
-        body: rows,
-        headStyles: { fillColor: [0, 198, 255] },
-        styles: { fontSize: 9 }
-    });
-
-    doc.save(`Statement_${s.name}.pdf`);
-}
 
            let invChartObj = null;
 
