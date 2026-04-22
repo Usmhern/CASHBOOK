@@ -311,24 +311,38 @@ function showPage(id) {
     if(id === 'savingsPage') renderSavingsTable();
 }
 
-  /* 
+  
     function checkLogin() {
         const u = document.getElementById("user").value;
         const p = document.getElementById("pass").value;
         if (u === ADMIN_USER && p === ADMIN_PASS) {
-            localStorage.setItem("isLoggedIn", "true");
-            location.reload();
+            //localStorage.setItem("isLoggedIn", "true");
+            //location.reload();
+            openModal(
+            "✓ Successful", 
+            "Identity Verified. Welcome back!", 
+            "✅", 
+            "#00c853", 
+            `<button onclick="enterApp()">ENTER SYSTEM</button>`
+        );
         } else {
             showToast("X Invalid Credentials", "red");
+            openModal(
+            "Access Denied", 
+            "Incorrect Username and Password.", 
+            "❌", 
+            "#ff4d4d", 
+            `<button onclick="closeAllModals()">RETRY</button>`
+        );
         }
     }
         
 
         
 
-    function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }*/
+    function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
 
-        function checkLogin() {
+    /*    function checkLogin() {
     // Get values from the login page inputs
     const u = document.getElementById("user").value;
     const p = document.getElementById("pass").value;
@@ -386,7 +400,7 @@ function enterApp() {
 function logout() {
     localStorage.removeItem("isLoggedIn");
     location.reload();
-}
+}*/
     // --- SAVINGS LOGIC ---
 function saveDeposit() {
     const n = document.getElementById("savName").value;
