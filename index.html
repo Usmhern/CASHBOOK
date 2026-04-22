@@ -311,7 +311,7 @@ function showPage(id) {
     if(id === 'savingsPage') renderSavingsTable();
 }
 
-    // --- LOGIN LOGIC ---
+  /* 
     function checkLogin() {
         const u = document.getElementById("user").value;
         const p = document.getElementById("pass").value;
@@ -322,12 +322,71 @@ function showPage(id) {
             showToast("X Invalid Credentials", "red");
         }
     }
-        // LOGIN LOGIC
+        
 
         
 
-    function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
+    function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }*/
 
+        function checkLogin() {
+    // Get values from the login page inputs
+    const u = document.getElementById("user").value;
+    const p = document.getElementById("pass").value;
+
+    // Condition 1: Perfect Match
+    if (u === ADMIN_USER && p === ADMIN_PASS) {
+        openModal(
+            "✓ Successful", 
+            "Identity Verified. Welcome back!", 
+            "✅", 
+            "#00c853", 
+            `<button onclick="enterApp()">ENTER SYSTEM</button>`
+        );
+    } 
+    // Condition 2: Correct User, Wrong Password
+    else if (u === ADMIN_USER && p !== ADMIN_PASS) {
+        openModal(
+            "🔐 Password Incorrect", 
+            "The password you entered is wrong.", 
+            "❌", 
+            "#ff4d4d", 
+            `<button onclick="closeAllModals()">RETRY</button>`
+        );
+    } 
+    // Condition 3: Wrong User, Correct Password
+    else if (u !== ADMIN_USER && p === ADMIN_PASS) {
+        openModal(
+            "👤 Username Incorrect", 
+            "This username does not exist.", 
+            "❌", 
+            "#ff4d4d", 
+            `<button onclick="closeAllModals()">RETRY</button>`
+        );
+    } 
+    // Condition 4: Everything Wrong
+    else {
+        openModal(
+            "Access Denied", 
+            "Incorrect Username and Password.", 
+            "❌", 
+            "#ff4d4d", 
+            `<button onclick="closeAllModals()">RETRY</button>`
+        );
+    }
+}
+
+// Function triggered by the 'OK' button in the Success Modal
+function enterApp() {
+    localStorage.setItem("isLoggedIn", "true");
+    // Reload the page to trigger window.onload logic
+    location.reload();
+}
+
+// Function to sign out
+function logout() {
+    localStorage.removeItem("isLoggedIn");
+    location.reload();
+}
     // --- SAVINGS LOGIC ---
 function saveDeposit() {
     const n = document.getElementById("savName").value;
@@ -668,47 +727,81 @@ function confirmPartialWithdraw(idx) {
     
 
     
-        // --- DOWNLOAD SINGLE ROW STATEMENT ---
 function downloadSingleSavingPDF(idx) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const s = savings[idx];
-    
+
+    // Show initial toast to let user know it's processing
+    showToast("Preparing Statement...", "#00c6ff");
+
+    // 1. PDF Header & Branding
     doc.setFontSize(18);
-    doc.setTextColor(0, 198, 255);
+    doc.setTextColor(0, 198, 255); // Akura Blue
     doc.text("AKURA GENERAL ENTERPRISE", 105, 15, { align: "center" });
     
     doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
-    doc.text(`Savings Statement: ${s.name}`, 14, 25);
-    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 32);
+    doc.text(`CUSTOMER STATEMENT: ${s.name.toUpperCase()}`, 14, 25);
+    doc.text(`Date Generated: ${new Date().toLocaleString()}`, 14, 32);
 
+    // 2. Prepare Table Data
     const rows = [];
-    // Add the "In" transaction
-    rows.push([s.date, "Initial Deposit", `+N${(s.originalAmount || s.amount).toLocaleString()}`, `N${(s.originalAmount || s.amount).toLocaleString()}`]);
+    let initialAmt = s.originalAmount || Math.abs(s.amount);
+    let runningBalance = initialAmt;
+
+    // Add the starting Deposit
+    rows.push([
+        s.date, 
+        "Initial Deposit", 
+        `+N${initialAmt.toLocaleString()}`, 
+        `N${initialAmt.toLocaleString()}`
+    ]);
     
-    // Add each withdrawal from history
-    let currentBalance = s.originalAmount || s.amount;
-    if (s.withdrawHistory) {
+    // Add each Withdrawal from the history array
+    if (s.withdrawHistory && s.withdrawHistory.length > 0) {
         s.withdrawHistory.forEach(log => {
-            // Parsing amount from log string "Out: N1,000 (Date)"
-            let amt = parseFloat(log.split('N')[1].split(' ')[0].replace(/,/g, ''));
-            currentBalance -= amt;
-            rows.push([log.split('(')[1].replace(')', ''), "Withdrawal", `-N${amt.toLocaleString()}`, `N${currentBalance.toLocaleString()}`]);
+            // Extract numerical amount from string like "Out: ₦1,000 (Date)"
+            let amtStr = log.split('₦')[1].split(' ')[0].replace(/,/g, '');
+            let amt = parseFloat(amtStr);
+            
+            runningBalance -= amt;
+            
+            // Extract date from inside the parentheses
+            let datePart = log.includes('(') ? log.split('(')[1].replace(')', '') : "N/A";
+            
+            rows.push([
+                datePart, 
+                "Withdrawal", 
+                `-N${amt.toLocaleString()}`, 
+                `N${runningBalance.toLocaleString()}`
+            ]);
         });
     }
 
+    // 3. Generate the Table
     doc.autoTable({
         startY: 40,
-        head: [['Date', 'Transaction', 'Amount', 'Running Balance']],
+        head: [['DATE & TIME', 'DESCRIPTION', 'AMOUNT', 'BALANCE']],
         body: rows,
-        headStyles: { fillColor: [0, 198, 255] },
-        alternateRowStyles: { fillColor: [240, 248, 255] }
+        headStyles: { fillColor: [0, 198, 255], textColor: [255, 255, 255] },
+        bodyStyles: { textColor: [0, 0, 0] },
+        alternateRowStyles: { fillColor: [240, 248, 255] },
+        margin: { top: 40 }
     });
 
-    doc.save(`Statement_${s.name}.pdf`);
-    showToast("✓ Report Downloaded", "purple");
+    // 4. Final Total Summary
+    let finalY = doc.lastAutoTable.finalY + 10;
+    doc.setFont("helvetica", "bold");
+    doc.text(`Current Remaining Balance: N${s.amount.toLocaleString()}`, 14, finalY);
+
+    // 5. Save the File
+    doc.save(`Statement_${s.name.replace(/\s+/g, '_')}.pdf`);
+    
+    // Success Toast
+    showToast("Statement Downloaded!", "#28a745");
 }
+
 
 // --- DOWNLOAD ALL SAVINGS AS ONE MERGED STATEMENT ---
 function downloadAllSavingsPDF() {
