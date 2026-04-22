@@ -318,12 +318,11 @@ function showPage(id) {
         if (u === ADMIN_USER && p === ADMIN_PASS) {
             localStorage.setItem("isLoggedIn", "true");
             location.reload();
-            alert("successful");
+            showToast("✓ Logged In", "green");
         } else {
-            //showToast("X Invalid Credentials", "red");
-            alert("error");
-                    openModal("Confirm Delete", `Remove record for ${entry.name}?`, "🗑️", "#ff4d4d", 
-        
+            showToast("X Invalid Credentials", "red");
+            
+                    
         }
     }
     
