@@ -446,30 +446,29 @@ function addStock() {
         });
     }*/
 /*RENDER STOCK*/
-        function renderStockTable() {
+/* RENDER STOCK */
+function renderStockTable() {
     const b = document.getElementById("stockBody"); 
     b.innerHTML = "";
-    let totalInventoryValue = 0;
-
     inventory.forEach((item, i) => {
         const revenue = item.totalRevenue || 0;
-        totalInventoryValue += (item.qty * item.price);
-
         b.innerHTML += `
         <tr>
             <td>${item.item}</td>
             <td style="color:${item.qty === 0 ? 'red' : 'black'}"><b>${item.qty}</b></td>
             <td>₦${item.price.toLocaleString()}</td>
-            <td style="color:green">₦${revenue.toLocaleString()}</td> <td>
+            <td style="color:green">₦${revenue.toLocaleString()}</td> 
+            <td>
                 <div style="display: flex; gap: 5px;">
-                    <button style="width:auto; padding:5px 8px; background:#blue; color:white;" onclick="sellOne(${i})">SELL</button>
+                    <button style="width:auto; padding:5px 8px; background:blue; color:white;" onclick="sellOne(${i})">SELL</button>
                     <button style="width:auto; padding:5px 8px; background:#eee; color:white;" onclick="openRestockPanel(${i})">➕</button>
-                    <button style="width:auto; padding:5px 8px; background:#ff4d4d; color:white;" onclick="askDeleteStock(${i})">X</button>
+                    <button style="width:auto; padding:5px 8px; background:#ff4d4d; color:white;" onclick="deleteStock(${i})">X</button>
                 </div>
             </td>
         </tr>`;
     });
-        }
+}
+
         
     // --- UPDATED SELL LOGIC ---
 function sellOne(idx) {
@@ -532,20 +531,29 @@ function confirmSell(idx) {
             showToast("✓ Updated", "green");
         }
     }
-
-    function deleteStock(idx) {
-        openModal("Delete Item", `Remove ${inventory[idx].item}?`, "⚠️", "#ff4d4d", 
+// This opens the confirmation modal
+function deleteStock(idx) {
+    const item = inventory[idx];
+    openModal(
+        "Delete Item", 
+        `Are you sure you want to remove ${item.item}?`, 
+        "⚠️", 
+        "#ff4d4d", 
         `<button style="background:red; color:white;" onclick="confirmDeleteStock(${idx})">YES, REMOVE</button>
-         <button style="background:#444; color:white;" onclick="closeAllModals()">CANCEL</button>`);
-    }
+         <button style="background:#444; color:white;" onclick="closeAllModals()">CANCEL</button>`
+    );
+}
 
-    function confirmDeleteStock(idx) {
-        inventory.splice(idx, 1);
-        localStorage.setItem("akura_stock", JSON.stringify(inventory));
-        renderStockTable();
-        closeAllModals();
-        showToast("✓ Deleted", "red");
-    }
+// This actually removes the item from the database
+function confirmDeleteStock(idx) {
+    inventory.splice(idx, 1);
+    localStorage.setItem("akura_stock", JSON.stringify(inventory));
+    renderStockTable(); // Refresh the table
+    closeAllModals();   // Close the popup
+    showToast("✓ Item Deleted", "red");
+}
+
+
 
     // --- RECORD LOGIC ---
     function saveRecord() {
