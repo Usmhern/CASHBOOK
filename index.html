@@ -370,7 +370,7 @@ function renderSavingsTable() {
                 <div style="display:flex; gap:10px;">
                     ${s.amount > 0 ? `<button style="width:auto; padding:5px 8px; background:#ffa500;" onclick="openWithdrawPanel(${i})">💸 Withdraw</button>` : ''}
                     <button style="width:auto; padding:5px 8px; background:#17a2b8;" onclick="downloadSingleSavingPDF(${i})">📄 Download</button>
-                    <button style="width:auto; padding:5px 8px; background:#ff4d4d;" onclick="askDeleteSaving(${i})">🗑️ Delete</button>
+                    <button style="width:auto; padding:5px 8px; background:#ff4d4d;" onclick="deleteSaving(${i})">🗑️ Delete</button>
                 </div>
             </td>
         </tr>`;
