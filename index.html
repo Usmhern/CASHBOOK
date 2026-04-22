@@ -318,9 +318,9 @@ function showPage(id) {
         if (u === ADMIN_USER && p === ADMIN_PASS) {
             localStorage.setItem("isLoggedIn", "true");
             location.reload();
-            showToast("✓ Logged In", "green");
+            alert("✓ Logged In", "green");
         } else {
-            showToast("X Invalid Credentials", "red");
+            alert("X Invalid Credentials", "red");
             
                     
         }
