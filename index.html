@@ -312,12 +312,12 @@ function showPage(id) {
 }
 
   
-    function checkLogin() {
+   /* function checkLogin() {
         const u = document.getElementById("user").value;
         const p = document.getElementById("pass").value;
         if (u === ADMIN_USER && p === ADMIN_PASS) {
-            //localStorage.setItem("isLoggedIn", "true");
-            //location.reload();
+            localStorage.setItem("isLoggedIn", "true");
+            location.reload();
             openModal(
             "✓ Successful", 
             "Identity Verified. Welcome back!", 
@@ -326,7 +326,7 @@ function showPage(id) {
             `<button onclick="enterApp()">ENTER SYSTEM</button>`
         );
         } else {
-            showToast("X Invalid Credentials", "red");
+            //showToast("X Invalid Credentials", "red");
             openModal(
             "Access Denied", 
             "Incorrect Username and Password.", 
@@ -342,7 +342,7 @@ function showPage(id) {
 
     function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
 
-    /*    function checkLogin() {
+    */   function checkLogin() {
     // Get values from the login page inputs
     const u = document.getElementById("user").value;
     const p = document.getElementById("pass").value;
@@ -356,6 +356,7 @@ function showPage(id) {
             "#00c853", 
             `<button onclick="enterApp()">ENTER SYSTEM</button>`
         );
+        document.getElementById("overlay").style.display = "block";
     } 
     // Condition 2: Correct User, Wrong Password
     else if (u === ADMIN_USER && p !== ADMIN_PASS) {
@@ -366,6 +367,7 @@ function showPage(id) {
             "#ff4d4d", 
             `<button onclick="closeAllModals()">RETRY</button>`
         );
+        document.getElementById("overlay").style.display = "block";
     } 
     // Condition 3: Wrong User, Correct Password
     else if (u !== ADMIN_USER && p === ADMIN_PASS) {
@@ -376,6 +378,7 @@ function showPage(id) {
             "#ff4d4d", 
             `<button onclick="closeAllModals()">RETRY</button>`
         );
+        document.getElementById("overlay").style.display = "block";
     } 
     // Condition 4: Everything Wrong
     else {
@@ -386,6 +389,7 @@ function showPage(id) {
             "#ff4d4d", 
             `<button onclick="closeAllModals()">RETRY</button>`
         );
+        document.getElementById("overlay").style.display = "block";
     }
 }
 
