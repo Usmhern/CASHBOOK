@@ -312,7 +312,7 @@ function showPage(id) {
 }
 
 
-        function checkLogin() {
+      /*  function checkLogin() {
     const u = document.getElementById("user").value;
     const p = document.getElementById("pass").value;
 
@@ -368,31 +368,19 @@ function enterApp() {
 function logout() { 
     localStorage.removeItem("isLoggedIn"); 
     location.reload(); 
-}
+}*/
         
   
-  /*  function checkLogin() {
+  function checkLogin() {
         const u = document.getElementById("user").value;
         const p = document.getElementById("pass").value;
         if (u === ADMIN_USER && p === ADMIN_PASS) {
             localStorage.setItem("isLoggedIn", "true");
             location.reload();
-            openModal(
-            "✓ Successful", 
-            "Identity Verified. Welcome back!", 
-            "✅", 
-            "#00c853", 
-            `<button onclick="enterApp()">ENTER SYSTEM</button>`
-        );
+            alert("successful");
         } else {
             //showToast("X Invalid Credentials", "red");
-            openModal(
-            "Access Denied", 
-            "Incorrect Username and Password.", 
-            "❌", 
-            "#ff4d4d", 
-            `<button onclick="closeAllModals()">RETRY</button>`
-        );
+            alert("error);
         }
     }
         
@@ -401,69 +389,8 @@ function logout() {
 
     function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
 
-    function checkLogin() {
-    // Get values from the login page inputs
-    const u = document.getElementById("user").value;
-    const p = document.getElementById("pass").value;
 
-    // Condition 1: Perfect Match
-    if (u === ADMIN_USER && p === ADMIN_PASS) {
-        openModal(
-            "✓ Successful", 
-            "Identity Verified. Welcome back!", 
-            "✅", 
-            "#00c853", 
-            `<button onclick="enterApp()">ENTER SYSTEM</button>`
-        );
-        document.getElementById("overlay").style.display = "block";
-    } 
-    // Condition 2: Correct User, Wrong Password
-    else if (u === ADMIN_USER && p !== ADMIN_PASS) {
-        openModal(
-            "🔐 Password Incorrect", 
-            "The password you entered is wrong.", 
-            "❌", 
-            "#ff4d4d", 
-            `<button onclick="closeAllModals()">RETRY</button>`
-        );
-        document.getElementById("overlay").style.display = "block";
-    } 
-    // Condition 3: Wrong User, Correct Password
-    else if (u !== ADMIN_USER && p === ADMIN_PASS) {
-        openModal(
-            "👤 Username Incorrect", 
-            "This username does not exist.", 
-            "❌", 
-            "#ff4d4d", 
-            `<button onclick="closeAllModals()">RETRY</button>`
-        );
-        document.getElementById("overlay").style.display = "block";
-    } 
-    // Condition 4: Everything Wrong
-    else {
-        openModal(
-            "Access Denied", 
-            "Incorrect Username and Password.", 
-            "❌", 
-            "#ff4d4d", 
-            `<button onclick="closeAllModals()">RETRY</button>`
-        );
-        document.getElementById("overlay").style.display = "block";
-    }
-}
 
-// Function triggered by the 'OK' button in the Success Modal
-function enterApp() {
-    localStorage.setItem("isLoggedIn", "true");
-    // Reload the page to trigger window.onload logic
-    location.reload();
-}
-
-// Function to sign out
-function logout() {
-    localStorage.removeItem("isLoggedIn");
-    location.reload();
-}*/
     // --- SAVINGS LOGIC ---
 function saveDeposit() {
     const n = document.getElementById("savName").value;
