@@ -311,65 +311,6 @@ function showPage(id) {
     if(id === 'savingsPage') renderSavingsTable();
 }
 
-
-      /*  function checkLogin() {
-    const u = document.getElementById("user").value;
-    const p = document.getElementById("pass").value;
-
-    // 1. Success Condition
-    if (u === ADMIN_USER && p === ADMIN_PASS) {
-        // We do NOT reload here. We show the modal first.
-        openModal(
-            "✓ Successful", 
-            "Identity Verified. Welcome back!", 
-            "✅", 
-            "#00c853", 
-            `<button onclick="enterApp()">ENTER SYSTEM</button>`
-        );
-    } 
-    // 2. Correct Username, but Wrong Password
-    else if (u === ADMIN_USER && p !== ADMIN_PASS) {
-        openModal(
-            "🔐 Password Incorrect", 
-            "The password you entered is wrong.", 
-            "❌", 
-            "#ff4d4d", 
-            `<button onclick="closeAllModals()">RETRY</button>`
-        );
-    } 
-    // 3. Correct Password, but Wrong Username
-    else if (u !== ADMIN_USER && p === ADMIN_PASS) {
-        openModal(
-            "👤 Username Incorrect", 
-            "This username does not exist.", 
-            "❌", 
-            "#ff4d4d", 
-            `<button onclick="closeAllModals()">RETRY</button>`
-        );
-    } 
-    // 4. Both fields are wrong
-    else {
-        openModal(
-            "Access Denied", 
-            "Incorrect Username and Password.", 
-            "❌", 
-            "#ff4d4d", 
-            `<button onclick="closeAllModals()">RETRY</button>`
-        );
-    }
-}
-
-// This function is triggered ONLY when they click "ENTER SYSTEM" in the modal
-function enterApp() {
-    localStorage.setItem("isLoggedIn", "true");
-    location.reload(); 
-}
-
-function logout() { 
-    localStorage.removeItem("isLoggedIn"); 
-    location.reload(); 
-}*/
-        
   
   function checkLogin() {
         const u = document.getElementById("user").value;
@@ -380,7 +321,7 @@ function logout() {
             alert("successful");
         } else {
             //showToast("X Invalid Credentials", "red");
-            alert("error);
+            alert("error");
         }
     }
         
