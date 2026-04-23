@@ -723,7 +723,7 @@ function closeAllModals() {
 
     function openRestockPanel(idx) {
         const item = inventory[idx];
-        openModal("RESTOCK ITEM",`` `Updating: ${item.item}`, "♻️", "#00c6ff", `<input id="resQty" type="number" placeholder="Qty to Add" style="background:#000; color:#fff; border:1px solid #333"><button onclick="confirmRestock(${idx})">UPDATE</button>&nbsp; &nbsp;<button style="background:red; color:white;" onclick="closeAllModals()">CANCEL</button>`);
+        openModal("RESTOCK ITEM", `Updating: ${item.item}`, "♻️", "#00c6ff", `<input id="resQty" type="number" placeholder="Qty to Add" style="background:#000; color:#fff; border:1px solid #333"><button onclick="confirmRestock(${idx})">UPDATE</button>&nbsp; &nbsp;<button style="background:red; color:white;" onclick="closeAllModals()">CANCEL</button>`);
     }
 
     function confirmRestock(idx) {
