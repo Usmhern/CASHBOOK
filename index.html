@@ -717,20 +717,30 @@ function closeAllModals() {
     }
 
     function openEdit(i) {
-        editIdx = i;
-   let d = document.getElementById("sumDebt").innerText = "₦" + sDebt.toLocaleString();
-        
-        openModal("Edit Debt", `Balance: ₦${i}`, "✏️", "#ffa500", `<input id="newD" type="number" value="${records[i].debt}" style="background:#000; color:#fff; border:1px solid #333; margin-bottom:10px;"><button onclick="saveEdit()">UPDATE</button>`);
-    }
+    editIdx = i;
+    openModal2(
+        "Edit Debt", 
+        `Adjust balance for ${records[i].name}`, 
+        "✏️", 
+        "--success-border", 
+        `<input id="newD" type="number" value="${records[i].debt}" style="background:#000; color:#fff; border:1px solid #333; margin-bottom:10px;">
+         <div style="display:flex; gap:10px;">
+            <button class="modal-btn" onclick="saveEdit()">UPDATE</button>
+            <button class="modal-btn" style="background:#444; color:white;" onclick="closeAllModals2()">CANCEL</button>
+         </div>`
+    );
+}
 
-    function saveEdit() {
-        const nD = Number(document.getElementById("newD").value);
-        records[editIdx].debt = nD;
-        records[editIdx].paid = records[editIdx].total - nD;
-        localStorage.setItem("akura_records", JSON.stringify(records));
-        closeAllModals(); renderTable();
-        showToast("✓ Updated", "orange");
-    }
+function saveEdit() {
+    const nD = Number(document.getElementById("newD").value);
+    // Update the data in the records array
+    records[editIdx].debt = nD;
+    records[editIdx].paid = records[editIdx].total - nD;
+    localStorage.setItem("akura_records", JSON.stringify(records));
+    closeAllModals2(); 
+    renderTable(); // Refresh the display table
+    showToast("✓ Updated", "orange");
+}
 
     function askDelete(i) {
         deleteIdx = i;
