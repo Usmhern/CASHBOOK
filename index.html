@@ -718,7 +718,7 @@ function closeAllModals() {
 
     function openEdit(i) {
     editIdx = i;
-    openModal2(
+    openModal(
         "Edit Debt", 
         `Adjust balance for ${records[i].name}`, 
         "✏️", 
@@ -737,7 +737,7 @@ function saveEdit() {
     records[editIdx].debt = nD;
     records[editIdx].paid = records[editIdx].total - nD;
     localStorage.setItem("akura_records", JSON.stringify(records));
-    closeAllModals2(); 
+    closeAllModals(); 
     renderTable(); // Refresh the display table
     showToast("✓ Updated", "orange");
 }
@@ -827,8 +827,12 @@ function saveEdit() {
     const amt = Number(amtInput.value);
     
     if (amt <= 0 || amt > savings[idx].amount) {
-        return showToast("X Insufficient balance", "red");
-    }
+        clodeAllModals();
+           setTimeout(() => {
+              return  openModal("Insufficient Balance", `₦${amt}`, "💰","--error-border" , `<button style="background:red; color:white;" onclick="closeAllModals()">OK</button>`);
+    }300);
+        return;
+                      }
 
     const timestamp = new Date().toLocaleString();
     savings[idx].amount -= amt;
