@@ -36,6 +36,11 @@ select{
     transition: width 0.5s ease-in-out;
 }
 
+        .history-out {
+    color: #ff4d4d !important; /* Bright red */
+    font-weight: bold;
+        }
+        
 /* Percentage text inside or next to bar */
 .progress-text {
     font-size: 10px;
@@ -527,7 +532,7 @@ function closeAllModals() {
         document.getElementById("savAmount").value = "";
     }
 
-    function renderSavingsTable() {
+ /*   function renderSavingsTable() {
         const b = document.getElementById("savingsBody"); 
         b.innerHTML = "";
         savings.forEach((s, i) => {
@@ -535,7 +540,45 @@ function closeAllModals() {
             let historyHtml = (s.withdrawHistory || []).map(log => `<div style="font-size: 11px; color: #ff4d4d; border-top: 1px solid #333; margin-top: 2px;">${log}</div>`).join("");
             b.innerHTML += `<tr><td style="vertical-align: top;"><div style="color: #00c853; font-weight: bold;">In: ₦${original.toLocaleString()}</div><span style="font-size: 10px; color: #aaa;">Date: ${s.date}</span>${historyHtml}</td><td>${s.name}</td><td>${s.type}</td><td style="color:#00c6ff"><b>₦${s.amount.toLocaleString()}</b></td><td><div style="display:flex; gap:10px;">${s.amount > 0 ? `<button style="width:auto; padding:5px 8px; background:#ffa500;" onclick="openWithdrawPanel(${i})">💸 Withdraw</button>` : ''}<button style="width:auto; padding:5px 8px; background:#17a2b8;" onclick="downloadSingleSavingPDF(${i})">📄 Download</button><button style="width:auto; padding:5px 8px; background:#ff4d4d;" onclick="deleteSaving(${i})">🗑️ Delete</button></div></td></tr>`;
         });
+    }*/
+
+    function renderSavingsTable() {
+    const b = document.getElementById("savingsBody"); 
+    b.innerHTML = "";
+    
+    savings.forEach((s, i) => {
+        let original = s.originalAmount || Math.abs(s.amount);
+        
+        // This part styles the "Out" text red specifically
+        let historyHtml = (s.withdrawHistory || []).map(log => {
+            const isOut = log.includes("Out:");
+            return `<div style="font-size: 11px; border-top: 1px solid #333; margin-top: 2px;" 
+                         class="${isOut ? 'history-out' : ''}">
+                        ${log}
+                    </div>`;
+        }).join("");
+        
+        b.innerHTML += `
+        <tr>
+            <td style="vertical-align: top;">
+                <div style="color: #00c853; font-weight: bold;">In: ₦${original.toLocaleString()}</div>
+                <span style="font-size: 10px; color: #aaa;">Date: ${s.date}</span>
+                ${historyHtml}
+            </td>
+            <td>${s.name}</td>
+            <td>${s.type}</td>
+            <td style="color:#00c6ff"><b>₦${s.amount.toLocaleString()}</b></td>
+            <td>
+                <div style="display:flex; gap:10px;">
+                    ${s.amount > 0 ? `<button style="width:auto; padding:5px 8px; background:#ffa500;" onclick="openWithdrawPanel(${i})">💸 Withdraw</button>` : ''}
+                    <button style="width:auto; padding:5px 8px; background:#17a2b8;" onclick="downloadSingleSavingPDF(${i})">📄 Download</button>
+                    <button style="width:auto; padding:5px 8px; background:#ff4d4d;" onclick="deleteSaving(${i})">🗑️ Delete</button>
+                </div>
+            </td>
+        </tr>`;
+    });
     }
+    
 
     function deleteSaving(idx) {
         openModal("Confirm Delete", `Remove record?`, "🗑️", "#ff4d4d", `<button style="background:red; color:white;" onclick="confirmDeleteSaving(${idx})">YES, DELETE</button><button style="background:#444; color:white;" onclick="closeAllModals()">CANCEL</button>`);
@@ -704,16 +747,55 @@ function closeAllModals() {
         openModal("WITHDRAWAL", `Balance: ₦${entry.amount.toLocaleString()}`, "💰", "#ffa500", `<input id="drawAmt" type="number" placeholder="Amount" style="background:#000; color:#fff; border:1px solid #333"><button style="background:blue; color:#fff" onclick="confirmPartialWithdraw(${idx})">CONFIRM</button>&nbsp; &nbsp;<button  style="background:grey; color:#fff"  onclick="closeAllModals()">CANCEL</button>`);
     }
 
-    function confirmPartialWithdraw(idx) {
-        const amt = Number(document.getElementById("drawAmt").value);
-        if (amt <= 0 || amt > savings[idx].amount) return showToast("X Insufficient balance", "red");
-        savings[idx].amount -= amt;
-        if (!savings[idx].withdrawHistory) savings[idx].withdrawHistory = [];
-        savings[idx].withdrawHistory.push(`Out: ₦${amt.toLocaleString()} (${new Date().toLocaleString()})`);
-        localStorage.setItem("akura_savings", JSON.stringify(savings));
-        closeAllModals(); renderSavingsTable(); showToast("✓ Withdrawn", "orange",`₦${amt}`);
+/*function confirmPartialWithdraw(idx) {
+    const amtInput = document.getElementById("drawAmt");
+    const amt = Number(amtInput.value);
+    
+    if (amt <= 0 || amt > savings[idx].amount) {
+        return showToast("X Insufficient balance", "red");
     }
 
+    const timestamp = new Date().toLocaleString();
+    
+    // Update balance and history
+    savings[idx].amount -= amt;
+    if (!savings[idx].withdrawHistory) savings[idx].withdrawHistory = [];
+    savings[idx].withdrawHistory.push(`Out: ₦${amt.toLocaleString()} (${timestamp})`);
+
+    localStorage.setItem("akura_savings", JSON.stringify(savings));
+    
+    // The Fix: Update the message to include the amount
+    showToast(`✓ Withdrawn: ₦${amt.toLocaleString()}`, "orange"); 
+
+    amtInput.value = "";
+    closeAllModals();
+    renderSavingsTable();
+}*/
+
+    function confirmPartialWithdraw(idx) {
+    const amtInput = document.getElementById("drawAmt");
+    const amt = Number(amtInput.value);
+    
+    if (amt <= 0 || amt > savings[idx].amount) {
+        return showToast("X Insufficient balance", "red");
+    }
+
+    const timestamp = new Date().toLocaleString();
+    savings[idx].amount -= amt;
+    
+    if (!savings[idx].withdrawHistory) savings[idx].withdrawHistory = [];
+    
+    // Ensure "Out:" is used here
+    savings[idx].withdrawHistory.push(`Out: ₦${amt.toLocaleString()} (${timestamp})`);
+
+    localStorage.setItem("akura_savings", JSON.stringify(savings));
+    showToast(`✓ Withdrawn: ₦${amt.toLocaleString()}`, "orange"); 
+
+    amtInput.value = "";
+    closeAllModals();
+    renderSavingsTable();
+    }
+    
     function downloadSingleSavingPDF(idx) {
         const { jsPDF } = window.jspdf; const doc = new jsPDF(); const s = savings[idx];
         doc.text(`AKURA GENERAL ENTERPRISE CUSTOMER STATEMENT: ${s.name.toUpperCase()}`, 14, 25);
