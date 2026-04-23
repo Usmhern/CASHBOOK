@@ -36,10 +36,15 @@ select{
     transition: width 0.5s ease-in-out;
 }
 
-        .history-out {
-    color: #ff4d4d !important; /* Bright red */
+.history-out {
+    color: #ff4d4d !important;
     font-weight: bold;
-        }
+}
+.history-in {
+    color: #00c853 !important;
+    font-weight: bold;
+}
+        
         
 /* Percentage text inside or next to bar */
 .progress-text {
@@ -518,7 +523,39 @@ function closeAllModals() {
 
     function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
 
+
     function saveDeposit() {
+    const n = document.getElementById("savName").value;
+    const a = Number(document.getElementById("savAmount").value);
+    const t = document.getElementById("savType").value;
+    
+    if(!n || a <= 0) return showToast("Enter details", "red");
+    
+    const final = t === "Withdrawal" ? -a : a;
+    
+    // Determine the label based on the dropdown selection
+    const historyLabel = t === "Withdrawal" ? `Out: ₦${a.toLocaleString()}` : `In: ₦${a.toLocaleString()}`;
+
+    savings.push({ 
+        name: n, 
+        amount: final, 
+        originalAmount: Math.abs(final),
+        type: t, 
+        date: new Date().toLocaleString(),
+        // Save the specific label for this entry
+        entryLabel: historyLabel, 
+        withdrawHistory: [] 
+    });
+    
+    localStorage.setItem("akura_savings", JSON.stringify(savings));
+    renderSavingsTable();
+    showToast("✓ Savings Updated", "blue");
+    document.getElementById("savName").value = "";
+    document.getElementById("savAmount").value = "";
+}
+
+    
+    /*  function saveDeposit() {
         const n = document.getElementById("savName").value;
         const a = Number(document.getElementById("savAmount").value);
         const t = document.getElementById("savType").value;
@@ -530,7 +567,7 @@ function closeAllModals() {
         showToast("✓ Savings Updated", "blue");
         document.getElementById("savName").value = "";
         document.getElementById("savAmount").value = "";
-    }
+    }*/
 
  /*   function renderSavingsTable() {
         const b = document.getElementById("savingsBody"); 
@@ -542,28 +579,28 @@ function closeAllModals() {
         });
     }*/
 
-    function renderSavingsTable() {
+     function renderSavingsTable() {
     const b = document.getElementById("savingsBody"); 
     b.innerHTML = "";
     
     savings.forEach((s, i) => {
-        let original = s.originalAmount || Math.abs(s.amount);
-        
-        // Check if the log is a withdrawal to apply the red color
-        let historyHtml = (s.withdrawHistory || []).map(log => {
-            const isWithdrawal = log.toLowerCase().includes("out:");
-            const displayLog = isWithdrawal ? log.replace(/Out:/i, "OUT:") : log;
-            
-            return `<div style="font-size: 11px; border-top: 1px solid #333; margin-top: 2px;" 
-                         class="${isWithdrawal ? 'history-out' : ''}">
-                        ${displayLog}
-                    </div>`;
-        }).join("");
+        // Determine if this main entry is a withdrawal or deposit
+        const isMainWithdrawal = s.type === "Withdrawal";
+        const mainLabel = isMainWithdrawal ? "OUT" : "In";
+        const mainClass = isMainWithdrawal ? "history-out" : "history-in";
+        const displayAmt = s.originalAmount || Math.abs(s.amount);
+
+        // Process secondary withdrawal history (from the "Withdraw" button)
+        let historyHtml = (s.withdrawHistory || []).map(log => 
+            `<div style="font-size: 11px; border-top: 1px solid #333; margin-top: 2px;" class="history-out">
+                ${log.replace("Out:", "OUT:")}
+            </div>`
+        ).join("");
         
         b.innerHTML += `
         <tr>
             <td style="vertical-align: top;">
-                <div style="color: #00c853; font-weight: bold;">In: ₦${original.toLocaleString()}</div>
+                <div class="${mainClass}">${mainLabel}: ₦${displayAmt.toLocaleString()}</div>
                 <span style="font-size: 10px; color: #aaa;">Date: ${s.date}</span>
                 ${historyHtml}
             </td>
@@ -579,7 +616,8 @@ function closeAllModals() {
             </td>
         </tr>`;
     });
-}
+     }
+    
 
 
     function deleteSaving(idx) {
@@ -788,7 +826,9 @@ function closeAllModals() {
     if (!savings[idx].withdrawHistory) savings[idx].withdrawHistory = [];
     
     // Ensure "Out:" is used here
-    savings[idx].withdrawHistory.push(`Out: ₦${amt.toLocaleString()} (${timestamp})`);
+    // Ensure this string format matches what renderSavingsTable looks for
+savings[idx].withdrawHistory.push(`Out: ₦${amt.toLocaleString()} (${timestamp})`);
+
 
     localStorage.setItem("akura_savings", JSON.stringify(savings));
     showToast(`✓ Withdrawn: ₦${amt.toLocaleString()}`, "orange"); 
