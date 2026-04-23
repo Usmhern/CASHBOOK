@@ -65,7 +65,7 @@ select{
     }
     }
     h2, #app header h3 {
-    background: linear-gradient(90deg, #00bbff, orange, #000000, #00bbff);
+    background: linear-gradient(90deg, #00bbff, navy, #000000, #00bbff);
     background-size: 300% auto;
     -webkit-background-clip: text; /* Clips background to the text letters */
     -webkit-text-fill-color: transparent; /* Makes original text color invisible */
@@ -126,16 +126,16 @@ header::after {
     left: 0;
     width: 100%;
     height: 4px; /* Thickness of the border */
-    background: linear-gradient(90deg, #00bbff, orange, #000000, #00bbff);
+    background: linear-gradient(90deg, #00bbff, navy, #000000,navy, #00bbff);
     background-size: 300% 100%; /* Makes the gradient wide for scrolling */
     animation: moveGradient 4s linear infinite;
 }
 
         @keyframes titleGradient {
     0% { color: #00bbff; }   /* #0bf Blue */
-    33% { color: purple; }  /* Red */
+    33% { color: navy; }  /* Red */
     66% { color: #000000; }  /* Black */
-    100% { color: orange; } /* Back to Blue */
+    100% { color: navy; } /* Back to Blue */
 }
 
 /* Apply to the H2 inside the header or login box */
