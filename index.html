@@ -111,11 +111,6 @@ select{
         th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 13px; }
         th { background: #243b55; color: #fff; }
 
-        /* MODALS (Login & Actions) */
-        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1c2e4a; padding: 25px; border-radius: 12px; z-index: 2000; display: none; width: 90%; max-width: 320px; text-align: center; border-width: 2px; border-style: solid; }
-        .modal h3 { margin-bottom: 10px; }
-        .modal-icon { font-size: 40px; margin-bottom: 10px; }
-
         /* TOAST */
         #toast { position: fixed; top: 70px; right: 20px; padding: 15px 25px; border-radius: 5px; display: none; z-index: 3000; font-weight: bold; color: #fff; }
    
@@ -197,7 +192,7 @@ select{
     font-weight: 700;
     cursor: pointer;
 }
-               
+        
     </style>
 </head>
 <body>
@@ -283,8 +278,8 @@ select{
 </div>
 
 
-<div id="alertModal" class="modal">
-    <div id="modalIconAlert" class="modal-icon"></div>
+<div id="alertModal" class="modal" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1c2e4a; padding: 25px; border-radius: 12px; z-index: 2000; display: none; width: 90%; max-width: 320px; text-align: center; border: 2px solid transparent;">
+    <div id="modalIconAlert" class="modal-icon" style="font-size: 40px; margin-bottom: 10px;"></div>
     <h3 id="modalTitleAlert"></h3>
     <p id="modalMsg" style="color:#ccc; font-size:14px; margin-bottom:15px;"></p>
     <div id="modalActionArea"></div>
@@ -342,14 +337,14 @@ select{
         </table>
     </div>
 </div>
+</div>
 
-    <script>
+<script>
     // --- APP DATA ---
-
     let records = JSON.parse(localStorage.getItem("akura_records")) || [];
     let savings = JSON.parse(localStorage.getItem("akura_savings")) || [];
     let inventory = JSON.parse(localStorage.getItem("akura_stock")) || [];
-    let deleteIdx = null, editIdx = null, chartObj = null;
+    let deleteIdx = null, editIdx = null, chartObj = null, invChartObj = null;
 
     // --- INITIALIZATION ---
     window.onload = () => {
@@ -360,11 +355,9 @@ select{
         }
     };
 
-    //LOGIN--------
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "12345";
 
-    // FIXED: Corrected IDs to match the HTML in modalOverlay
     function openModal2(title, msg, icon, borderVar, btnHtml) {
         const overlay = document.getElementById("modalOverlay");
         const panel = document.getElementById("modalPanel");
@@ -402,12 +395,10 @@ select{
 
     function enterApp() {
         closeAllModals2();
-        document.getElementById("loginPage").style.display = "none";
-        document.getElementById("app").style.display = "block";
         localStorage.setItem("isLoggedIn", "true");
         location.reload();
     }
-        
+
     function showToast(msg, bg) {
         const t = document.getElementById("toast");
         t.innerText = msg; t.style.background = bg; t.style.display = "block";
@@ -445,7 +436,7 @@ select{
         if(id === 'stockPage') renderStockTable();
         if(id === 'savingsPage') renderSavingsTable();
     }
-        
+
     function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
 
     function saveDeposit() {
@@ -544,11 +535,11 @@ select{
     }
 
     function saveRecord() {
-        const total = Number(totalAmt.value), paid = Number(paidAmt.value);
-        if(!custName.value || total <= 0) return alert("Fill fields correctly");
-        records.push({ name: custName.value, product: prodName.value, total: total, paid: paid, debt: total - paid, date: new Date().toLocaleDateString() });
+        const total = Number(document.getElementById("totalAmt").value), paid = Number(document.getElementById("paidAmt").value);
+        if(!document.getElementById("custName").value || total <= 0) return alert("Fill fields correctly");
+        records.push({ name: document.getElementById("custName").value, product: document.getElementById("prodName").value, total: total, paid: paid, debt: total - paid, date: new Date().toLocaleDateString() });
         localStorage.setItem("akura_records", JSON.stringify(records));
-        custName.value = prodName.value = totalAmt.value = paidAmt.value = "";
+        document.getElementById("custName").value = document.getElementById("prodName").value = document.getElementById("totalAmt").value = document.getElementById("paidAmt").value = "";
         showToast("✓ Saved", "green");
         showPage('tablePage');
     }
@@ -594,7 +585,7 @@ select{
     }
 
     function filterTable() {
-        let val = searchBox.value.toLowerCase();
+        let val = document.getElementById("searchBox").value.toLowerCase();
         document.querySelectorAll("#tableBody tr").forEach(tr => { tr.style.display = tr.innerText.toLowerCase().includes(val) ? "" : "none"; });
     }
 
@@ -613,8 +604,6 @@ select{
         if(invChartObj) invChartObj.destroy();
         invChartObj = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Units Sold', data: salesData, backgroundColor: '#00c6ff' }] } });
     }
-
-    let invChartObj = null;
 
     function danger() {
         let p = document.getElementById("sumPaid"), d = document.getElementById("sumDebt");
@@ -668,7 +657,6 @@ select{
         doc.autoTable({ startY: 25, head: [['DATE', 'CUSTOMER', 'TYPE', 'AMOUNT', 'BALANCE']], body: tableData });
         doc.save("Complete_Savings.pdf");
     }
-
 </script>
 
 <div id="modalOverlay" class="modal-overlay">
