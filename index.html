@@ -56,14 +56,14 @@ select{
     text-align: center;
     line-height: 12px;
 }
-     /*   @keyframes moveGradient {
+       @keyframes moveGradient {
     0% {
         background-position: 0% 50%;
     }
     100% {
         background-position: 100% 50%;
     }
-    }*/
+    }
         
         /* 1. Define the animation keyframes */
 @keyframes blink {
@@ -91,52 +91,43 @@ select{
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
         body { background:black; color:#fff; min-height:100vh; overflow-x: hidden; }
 
-        /* HEADER STYLES */
-       /* header { 
-            position: fixed; top: 60; width: 100%; background: #000; 
-            padding: 10px; text-align: center; z-index: 1000; border-bottom: 2px solid #00c6ff;
-            display: flex; flex-direction: column; align-items: center;
-        }*/
-header { 
+    header { 
     position: fixed; 
-    top: 5px; 
+    top: 0; 
     width: 100%; 
-    /*background: #000; */
-    padding: 10px; 
+    background: #000; 
+    padding: 15px 10px; 
     text-align: center; 
     z-index: 1000; 
     display: flex; 
     flex-direction: column; 
     align-items: center;
-    border-bottom:none;
-    height: 4px; /* Thickness of the border */
-    background: linear-gradient(90deg, #000000, navy, #000000, #00bbff,navy);
-    background-size: 300% 100%; /* Makes the gradient wide for scrolling */
-    animation: moveGradient 3s linear infinite;
+    border-bottom: none; /* Remove any existing solid border */
 }
 
-/* The moving gradient line at the bottom */
-/*header{
+/* This creates the continuous moving border at the bottom */
+header::after {
     content: "";
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 4px; 
-    background: linear-gradient(90deg, #000000, navy, #000000, #00bbff,navy);
-    background-size: 300% 100%; 
+    height: 3px; 
+    background: linear-gradient(90deg, #00bbff, navy, #000000, #00bbff,navy, black);
+    background-size: 300% 100%;
     animation: moveGradient 3s linear infinite;
-}*/
+}
 
-        @keyframes moveGradient {
-    0% { color: #000000; }   /* #0bf Blue */
+
+        /*@keyframes moveGradient {
+    0% { color: #000000; }  
     15% { color: navy; } 
     25% { color: #00bbff; }
-    50% { color: navy; }  /* Red */
-    65% { color: #000000; }  /* Black */
-    85% { color: navy; } /* Back to Blue */
+    50% { color: navy; }  
+    65% { color: #000000; }  
+    85% { color: navy; } 
     100% { color: #00bbff; }
-}
+}*/
 
 /* Apply to the H2 inside the header or login box */
         h2 {
