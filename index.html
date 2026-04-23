@@ -821,28 +821,37 @@ function saveEdit() {
     closeAllModals();
     renderSavingsTable();
 }*/
+    function enterApp() {
+    // Hide the glass modal overlay
+    document.getElementById("modalOverlay").style.display = "none";
+    
+    // Hide the login page and show the app
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    
+    // Save session
+    localStorage.setItem("isLoggedIn", "true");
+    showPage('tablePage'); 
+}
 
-    function confirmPartialWithdraw(idx) {
+function confirmPartialWithdraw(idx) {
     const amtInput = document.getElementById("drawAmt");
     const amt = Number(amtInput.value);
     
     if (amt <= 0 || amt > savings[idx].amount) {
-        closeAllModals();
-           setTimeout(() => {
-              return  openModal("Insufficient Balance", `₦${amt}`, "💰","--error-border" , `<button style="background:red; color:white;" onclick="closeAllModals()">OK</button>`);
-    }300);
+        closeAllModals(); // Corrected typo here
+        setTimeout(() => {
+            openModal("Insufficient Balance", `Amount: ₦${amt}`, "💰", "--error-border", `<button style="background:red; color:white;" onclick="closeAllModals()">OK</button>`);
+        }, 300); // Corrected syntax here
         return;
-                      }
+    }
 
     const timestamp = new Date().toLocaleString();
     savings[idx].amount -= amt;
     
     if (!savings[idx].withdrawHistory) savings[idx].withdrawHistory = [];
     
-    // Ensure "Out:" is used here
-    // Ensure this string format matches what renderSavingsTable looks for
-savings[idx].withdrawHistory.push(`Out: ₦${amt.toLocaleString()} (${timestamp})`);
-
+    savings[idx].withdrawHistory.push(`Out: ₦${amt.toLocaleString()} (${timestamp})`);
 
     localStorage.setItem("akura_savings", JSON.stringify(savings));
     showToast(`✓ Withdrawn: ₦${amt.toLocaleString()}`, "orange"); 
@@ -850,7 +859,7 @@ savings[idx].withdrawHistory.push(`Out: ₦${amt.toLocaleString()} (${timestamp}
     amtInput.value = "";
     closeAllModals();
     renderSavingsTable();
-    }
+}
     
     function downloadSingleSavingPDF(idx) {
     const { jsPDF } = window.jspdf;
