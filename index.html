@@ -426,7 +426,7 @@ select{
             openModal("Invalid Username", "Please check your username.", "👤", "--error-border", `<button class="modal-btn" onclick="closeAllModals()">RETRY</button>`);
         } 
         else if (u ==="" && p ==="") {
-            openModal("Access Denied", "Please username and password", "⚠️", "--error-border", `<button class="modal-btn" onclick="closeAllModals()">RETRY</button>`);
+            openModal("Access Denied", "Please enter username and password", "⚠️", "--error-border", `<button class="modal-btn" onclick="closeAllModals()">RETRY</button>`);
      
         }  else {
             openModal("Access Denied", "Both fields are incorrect.", "❌", "--error-border", `<button class="modal-btn" onclick="closeAllModals()">RETRY</button>`);
@@ -637,7 +637,7 @@ function closeAllModals() {
         editIdx = i;
    let d = document.getElementById("sumDebt").innerText = "₦" + sDebt.toLocaleString();
         
-        openModal("Edit Debt", "balance:",${d}, "✏️", "#ffa500", `<input id="newD" type="number" value="${records[i].debt}" style="background:#000; color:#fff; border:1px solid #333; margin-bottom:10px;"><button onclick="saveEdit()">UPDATE</button>`);
+        openModal("Edit Debt", `Balance: ₦${entry.sDebt.toLocaleString()}`, "✏️", "#ffa500", `<input id="newD" type="number" value="${records[i].debt}" style="background:#000; color:#fff; border:1px solid #333; margin-bottom:10px;"><button onclick="saveEdit()">UPDATE</button>`);
     }
 
     function saveEdit() {
@@ -696,11 +696,12 @@ function closeAllModals() {
         const data = records.map((r, i) => [i+1, r.name, r.product, r.total, r.paid, r.debt, r.date]);
         doc.autoTable({ startY: 25, head: [['SN', 'NAME', 'SERVICE', 'AMOUNT', 'PAID', 'DEBT', 'DATE']], body: data });
         doc.save("Akura_Report.pdf");
+        showToast("✓ Downloaded",blue);
     }
 
     function openWithdrawPanel(idx) {
         const entry = savings[idx];
-        openModal("WITHDRAWAL", `Balance: ₦${entry.amount.toLocaleString()}`, "💰", "#ffa500", `<input id="drawAmt" type="number" placeholder="Amount" style="background:#000; color:#fff; border:1px solid #333"><button onclick="confirmPartialWithdraw(${idx})">CONFIRM</button>`);
+        openModal("WITHDRAWAL", `Balance: ₦${entry.amount.toLocaleString()}`, "💰", "#ffa500", `<input id="drawAmt" type="number" placeholder="Amount" style="background:#000; color:#fff; border:1px solid #333"><button style="background:blue; color:#fff" onclick="confirmPartialWithdraw(${idx})">CONFIRM</button>&nbsp; &nbsp;<button  style="background:grey; color:#fff"  onclick="closeAllModals()">CANCEL</button>`);
     }
 
     function confirmPartialWithdraw(idx) {
