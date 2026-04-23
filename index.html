@@ -637,7 +637,7 @@ function closeAllModals() {
         editIdx = i;
    let d = document.getElementById("sumDebt").innerText = "₦" + sDebt.toLocaleString();
         
-        openModal("Edit Debt", `Balance: ₦${entry.sDebt.toLocaleString()}`, "✏️", "#ffa500", `<input id="newD" type="number" value="${records[i].debt}" style="background:#000; color:#fff; border:1px solid #333; margin-bottom:10px;"><button onclick="saveEdit()">UPDATE</button>`);
+        openModal("Edit Debt", `Balance: ₦${i}`, "✏️", "#ffa500", `<input id="newD" type="number" value="${records[i].debt}" style="background:#000; color:#fff; border:1px solid #333; margin-bottom:10px;"><button onclick="saveEdit()">UPDATE</button>`);
     }
 
     function saveEdit() {
@@ -696,7 +696,7 @@ function closeAllModals() {
         const data = records.map((r, i) => [i+1, r.name, r.product, r.total, r.paid, r.debt, r.date]);
         doc.autoTable({ startY: 25, head: [['SN', 'NAME', 'SERVICE', 'AMOUNT', 'PAID', 'DEBT', 'DATE']], body: data });
         doc.save("Akura_Report.pdf");
-        showToast("✓ Downloaded",blue);
+        showToast("✓ Downloaded","blue");
     }
 
     function openWithdrawPanel(idx) {
@@ -711,7 +711,7 @@ function closeAllModals() {
         if (!savings[idx].withdrawHistory) savings[idx].withdrawHistory = [];
         savings[idx].withdrawHistory.push(`Out: ₦${amt.toLocaleString()} (${new Date().toLocaleString()})`);
         localStorage.setItem("akura_savings", JSON.stringify(savings));
-        closeAllModals(); renderSavingsTable(); showToast("✓ Withdrawn", "orange");
+        closeAllModals(); renderSavingsTable(); showToast("✓ Withdrawn", "orange",`₦${amt}`);
     }
 
     function downloadSingleSavingPDF(idx) {
@@ -722,6 +722,7 @@ function closeAllModals() {
         if (s.withdrawHistory) s.withdrawHistory.forEach(log => { rows.push([log.split('(')[1].replace(')', ''), "Withdrawal", `-${log.split('₦')[1].split(' ')[0]}`]); });
         doc.autoTable({ startY: 35, head: [['DATE', 'TYPE', 'AMOUNT']], body: rows });
         doc.save(`Statement_${s.name}.pdf`);
+        showToast("✓ Downloaded","blue");
     }
 
     function downloadAllSavingsPDF() {
@@ -733,6 +734,7 @@ function closeAllModals() {
         });
         doc.autoTable({ startY: 25, head: [['DATE', 'CUSTOMER', 'TYPE', 'AMOUNT', 'BALANCE']], body: tableData });
         doc.save("Complete_Savings.pdf");
+        showToast("✓ Downloaded","blue");
     }
 </script>
 
