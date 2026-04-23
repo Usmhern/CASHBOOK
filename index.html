@@ -429,12 +429,19 @@ select{
             openModal("Access Denied", "Both fields are incorrect.", "❌", "--error-border", `<button class="modal-btn" onclick="closeAllModals()">RETRY</button>`);
         }
     }
+function enterApp() {
+    // 1. Hide the glass modal overlay
+    document.getElementById("modalOverlay").style.display = "none";
+    
+    // 2. Hide the login page and show the app
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    
+    // 3. Save session and refresh/redirect
+    localStorage.setItem("isLoggedIn", "true");
+    showPage('tablePage'); // Direct them to the dashboard immediately
+}
 
-    function enterApp() {
-        closeAllModals();
-        localStorage.setItem("isLoggedIn", "true");
-        location.reload();
-    }
 
     function showToast(msg, bg) {
         const t = document.getElementById("toast");
