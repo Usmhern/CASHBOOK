@@ -128,7 +128,7 @@ header::after {
     height: 4px; /* Thickness of the border */
     background: linear-gradient(90deg, #000000, navy, #000000, #00bbff,navy);
     background-size: 300% 100%; /* Makes the gradient wide for scrolling */
-    animation: moveGradient 4s linear infinite;
+    animation: moveGradient 3s linear infinite;
 }
 
         @keyframes titleGradient {
@@ -142,8 +142,8 @@ header::after {
 }
 
 /* Apply to the H2 inside the header or login box */
-#app header{
-    animation: titleGradient 5s infinite ease-in-out;
+header{
+    animation: titleGradient 3s infinite ease-in-out;
 }
         h2 {
     font-weight: bold;
@@ -327,7 +327,7 @@ header::after {
         <img src="akura.png" class="main-logo">
         <h2 style="color:#00c6ff">AKURA GENERAL ENTERPRISE</h2>
         <p class="sub-heading">INVENTORY MANAGEMENT SYSTEM</p>
-    </header><br>
+    </header>
 
     <div class="sidebar" id="sidebar">
         <a onclick="showPage('formPage')">➕ Add New Record</a>
