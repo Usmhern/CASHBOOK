@@ -9,13 +9,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
     <style>
-        /* --- ORIGINAL THEME & ANIMATIONS --- */
+        /* --- THEME & ANIMATIONS --- */
         :root {
             --accent: #00c6ff;
             --glass: rgba(255, 255, 255, 0.05);
             --success-border: #00c853;
             --error-border: #ff4d4d;
-            --warning-border: #ff9800;
+            --warning-border: #ffa500;
         }
 
         @keyframes blink { 50% { opacity: 0.3; } }
@@ -25,26 +25,21 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
         body { background:black; color:#fff; min-height:100vh; overflow-x: hidden; }
 
-        /* --- HEADER (BIG LOGO, NO BORDER) --- */
         header { 
             position: fixed; top: 0; width: 100%; background: #000; 
             padding: 20px 10px; text-align: center; z-index: 1000;
             display: flex; flex-direction: column; align-items: center;
         }
-        .main-logo { width: 180px; height: auto; margin-bottom: 10px; }
+        .main-logo { width: 180px; height: auto; margin-bottom: 5px; }
         .sub-heading { color: #ffffff; font-size: 14px; font-weight: bold; letter-spacing: 3px; }
 
-        /* --- LOGIN PAGE --- */
         #loginPage { display: flex; height: 100vh; justify-content: center; align-items: center; background: #141e30; position: fixed; width: 100%; z-index: 5000; }
         .login-box { background:#1c2e4a; padding:40px; border-radius:12px; width:350px; text-align: center; border: 1px solid #333; }
-        .login-logo { width: 150px; height: auto; margin-bottom: 20px; }
 
-        /* --- APP STRUCTURE --- */
         #app { display: none; }
-        .page { display: none; padding: 20px; padding-top: 260px; max-width: 1000px; margin: auto; }
+        .page { display: none; padding: 20px; padding-top: 240px; max-width: 1000px; margin: auto; }
         .active-page { display: block; }
 
-        /* --- UI ELEMENTS --- */
         input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 5px; outline: none; }
         input, select { background: transparent; color: #fff; border: none; border-bottom: 1px solid #333; }
         button { background: var(--accent); font-weight: bold; cursor: pointer; color: #000; border: none; }
@@ -53,21 +48,19 @@
         .progress-bar { height: 100%; transition: width 0.5s; }
         .progress-text { font-size: 10px; color: #000; font-weight: bold; position: absolute; width: 100%; text-align: center; line-height: 12px; }
 
-        /* --- TABLES --- */
         .table-wrap { overflow-x: auto; background: #fff; border-radius: 8px; margin-top: 10px; }
         table { width: 100%; border-collapse: collapse; color: #000; min-width: 800px; }
         th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 13px; }
         th { background: #243b55; color: #fff; }
 
-        /* --- SQUARE TRANSPARENT MODALS --- */
+        /* SQUARE TRANSPARENT MODALS */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: none; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(8px); }
-        .modal-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); width: 350px; height: 350px; border-radius: 30px; border: 4px solid transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
+        .modal-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); width: 350px; min-height: 350px; border-radius: 30px; border: 4px solid transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
         .modal-icon { font-size: 60px; margin-bottom: 10px; }
-        .modal-btn { background: white; color: black; border: none; padding: 10px 30px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 20px; }
+        .modal-btn { background: white; color: black; border: none; padding: 10px 30px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 15px; }
         
         #toast { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 5px; display: none; z-index: 11000; font-weight: bold; color: #fff; }
 
-        /* --- SIDEBAR --- */
         .menu-btn { position: fixed; top: 20px; left: 15px; z-index: 1100; font-size: 24px; cursor: pointer; background: var(--accent); padding: 5px 12px; border-radius: 4px; color: #000; }
         .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: #0a0f18; transition: 0.3s; z-index: 1500; padding-top: 80px; }
         .sidebar a { display: block; padding: 15px 25px; color: #fff; text-decoration: none; border-bottom: 1px solid #1a1a1a; cursor: pointer; }
@@ -80,7 +73,7 @@
 
 <div id="loginPage">
     <div class="login-box">
-        <img src="akura.png" class="login-logo">
+        <img src="akura.png" class="main-logo" style="width: 100px;">
         <h2 style="margin-bottom:20px;">Admin Login</h2>
         <input id="user" placeholder="Username">
         <input id="pass" type="password" placeholder="Password">
@@ -178,7 +171,7 @@
     <div id="modalPanel" class="modal-panel">
         <div id="modalIcon" class="modal-icon"></div>
         <h2 id="modalTitle"></h2>
-        <p id="modalMessage"></p>
+        <p id="modalMessage" style="white-space: pre-line;"></p>
         <div id="modalAction"></div>
     </div>
 </div>
@@ -198,14 +191,11 @@
         }
     };
 
-    // --- EXHAUSTIVE LOGIN LOGIC ---
+    // --- LOGIN LOGIC ---
     function checkLogin() {
         const u = document.getElementById("user").value.trim();
         const p = document.getElementById("pass").value.trim();
-
-        if (u === "" || p === "") {
-            openModal("⚠️ Warning", "Fields cannot be empty.", "⚠️", "--warning-border", `<button class="modal-btn" onclick="closeModal()">OK</button>`);
-        } else if (u === ADMIN_USER && p === ADMIN_PASS) {
+        if (u === ADMIN_USER && p === ADMIN_PASS) {
             openModal("✓ Successful", "Identity Verified.", "✅", "--success-border", `<button class="modal-btn" onclick="enterApp()">PROCEED</button>`);
         } else if (u === ADMIN_USER && p !== ADMIN_PASS) {
             openModal("Invalid Password", "Incorrect password entered.", "🔐", "--error-border", `<button class="modal-btn" onclick="closeModal()">RETRY</button>`);
@@ -219,33 +209,7 @@
     function enterApp() { localStorage.setItem("isLoggedIn", "true"); location.reload(); }
     function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
 
-    // --- IMPROVED WITHDRAWAL MODAL ---
-    function openWithdrawPanel(idx) {
-        const entry = savings[idx];
-        openModal(
-            "WITHDRAWAL",
-            `Customer: ${entry.name}\nBalance: ₦${entry.amount.toLocaleString()}`,
-            "💸",
-            "--warning-border",
-            `<input id="drawAmt" type="number" placeholder="Enter amount" style="background:#000; color:#fff; border:1px solid #333">
-             <button class="modal-btn" onclick="confirmWithdraw(${idx})">CONFIRM</button>`
-        );
-    }
-
-    function confirmWithdraw(idx) {
-        const amt = Number(document.getElementById("drawAmt").value);
-        if (amt <= 0 || amt > savings[idx].amount) return showToast("Invalid Amount", "red");
-        
-        savings[idx].amount -= amt;
-        if (!savings[idx].withdrawHistory) savings[idx].withdrawHistory = [];
-        savings[idx].withdrawHistory.push(`Out: ₦${amt.toLocaleString()} (${new Date().toLocaleString()})`);
-        
-        localStorage.setItem("akura_savings", JSON.stringify(savings));
-        closeModal(); renderSavingsTable();
-        showToast("✓ Withdrawal Successful", "orange");
-    }
-
-    // --- MODAL & UI UTILS ---
+    // --- MODAL CONTROLS ---
     function openModal(title, msg, icon, borderVar, btnHtml) {
         document.getElementById("modalTitle").innerText = title;
         document.getElementById("modalMessage").innerText = msg;
@@ -268,7 +232,7 @@
         if(id === 'chartPage') { renderChart(); renderInventoryChart(); }
     }
 
-    // --- CORE LOGIC ---
+    // --- SALES LOGIC (WITH EDIT/DELETE) ---
     function saveRecord() {
         const n = document.getElementById("custName").value, t = Number(document.getElementById("totalAmt").value), p = Number(document.getElementById("paidAmt").value);
         if(!n || t <= 0) return showToast("Invalid Entry", "red");
@@ -283,16 +247,40 @@
         records.forEach((r, i) => {
             sp += r.paid; sd += r.debt;
             let perc = Math.round((r.paid / r.total) * 100);
-            b.innerHTML += `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.product}</td><td>₦${r.total.toLocaleString()}</td><td>₦${r.paid.toLocaleString()}</td><td class="${r.debt > 0 ? 'blink-red' : ''}">₦${r.debt.toLocaleString()}</td><td><div class="progress-container"><div class="progress-bar" style="width:${perc}%; background:${perc===100?'#00c853':'#00c6ff'}"></div><span class="progress-text">${perc}%</span></div></td><td>${r.date}</td><td><button onclick="deleteRecord(${i})" style="background:red; width:auto; color:#fff; padding:5px;">❌</button></td></tr>`;
+            b.innerHTML += `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.product}</td><td>₦${r.total.toLocaleString()}</td><td>₦${r.paid.toLocaleString()}</td><td class="${r.debt > 0 ? 'blink-red' : ''}">₦${r.debt.toLocaleString()}</td><td><div class="progress-container"><div class="progress-bar" style="width:${perc}%; background:${perc===100?'#00c853':'#00c6ff'}"></div><span class="progress-text">${perc}%</span></div></td><td>${r.date}</td><td><button onclick="openEdit(${i})" style="width:auto; padding:5px; background:#eee;">✏️</button><button onclick="deleteRecord(${i})" style="background:red; width:auto; color:#fff; padding:5px;">❌</button></td></tr>`;
         });
         document.getElementById("sumPaid").innerText = "₦" + sp.toLocaleString();
         document.getElementById("sumDebt").innerText = "₦" + sd.toLocaleString();
+        dangerCheck(sp, sd);
     }
 
+    function openEdit(i) {
+        openModal("Edit Debt", `Adjust balance for ${records[i].name}`, "✏️", "--warning-border", `<input id="newD" type="number" value="${records[i].debt}" style="background:#000; color:#fff; border:1px solid #333"><button class="modal-btn" onclick="saveEdit(${i})">UPDATE</button>`);
+    }
+
+    function saveEdit(i) {
+        const nD = Number(document.getElementById("newD").value);
+        records[i].debt = nD; records[i].paid = records[i].total - nD;
+        localStorage.setItem("akura_records", JSON.stringify(records));
+        closeModal(); renderTable(); showToast("✓ Updated", "orange");
+    }
+
+    function deleteRecord(i) {
+        openModal("Confirm Delete", `Delete record for ${records[i].name}?`, "⚠️", "--error-border", `<button class="modal-btn" style="background:red; color:white" onclick="confirmDeleteSales(${i})">DELETE</button>`);
+    }
+    function confirmDeleteSales(i) { records.splice(i,1); localStorage.setItem("akura_records", JSON.stringify(records)); closeModal(); renderTable(); }
+
+    function dangerCheck(p, d) {
+        const pEl = document.getElementById("sumPaid"), dEl = document.getElementById("sumDebt");
+        pEl.className = (d === 0 && p > 0) ? "blink-green" : "";
+        dEl.className = (d > p && d > 0) ? "blink-red" : "";
+    }
+
+    // --- SAVINGS LOGIC (WITH WITHDRAWAL IMPROVMENT) ---
     function saveDeposit() {
         const n = document.getElementById("savName").value, a = Number(document.getElementById("savAmount").value), t = document.getElementById("savType").value;
-        const val = t === "Withdrawal" ? -a : a;
-        savings.push({ name: n, amount: val, originalAmount: a, type: t, date: new Date().toLocaleString() });
+        if(!n || a <= 0) return showToast("Enter details", "red");
+        savings.push({ name: n, amount: t === "Withdrawal" ? -a : a, originalAmount: a, type: t, date: new Date().toLocaleString(), withdrawHistory: [] });
         localStorage.setItem("akura_savings", JSON.stringify(savings));
         renderSavingsTable(); showToast("✓ Updated", "blue");
     }
@@ -301,35 +289,73 @@
         const b = document.getElementById("savingsBody"); b.innerHTML = "";
         savings.forEach((s, i) => {
             let hist = (s.withdrawHistory || []).map(h => `<div style="font-size:10px; color:#ff4d4d;">${h}</div>`).join("");
-            b.innerHTML += `<tr><td>${s.date}${hist}</td><td>${s.name}</td><td>${s.type}</td><td><b>₦${s.amount.toLocaleString()}</b></td><td><button onclick="openWithdrawPanel(${i})" style="background:orange; width:auto; padding:5px;">💸</button> <button onclick="downloadSingleSavingPDF(${i})" style="background:blue; width:auto; padding:5px; color:#fff;">📄</button></td></tr>`;
+            b.innerHTML += `<tr><td>${s.date}${hist}</td><td>${s.name}</td><td>${s.type}</td><td><b>₦${s.amount.toLocaleString()}</b></td><td><button onclick="openWithdrawPanel(${i})" style="background:orange; width:auto; padding:5px;">💸</button> <button onclick="downloadSingleSavingPDF(${i})" style="background:blue; width:auto; padding:5px; color:#fff;">📄</button> <button onclick="deleteSaving(${i})" style="background:red; width:auto; padding:5px; color:#fff;">🗑️</button></td></tr>`;
         });
     }
 
+    function openWithdrawPanel(i) {
+        const s = savings[i];
+        openModal("WITHDRAWAL", `Customer: ${s.name}\nCurrent Balance: ₦${s.amount.toLocaleString()}`, "💰", "--warning-border", `<input id="drawAmt" type="number" placeholder="Enter amount" style="background:#000; color:#fff; border:1px solid #333"><button class="modal-btn" onclick="confirmWithdraw(${i})">CONFIRM</button>`);
+    }
+
+    function confirmWithdraw(i) {
+        const amt = Number(document.getElementById("drawAmt").value);
+        if (amt <= 0 || amt > savings[i].amount) return showToast("Invalid Amount", "red");
+        savings[i].amount -= amt;
+        if (!savings[i].withdrawHistory) savings[i].withdrawHistory = [];
+        savings[i].withdrawHistory.push(`Out: ₦${amt.toLocaleString()} (${new Date().toLocaleString()})`);
+        localStorage.setItem("akura_savings", JSON.stringify(savings));
+        closeModal(); renderSavingsTable(); showToast("✓ Withdrawn", "orange");
+    }
+
+    function deleteSaving(i) {
+        openModal("Delete Saving", `Remove ${savings[i].name}?`, "🗑️", "--error-border", `<button class="modal-btn" style="background:red; color:white" onclick="confirmDeleteSaving(${i})">DELETE</button>`);
+    }
+    function confirmDeleteSaving(i) { savings.splice(i,1); localStorage.setItem("akura_savings", JSON.stringify(savings)); closeModal(); renderSavingsTable(); }
+
+    // --- STOCK LOGIC (WITH RESTORED MODALS) ---
     function addStock() {
         const i = document.getElementById("stkItem").value, q = Number(document.getElementById("stkQty").value), p = Number(document.getElementById("stkPrice").value);
+        if(!i || q <= 0) return showToast("Fill fields", "red");
         inventory.push({ item: i, qty: q, price: p, totalSold: 0, totalRevenue: 0 });
         localStorage.setItem("akura_stock", JSON.stringify(inventory));
-        renderStockTable();
+        renderStockTable(); showToast("✓ Added", "green");
     }
 
     function renderStockTable() {
         const b = document.getElementById("stockBody"); b.innerHTML = "";
         inventory.forEach((it, i) => {
-            b.innerHTML += `<tr><td>${it.item}</td><td>${it.qty}</td><td>₦${it.price.toLocaleString()}</td><td style="color:green">₦${(it.totalRevenue||0).toLocaleString()}</td><td><button onclick="sellOne(${i})" style="background:blue; color:#fff; width:auto; padding:5px;">SELL</button></td></tr>`;
+            b.innerHTML += `<tr><td>${it.item}</td><td style="color:${it.qty===0?'red':'black'}"><b>${it.qty}</b></td><td>₦${it.price.toLocaleString()}</td><td style="color:green">₦${(it.totalRevenue||0).toLocaleString()}</td><td><button onclick="sellOne(${i})" style="background:blue; color:#fff; width:auto; padding:5px;">SELL</button> <button onclick="openRestockPanel(${i})" style="background:#eee; width:auto; padding:5px;">➕</button> <button onclick="deleteStock(${i})" style="background:red; width:auto; padding:5px; color:#fff;">X</button></td></tr>`;
         });
     }
 
-    function sellOne(idx) {
-        const qty = prompt("Qty to sell:");
-        if (qty > 0 && qty <= inventory[idx].qty) {
-            inventory[idx].qty -= qty;
-            inventory[idx].totalSold = (inventory[idx].totalSold || 0) + Number(qty);
-            inventory[idx].totalRevenue = (inventory[idx].totalRevenue || 0) + (qty * inventory[idx].price);
-            localStorage.setItem("akura_stock", JSON.stringify(inventory));
-            renderStockTable();
-        }
+    function sellOne(i) {
+        const it = inventory[i];
+        openModal("SELL ITEM", `Selling: ${it.item}\nIn Stock: ${it.qty}`, "💰", "--success-border", `<input id="sqty" type="number" placeholder="Qty to sell" style="background:#000; color:#fff; border:1px solid #333"><button class="modal-btn" onclick="confirmSell(${i})">CONFIRM</button>`);
+    }
+    function confirmSell(i) {
+        const q = Number(document.getElementById("sqty").value);
+        if(q <= 0 || q > inventory[i].qty) return showToast("Invalid Qty", "red");
+        inventory[i].qty -= q; inventory[i].totalSold = (inventory[i].totalSold||0) + q;
+        inventory[i].totalRevenue = (inventory[i].totalRevenue||0) + (q * inventory[i].price);
+        localStorage.setItem("akura_stock", JSON.stringify(inventory));
+        closeModal(); renderStockTable(); showToast("✓ Sold", "green");
     }
 
+    function openRestockPanel(i) {
+        openModal("RESTOCK", `Updating: ${inventory[i].item}`, "➕", "--accent", `<input id="rqty" type="number" placeholder="Qty to add" style="background:#000; color:#fff; border:1px solid #333"><button class="modal-btn" onclick="confirmRestock(${i})">UPDATE</button>`);
+    }
+    function confirmRestock(i) {
+        const q = Number(document.getElementById("rqty").value);
+        if(q > 0) { inventory[i].qty += q; localStorage.setItem("akura_stock", JSON.stringify(inventory)); closeModal(); renderStockTable(); }
+    }
+
+    function deleteStock(i) {
+        openModal("Delete Item", `Remove ${inventory[i].item}?`, "⚠️", "--error-border", `<button class="modal-btn" style="background:red; color:white" onclick="confirmDeleteStock(${i})">DELETE</button>`);
+    }
+    function confirmDeleteStock(i) { inventory.splice(i,1); localStorage.setItem("akura_stock", JSON.stringify(inventory)); closeModal(); renderStockTable(); }
+
+    // --- PDF & CHARTS ---
     function downloadPDF() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
         doc.text("AKURA SALES REPORT", 105, 15, { align: "center" });
@@ -339,7 +365,12 @@
 
     function downloadAllSavingsPDF() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        doc.autoTable({ head:[['DATE','NAME','TYPE','BAL']], body: savings.map(s=>[s.date,s.name,s.type,s.amount]) });
+        const tableData = [];
+        savings.forEach(s => {
+            tableData.push([s.date, s.name, "DEPOSIT", `+N${(s.originalAmount || s.amount).toLocaleString()}`, `N${s.amount.toLocaleString()}`]);
+            if (s.withdrawHistory) s.withdrawHistory.forEach(log => tableData.push(["-", s.name, "OUT", log.split(' ')[1], "---"]));
+        });
+        doc.autoTable({ head:[['DATE','NAME','TYPE','AMT','BAL']], body: tableData });
         doc.save("Master_Savings.pdf");
     }
 
