@@ -425,6 +425,9 @@ select{
         else if (u !== ADMIN_USER && p === ADMIN_PASS) {
             openModal("Invalid Username", "Please check your username.", "👤", "--error-border", `<button class="modal-btn" onclick="closeAllModals()">RETRY</button>`);
         } 
+        else if (u ==="" && p ==="") {
+            openModal("Access Denied", "Please username and password", "⚠️", "--error-border", `<button class="modal-btn" onclick="closeAllModals()">RETRY</button>`);
+     
         else {
             openModal("Access Denied", "Both fields are incorrect.", "❌", "--error-border", `<button class="modal-btn" onclick="closeAllModals()">RETRY</button>`);
         }
@@ -588,7 +591,7 @@ function closeAllModals() {
 
     function openRestockPanel(idx) {
         const item = inventory[idx];
-        openModal("RESTOCK ITEM", `Updating: ${item.item}`, "➕", "#00c6ff", `<input id="resQty" type="number" placeholder="Qty to Add" style="background:#000; color:#fff; border:1px solid #333"><button onclick="confirmRestock(${idx})">UPDATE</button>`);
+        openModal("RESTOCK ITEM", `Updating: ${item.item}`, "➕", "#00c6ff", `<input id="resQty" type="number" placeholder="Qty to Add" style="background:#000; color:#fff; border:1px solid #333"><button onclick="confirmRestock(${idx})">UPDATE</button>&nbsp; &nbsp;<button style="background:red; color:white;" onclick="closeAllModals()">CANCEL</button>`);
     }
 
     function confirmRestock(idx) {
@@ -597,7 +600,7 @@ function closeAllModals() {
     }
 
     function deleteStock(idx) {
-        openModal("Delete Item", `Remove item?`, "⚠️", "#ff4d4d", `<button style="background:red; color:white;" onclick="confirmDeleteStock(${idx})">YES</button>`);
+        openModal("Delete Item", `Remove item?`, "⚠️", "#ff4d4d", `<button style="background:red; color:white;" onclick="confirmDeleteStock(${idx})">YES</button> &nbsp; &nbsp; <button style="background:grey; color:white;" onclick="closeAllModals()">NO</button>`);
     }
     function confirmDeleteStock(idx) {
         inventory.splice(idx, 1);
@@ -646,7 +649,7 @@ function closeAllModals() {
 
     function askDelete(i) {
         deleteIdx = i;
-        openModal("Confirm Delete", `Delete record?`, "⚠️", "#ff4d4d", `<button style="background:red; color:white;" onclick="confirmDelete()">YES</button>`);
+        openModal("Confirm Delete", `Delete record?`, "⚠️", "#ff4d4d", `<button style="background:grey; color:white;" onclick="confirmDelete()">YES</button>&nbsp; &nbsp;<button style="background:red; color:white;" onclick="closeAllModals()">NO</button>`);
     }
 
     function confirmDelete() {
