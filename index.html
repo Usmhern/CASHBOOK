@@ -249,7 +249,7 @@ select{
 <div id="loginPage">
     <div class="login-box">
         <img src="akura.png" class="main-logo" style="width: 80px;">
-        <h2 style="margin-bottom:20px;">Admin Login</h2>
+        <h2 style="margin-bottom:20px;">AKURA GENERAL ENTERPRISE</h2>
         <input id="user" placeholder="Username">
         <input id="pass" type="password" placeholder="Password">
         <button onclick="checkLogin()">LOGIN</button>
@@ -263,7 +263,7 @@ select{
     <header>
         <img src="akura.png" class="main-logo">
         <h3 style="color:#00c6ff">AKURA GENERAL ENTERPRISE</h3>
-        <p class="sub-heading">CASHBOOK</p>
+        <p class="sub-heading">INVENTORY MANAGEMENT SYSTEM</p>
     </header>
 
     <div class="sidebar" id="sidebar">
@@ -288,6 +288,7 @@ select{
     </div>
 <br><br>
     <div id="tablePage" class="page">
+        <h3>CASHBOOK RECORDS</h3>
         <div class="dashboard">
             <div class="card">TOTAL PAID<br><b id="sumPaid" style="color:green">₦0</b></div>
             <div class="card">TOTAL DEBT<br><b id="sumDebt" style="color:red">₦0</b></div>
@@ -334,7 +335,7 @@ select{
 </div>
     <div id="savingsPage" class="page">
     <div style="background:rgba(255,255,255,0.05); padding: 25px; border-radius: 10px;">
-        <h3>CASH SAVINGS / DEPOSITS</h3>
+        <h3>CASH SAVINGS / WITHRAWALS</h3>
         <input id="savName" placeholder="Customer Name">
         <input id="savAmount" type="number" placeholder="Amount (₦)">
         <select id="savType">
@@ -349,7 +350,7 @@ select{
         <table>
             <thead>
                 <tr>
-                    <th>HISTORY</th>
+                    <th>HISTORY/DATE</th>
                     <th>CUSTOMER</th>
                     <th>TYPE</th>
                     <th>BALANCE</th>
@@ -842,7 +843,7 @@ function confirmPartialWithdraw(idx) {
         closeAllModals(); // Corrected typo here
         setTimeout(() => {
             openModal("Insufficient Balance", `Amount: ₦${amt}`, "💰", "--error-border", `<button style="background:red; color:white;" onclick="closeAllModals()">OK</button>`);
-        }, 300); // Corrected syntax here
+        }, 100); // Corrected syntax here
         return;
     }
 
