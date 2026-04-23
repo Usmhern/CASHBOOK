@@ -839,25 +839,74 @@ savings[idx].withdrawHistory.push(`Out: ₦${amt.toLocaleString()} (${timestamp}
     }
     
     function downloadSingleSavingPDF(idx) {
-        const { jsPDF } = window.jspdf; const doc = new jsPDF(); const s = savings[idx];
-        doc.text(`AKURA GENERAL ENTERPRISE CUSTOMER STATEMENT: ${s.name.toUpperCase()}`, 14, 25);
-        const rows = []; let initialAmt = s.originalAmount || Math.abs(s.amount);
-        rows.push([s.date, "Initial Deposit", `+N${initialAmt.toLocaleString()}`]);
-        if (s.withdrawHistory) s.withdrawHistory.forEach(log => { rows.push([log.split('(')[1].replace(')', ''), "Withdrawal", `-${log.split('₦')[1].split(' ')[0]}`]); });
-        doc.autoTable({ startY: 35, head: [['DATE', 'TYPE', 'AMOUNT']], body: rows });
-        doc.save(`Statement_${s.name}.pdf`);
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const s = savings[idx];
+
+    doc.setFontSize(14);
+    doc.text(`AKURA GENERAL ENTERPRISE: ${s.name.toUpperCase()}`, 14, 20);
+
+    const rows = [];
+    let initialAmt = s.originalAmount || Math.abs(s.amount);
+    
+    // Check if the initial entry was a Deposit or Withdrawal
+    const isInitialWithdrawal = s.type === "Withdrawal";
+    const typeLabel = isInitialWithdrawal ? "Withdrawal" : "Initial Deposit";
+    const symbol = isInitialWithdrawal ? "-N" : "+N";
+
+    rows.push([s.date, typeLabel, `${symbol}${initialAmt.toLocaleString()}`]);
+
+    if (s.withdrawHistory) {
+        s.withdrawHistory.forEach(log => {
+            // Extracts amount from "Out: ₦1,000 (Date)"
+            let amt = log.split('₦')[1].split(' ')[0];
+            rows.push([log.split('(')[1].replace(')', ''), "Partial Withdrawal", `-N${amt}`]);
+        });
+    }
+
+    doc.autoTable({ 
+        startY: 30, 
+        head: [['DATE', 'TYPE', 'AMOUNT']], 
+        body: rows 
+    });
+    doc.save(`Statement_${s.name}.pdf`);
+
         showToast("✓ Downloaded","blue");
     }
 
     function downloadAllSavingsPDF() {
-        const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        const tableData = [];
-        savings.forEach(s => {
-            tableData.push([s.date, s.name, "DEPOSIT", `+N${(s.originalAmount || s.amount).toLocaleString()}`, `N${s.amount.toLocaleString()}`]);
-            if (s.withdrawHistory) s.withdrawHistory.forEach(log => { tableData.push(["-", s.name, "OUT", log.split(' ')[1], "---"]); });
-        });
-        doc.autoTable({ startY: 25, head: [['DATE', 'CUSTOMER', 'TYPE', 'AMOUNT', 'BALANCE']], body: tableData });
-        doc.save("Complete_Savings.pdf");
+    const { jsPDF } = window.jspdf; 
+    const doc = new jsPDF();
+    
+    const tableData = [];
+    savings.forEach(s => {
+        // Detect if the main record is a Withdrawal or Deposit
+        const isWithdrawal = s.type === "Withdrawal";
+        const typeLabel = isWithdrawal ? "WITHDRAWAL" : "DEPOSIT";
+        const symbol = isWithdrawal ? "-N" : "+N";
+        const displayAmt = (s.originalAmount || s.amount);
+
+        tableData.push([
+            s.date, 
+            s.name, 
+            typeLabel, 
+            `${symbol}${displayAmt.toLocaleString()}`, 
+            `N${s.amount.toLocaleString()}`
+        ]);
+
+        if (s.withdrawHistory) {
+            s.withdrawHistory.forEach(log => {
+                tableData.push(["-", s.name, "PARTIAL OUT", `-${log.split(' ')[1]}`, "---"]);
+            });
+        }
+    });
+
+    doc.autoTable({ 
+        startY: 25, 
+        head: [['DATE', 'CUSTOMER', 'TYPE', 'AMOUNT', 'BALANCE']], 
+        body: tableData 
+    });
+    doc.save("Complete_Savings_Report.pdf");
         showToast("✓ Downloaded","blue");
     }
 </script>
