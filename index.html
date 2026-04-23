@@ -398,7 +398,7 @@ const ADMIN_PASS = "12345";
  * @param {string} borderVar - CSS variable for border color
  * @param {string} btnHtml - Action button HTML
  */
-function openModal(title, msg, icon, borderVar, btnHtml) {
+function openModal2(title, msg, icon, borderVar, btnHtml) {
     const overlay = document.getElementById("modalOverlay");
     const panel = document.getElementById("modalPanel");
     
@@ -413,7 +413,7 @@ function openModal(title, msg, icon, borderVar, btnHtml) {
     overlay.style.display = "flex";
 }
 
-function closeAllModals() {
+function closeAllModals2() {
     document.getElementById("modalOverlay").style.display = "none";
 }
 
@@ -423,25 +423,25 @@ function checkLogin() {
 
     if (u === ADMIN_USER && p === ADMIN_PASS) {
         // Condition: All Correct (Success)
-        openModal("✓ Successful", "Identity Verified.", "✅", "--success-border", `<button class="modal-btn" onclick="enterApp()">OK</button>`);
+        openModal2("✓ Successful", "Identity Verified.", "✅", "--success-border", `<button class="modal-btn" onclick="enterApp()">OK</button>`);
     } 
     else if (u === ADMIN_USER && p !== ADMIN_PASS) {
         // Condition: User Correct, Pass Wrong
-        openModal("Invalid Password", "Please check your password.", "🔐", "--error-border", `<button class="modal-btn" onclick="closeAllModals()">RETRY</button>`);
+        openModal2("Invalid Password", "Please check your password.", "🔐", "--error-border", `<button class="modal-btn" onclick="closeAllModals2()">RETRY</button>`);
     } 
     else if (u !== ADMIN_USER && p === ADMIN_PASS) {
         // Condition: Pass Correct, User Wrong
-        openModal("Invalid Username", "Please check your username.", "👤", "--error-border", `<button class="modal-btn" onclick="closeAllModals()">RETRY</button>`);
+        openModal2("Invalid Username", "Please check your username.", "👤", "--error-border", `<button class="modal-btn" onclick="closeAllModals2()">RETRY</button>`);
     } 
     else {
         // Condition: Both Wrong
-        openModal("Access Denied", "Both fields are incorrect.", "❌", "--error-border", `<button class="modal-btn" onclick="closeAllModals()">RETRY</button>`);
+        openModal2("Access Denied", "Both fields are incorrect.", "❌", "--error-border", `<button class="modal-btn" onclick="closeAllModals2()">RETRY</button>`);
     }
 }
 
 function enterApp() {
     // Hide Modal and Login, Show Welcome Page
-    closeAllModals();
+    closeAllModals2();
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("app").style.display = "block";
     localStorage.setItem("isLoggedIn", "true");
