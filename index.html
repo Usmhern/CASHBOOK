@@ -10,38 +10,100 @@
 
     <style>
         /* Progress Bar Container */
-        .progress-container { width: 100%; background-color: #333; border-radius: 10px; height: 12px; position: relative; overflow: hidden; }
-        select { outline:none; background:black; color:#eee; width:100%; border:none; border-bottom:1px solid grey; padding: 10px; }
-        .progress-bar { height: 100%; background: linear-gradient(90deg, #00c6ff, #0072ff); transition: width 0.5s ease-in-out; }
-        .progress-text { font-size: 10px; color: #000; font-weight: bold; position: absolute; width: 100%; text-align: center; line-height: 12px; }
+.progress-container {
+    width: 100%;
+    background-color: #333;
+    border-radius: 10px;
+    height: 12px;
+    position: relative;
+    overflow: hidden;
+}
+select{
+    outline:none;
+    background:black;
+    color:#eee;
+    text-decoration:none;
+    width:100%;
+    border-top:none;
+    border-left:none;
+    border-right:none;
+    border-bottom:1px solid grey;
+}
+/* The actual moving bar */
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
+    transition: width 0.5s ease-in-out;
+}
+
+/* Percentage text inside or next to bar */
+.progress-text {
+    font-size: 10px;
+    color: #000;
+    font-weight: bold;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    line-height: 12px;
+}
         
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        .blink-green { color: #00ff00 !important; animation: blink 1.2s linear infinite; font-weight: bold; }
-        .blink-red { color: #ff0000 !important; animation: blink 0.8s linear infinite; font-weight: bold; }
+        /* 1. Define the animation keyframes */
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; } /* Dims the element */
+    100% { opacity: 1; }
+}
+
+/* 2. Create the Green Blink class */
+.blink-green {
+    color: #00ff00 !important; 
+    animation: blink 1.2s linear infinite; /* Loops forever */
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.6); /* Adds a glowing effect */
+    font-weight: bold;
+}
+
+/* 3. Create the Red Blink class */
+.blink-red {
+    color: #ff0000 !important; 
+    animation: blink 0.8s linear infinite; /* Faster blink for "danger" */
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+    font-weight: bold;
+}
         
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
         body { background:black; color:#fff; min-height:100vh; overflow-x: hidden; }
 
-        header { position: fixed; top: 0; width: 100%; background: #000; padding: 10px; text-align: center; z-index: 1000; border-bottom: 2px solid #00c6ff; display: flex; flex-direction: column; align-items: center; }
-        .main-logo { width: 120px; height: auto; margin-bottom: 5px; }
+        /* HEADER STYLES */
+        header { 
+            position: fixed; top: 60; width: 100%; background: #000; 
+            padding: 10px; text-align: center; z-index: 1000; border-bottom: 2px solid #00c6ff;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .main-logo { width: 180px; height: 250; margin-bottom: 5px; }
         .sub-heading { color: #ffffff; font-size: 14px; font-weight: bold; letter-spacing: 3px; }
 
-        #loginPage { display: flex; height: 100vh; justify-content: center; align-items: center; background: #141e30; position: fixed; width: 100%; z-index: 5000; }
+        /* LOGIN PAGE */
+        #loginPage { display: flex; height: 100vh; justify-content: center; align-items: center; background: #141e30; }
         .login-box { background:#1c2e4a; padding:30px; border-radius:12px; width:320px; text-align: center; border: 1px solid #333; }
         
+        /* APP STRUCTURE */
         #app { display: none; }
         .page { display: none; padding: 20px; padding-top: 180px; max-width: 900px; margin: auto; }
         .active-page { display: block; }
 
+        /* SIDEBAR */
         .menu-btn { position: fixed; top: 80px; left: 15px; z-index: 1100; font-size: 24px; cursor: pointer; background: #00c6ff; padding: 5px 12px; border-radius: 4px; color: #000; }
         .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: #0a0f18; transition: 0.3s; z-index: 1500; padding-top: 80px; }
         .sidebar a { display: block; padding: 15px 25px; color: #fff; text-decoration: none; border-bottom: 1px solid #1a1a1a; cursor: pointer; }
+        .sidebar a:hover { background: #00c6ff; color: #000; }
         .overlay { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 1400; }
 
+        /* UI ELEMENTS */
         input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 5px; border: none; outline: none; }
-        input { background: transparent; color: #fff; border-bottom: 1px solid #333; }
+        input { background: transparent; color: #fff; border-bottom: 1px solid #333; border-top:none; border-left:none; border-right:none;}
         button { background: #00c6ff; font-weight: bold; cursor: pointer; color: #000; }
         
+        /* TABLE & DASHBOARD */
         .dashboard { display: flex; gap: 10px; margin-bottom: 20px; }
         .card { flex: 1; background: #fff; color: #000; padding: 15px; border-radius: 8px; text-align: center; }
         .table-wrap { overflow-x: auto; background: #fff; border-radius: 8px; }
@@ -49,15 +111,88 @@
         th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 13px; }
         th { background: #243b55; color: #fff; }
 
-        /* SQUARE TRANSPARENT MODAL */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: none; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(8px); }
-        .modal-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); width: 350px; height: 350px; border-radius: 30px; border: 4px solid transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; transition: all 0.3s ease; }
-        .modal-icon { font-size: 60px; margin-bottom: 10px; }
-        .modal-btn { background: white; color: black; border: none; padding: 10px 30px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-        
+        /* TOAST */
         #toast { position: fixed; top: 70px; right: 20px; padding: 15px 25px; border-radius: 5px; display: none; z-index: 3000; font-weight: bold; color: #fff; }
+   
+    /*modalsss*/
+
+        :root {
+    --bg-color: #0f172a;
+    --glass: rgba(255, 255, 255, 0.05);
+    --text-main: #ffffff;
+    --text-dim: #94a3b8;
+    --success-border: #00c853;
+    --error-border: #ff4d4d;
+}
+
+.container {
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 3rem;
+    border-radius: 24px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.btn-main {
+    width: 100%;
+    padding: 12px;
+    background: #4f46e5;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(5px);
+}
+
+/* The Square Transparent Modal */
+.modal-panel {
+    background: rgba(255, 255, 255, 0.03); /* Highly Transparent */
+    backdrop-filter: blur(20px);
+    width: 350px;
+    height: 350px; /* Equal width and height */
+    border-radius: 30px;
+    border: 4px solid transparent; /* Color set by JS */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.modal-icon { font-size: 60px; margin-bottom: 10px; }
+.modal-panel h2 { margin: 5px 0; font-size: 1.5rem; }
+.modal-panel p { color: var(--text-dim); margin-bottom: 20px; }
+
+.modal-btn {
+    background: white;
+    color: black;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}
         
-        :root { --success-border: #00c853; --error-border: #ff4d4d; --text-dim: #94a3b8; }
     </style>
 </head>
 <body>
@@ -66,17 +201,17 @@
 
 <div id="loginPage">
     <div class="login-box">
-        <img src="akura.png" class="main-logo">
+        <img src="akura.png" class="main-logo" style="width: 80px;">
         <h2 style="margin-bottom:20px;">Admin Login</h2>
         <input id="user" placeholder="Username">
         <input id="pass" type="password" placeholder="Password">
         <button onclick="checkLogin()">LOGIN</button>
     </div>
 </div>
-
+<br><br><br>
 <div id="app">
     <div class="menu-btn" onclick="toggleMenu(true)">☰</div>
-    <div class="overlay" id="overlay" onclick="toggleMenu(false)"></div>
+    <div class="overlay" id="overlay" onclick="closeAllModals()"></div>
 
     <header>
         <img src="akura.png" class="main-logo">
@@ -96,7 +231,7 @@
 
     <div id="formPage" class="page">
         <div style="background:rgba(255,255,255,0.05); padding: 25px; border-radius: 10px;">
-            <h3>REGISTER SALE</h3>
+            <h3>REGISTER SALE </h3>
             <input id="custName" placeholder="Customer Name">
             <input id="prodName" placeholder="Product">
             <input id="totalAmt" type="number" placeholder="Total Amount (₦)">
@@ -104,82 +239,113 @@
             <button onclick="saveRecord()">SAVE RECORD</button>
         </div>
     </div>
-
+<br><br>
     <div id="tablePage" class="page">
         <div class="dashboard">
             <div class="card">TOTAL PAID<br><b id="sumPaid" style="color:green">₦0</b></div>
             <div class="card">TOTAL DEBT<br><b id="sumDebt" style="color:red">₦0</b></div>
         </div>
-        <input id="searchBox" placeholder="Search records..." onkeyup="filterTable()">
+          <input id="searchBox" placeholder="Search by name or product..." onkeyup="filterTable()">
         <div class="table-wrap">
             <table>
-                <thead><tr><th>SN</th><th>NAME</th><th>SERVICE</th><th>AMOUNT</th><th>PAID</th><th>DEBT</th><th>PROGRESS</th><th>DATE</th><th>ACTION</th></tr></thead>
+                <thead>
+    <tr>
+        <th>SN</th>
+        <th>NAME</th>
+        <th>SERVICE</th>
+        <th>AMOUNT</th>
+        <th>PAID</th>
+        <th>DEBT</th>
+        <th>PROGRESS</th> <th>DATE</th>
+        <th>ACTION</th>
+    </tr>
+</thead>
+
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
     </div>
 
-    <div id="savingsPage" class="page">
-        <div style="background:rgba(255,255,255,0.05); padding: 25px; border-radius: 10px;">
-            <h3>CASH SAVINGS / DEPOSITS</h3>
-            <input id="savName" placeholder="Customer Name">
-            <input id="savAmount" type="number" placeholder="Amount (₦)">
-            <select id="savType"><option value="Deposit">Deposit (+)</option><option value="Withdrawal">Withdrawal (-)</option></select>
-            <button onclick="saveDeposit()">UPDATE SAVINGS</button>
-            <center><button onclick="downloadAllSavingsPDF()" style="background: #28a745; color: white; width: auto; margin-top:10px;">📥 Download Master Report</button></center>
-        </div>
-        <div class="table-wrap" style="margin-top:20px;">
-            <table>
-                <thead><tr><th>HISTORY</th><th>CUSTOMER</th><th>TYPE</th><th>BALANCE</th><th>ACTION</th></tr></thead>
-                <tbody id="savingsBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="stockPage" class="page">
-        <div style="background:rgba(255,255,255,0.05); padding: 25px; border-radius: 10px;">
-            <h3>INVENTORY & STOCK</h3>
-            <input id="stkItem" placeholder="Product Name">
-            <input id="stkQty" type="number" placeholder="Quantity">
-            <input id="stkPrice" type="number" placeholder="Price">
-            <button onclick="addStock()">ADD TO STOCK</button>
-        </div>
-        <div class="table-wrap" style="margin-top:20px;">
-            <table>
-                <thead><tr><th>ITEM</th><th>QUANTITY</th><th>PRICE</th><th>SALES</th><th>ACTION</th></tr></thead>
-                <tbody id="stockBody"></tbody>
-            </table>
-        </div>
-    </div>
-
     <div id="chartPage" class="page">
-        <div style="background:rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; margin-bottom:20px;">
-            <canvas id="myChart"></canvas>
-        </div>
-        <div style="background:rgba(255,255,255,0.05); padding: 20px; border-radius: 10px;">
-            <canvas id="inventoryChart"></canvas>
-        </div>
+    <div style="background:black; padding: 20px; border-radius: 10px; margin-bottom:20px;">
+        <h3>Sales vs Debt (Records)</h3>
+        <canvas id="myChart"></canvas>
+    </div>
+    <div style="background:black; padding: 20px; border-radius: 10px;">
+        <h3>Inventory Performance (Total Units Sold)</h3>
+        <canvas id="inventoryChart"></canvas>
     </div>
 </div>
 
-<div id="modalOverlay" class="modal-overlay">
-    <div id="modalPanel" class="modal-panel">
-        <div id="modalIcon" class="modal-icon"></div>
-        <h2 id="modalTitle"></h2>
-        <p id="modalMessage" style="color:#ccc;"></p>
-        <div id="modalAction"></div>
+
+<div id="alertModal" class="modal" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1c2e4a; padding: 25px; border-radius: 12px; z-index: 2000; display: none; width: 90%; max-width: 320px; text-align: center; border-width: 2px; border-style: solid;">
+    <div id="modalIcon" class="modal-icon"></div>
+    <h3 id="modalTitle"></h3>
+    <p id="modalMsg" style="color:#ccc; font-size:14px; margin-bottom:15px;"></p>
+    <div id="modalActionArea"></div>
+</div>
+
+    <div id="savingsPage" class="page">
+    <div style="background:rgba(255,255,255,0.05); padding: 25px; border-radius: 10px;">
+        <h3>CASH SAVINGS / DEPOSITS</h3>
+        <input id="savName" placeholder="Customer Name">
+        <input id="savAmount" type="number" placeholder="Amount (₦)">
+        <select id="savType">
+            <option value="Deposit">Deposit (+)</option>
+            <option value="Withdrawal">Withdrawal (-)</option>
+        </select>
+        <button onclick="saveDeposit()">UPDATE SAVINGS</button>&nbsp; &nbsp;
+             <center> <button onclick="downloadAllSavingsPDF()" style="background: #28a745; color: white; width: auto;">📥 Download All Statements</button></center>
+    </div>
+        
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>DATE</th>
+                    <th>CUSTOMER</th>
+                    <th>TYPE</th>
+                    <th>AMOUNT</th>
+                    <th>ACTION</th>
+                </tr>
+            </thead>
+            <tbody id="savingsBody"></tbody>
+        </table>
     </div>
 </div>
 
-<script>
+<div id="stockPage" class="page">
+    <div style="background:rgba(255,255,255,0.05); padding: 25px; border-radius: 10px;">
+        <h3>INVENTORY & STOCK</h3>
+        <input id="stkItem" placeholder="Product Name">
+        <input id="stkQty" type="number" placeholder="Quantity">
+        <input id="stkPrice" type="number" placeholder="Price per piece">
+        <button onclick="addStock()">ADD TO STOCK</button>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ITEM</th>
+                    <th>QUANTITY</th>
+                    <th>PRICE</th>
+                    <th>SALES</th>
+                    <th>ACTION</th>
+                </tr>
+            </thead>
+            <tbody id="stockBody"></tbody>
+        </table>
+    </div>
+</div>
+
+    <script>
+    // --- APP DATA ---
     let records = JSON.parse(localStorage.getItem("akura_records")) || [];
     let savings = JSON.parse(localStorage.getItem("akura_savings")) || [];
     let inventory = JSON.parse(localStorage.getItem("akura_stock")) || [];
-    let chartObj = null, invChartObj = null;
+    let deleteIdx = null, editIdx = null, chartObj = null;
 
-    const ADMIN_USER = "admin";
-    const ADMIN_PASS = "12345";
-
+    // --- INITIALIZATION ---
     window.onload = () => {
         if(localStorage.getItem("isLoggedIn") === "true") {
             document.getElementById("loginPage").style.display = "none";
@@ -188,14 +354,19 @@
         }
     };
 
-    // --- LOGIN SYSTEM ---
+    //LOGIN SYSTEM (FIXED CONNECTION TO SQUARE MODAL)
+    const ADMIN_USER = "admin";
+    const ADMIN_PASS = "12345";
+
     function openModal2(title, msg, icon, borderVar, btnHtml) {
-        document.getElementById("modalTitle").innerText = title;
-        document.getElementById("modalMessage").innerText = msg;
-        document.getElementById("modalIcon").innerText = icon;
-        document.getElementById("modalAction").innerHTML = btnHtml;
-        document.getElementById("modalPanel").style.borderColor = `var(${borderVar})`;
-        document.getElementById("modalOverlay").style.display = "flex";
+        const overlay = document.getElementById("modalOverlay");
+        const panel = document.getElementById("modalPanel");
+        document.getElementById("modalTitleSquare").innerText = title;
+        document.getElementById("modalMessageSquare").innerText = msg;
+        document.getElementById("modalIconSquare").innerText = icon;
+        document.getElementById("modalActionSquare").innerHTML = btnHtml;
+        panel.style.borderColor = `var(${borderVar})`;
+        overlay.style.display = "flex";
     }
 
     function checkLogin() {
@@ -213,9 +384,30 @@
         location.reload();
     }
 
-    function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
+    // --- UTILITY FUNCTIONS ---
+    function showToast(msg, bg) {
+        const t = document.getElementById("toast");
+        t.innerText = msg; t.style.background = bg; t.style.display = "block";
+        setTimeout(() => t.style.display="none", 2500);
+    }
 
-    // --- UI HELPERS ---
+    function openModal(title, msg, icon, borderColor, actionHtml) {
+        document.getElementById("modalTitle").innerText = title;
+        document.getElementById("modalMsg").innerText = msg;
+        document.getElementById("modalIcon").innerText = icon;
+        const modal = document.getElementById("alertModal");
+        modal.style.borderColor = borderColor;
+        modal.style.display = "block";
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("modalActionArea").innerHTML = actionHtml;
+    }
+
+    function closeAllModals() {
+        document.getElementById("alertModal").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+        toggleMenu(false);
+    }
+
     function toggleMenu(open) {
         document.getElementById("sidebar").style.left = open ? "0" : "-260px";
         document.getElementById("overlay").style.display = open ? "block" : "none";
@@ -226,77 +418,211 @@
         document.getElementById(id).classList.add('active-page');
         toggleMenu(false);
         if(id === 'tablePage') renderTable();
-        if(id === 'savingsPage') renderSavingsTable();
-        if(id === 'stockPage') renderStockTable();
         if(id === 'chartPage') { renderChart(); renderInventoryChart(); }
+        if(id === 'stockPage') renderStockTable();
+        if(id === 'savingsPage') renderSavingsTable();
+    }
+        
+    function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
+
+    // --- SAVINGS LOGIC ---
+    function saveDeposit() {
+        const n = document.getElementById("savName").value;
+        const a = Number(document.getElementById("savAmount").value);
+        const t = document.getElementById("savType").value;
+        if(!n || a <= 0) return showToast("Enter details", "red");
+        const final = t === "Withdrawal" ? -a : a;
+        savings.push({ name: n, amount: final, originalAmount: Math.abs(final), type: t, date: new Date().toLocaleString(), withdrawHistory: [] });
+        localStorage.setItem("akura_savings", JSON.stringify(savings));
+        renderSavingsTable();
+        showToast("✓ Savings Updated", "blue");
+        document.getElementById("savName").value = "";
+        document.getElementById("savAmount").value = "";
     }
 
-    function showToast(msg, bg) {
-        const t = document.getElementById("toast");
-        t.innerText = msg; t.style.background = bg; t.style.display = "block";
-        setTimeout(() => t.style.display="none", 2500);
+    function renderSavingsTable() {
+        const b = document.getElementById("savingsBody"); 
+        b.innerHTML = "";
+        savings.forEach((s, i) => {
+            let original = s.originalAmount || s.amount;
+            let historyHtml = (s.withdrawHistory || []).map(log => 
+                `<div style="font-size: 11px; color: #ff4d4d; border-top: 1px solid #333; margin-top: 2px;">${log}</div>`
+            ).join("");
+            b.innerHTML += `<tr><td style="vertical-align: top;"><div style="color: #00c853; font-weight: bold;">In: ₦${original.toLocaleString()}</div><span style="font-size: 10px; color: #aaa;">Date: ${s.date}</span>${historyHtml}</td><td>${s.name}</td><td>${s.type}</td><td style="color:#00c6ff"><b>₦${s.amount.toLocaleString()}</b></td><td><div style="display:flex; gap:10px;">${s.amount > 0 ? `<button style="width:auto; padding:5px 8px; background:#ffa500;" onclick="openWithdrawPanel(${i})">💸 Withdraw</button>` : ''}<button style="width:auto; padding:5px 8px; background:#17a2b8;" onclick="downloadSingleSavingPDF(${i})">📄 Download</button><button style="width:auto; padding:5px 8px; background:#ff4d4d;" onclick="deleteSaving(${i})">🗑️ Delete</button></div></td></tr>`;
+        });
     }
 
-    // --- CORE LOGIC (SALES/SAVINGS/STOCK) ---
+    function deleteSaving(idx) {
+        openModal("Confirm Delete", `Remove record?`, "🗑️", "#ff4d4d", `<button style="background:red; color:white;" onclick="confirmDeleteSaving(${idx})">YES, DELETE</button>`);
+    }
+
+    function confirmDeleteSaving(idx) {
+        savings.splice(idx, 1);
+        localStorage.setItem("akura_savings", JSON.stringify(savings));
+        renderSavingsTable(); closeAllModals(); showToast("✓ Entry Removed", "red");
+    }
+
+    // --- STOCK LOGIC ---
+    function addStock() {
+        const i = document.getElementById("stkItem").value, q = Number(document.getElementById("stkQty").value), p = Number(document.getElementById("stkPrice").value);
+        if(!i || q <= 0) return showToast("Fill all fields", "red");
+        inventory.push({ item: i, qty: q, price: p });
+        localStorage.setItem("akura_stock", JSON.stringify(inventory));
+        renderStockTable();
+        showToast("✓ Stock Added", "green");
+        document.getElementById("stkItem").value = ""; document.getElementById("stkQty").value = ""; document.getElementById("stkPrice").value = "";
+    }
+
+    function renderStockTable() {
+        const b = document.getElementById("stockBody"); b.innerHTML = "";
+        inventory.forEach((item, i) => {
+            const revenue = item.totalRevenue || 0;
+            b.innerHTML += `<tr><td>${item.item}</td><td style="color:${item.qty === 0 ? 'red' : 'black'}"><b>${item.qty}</b></td><td>₦${item.price.toLocaleString()}</td><td style="color:green">₦${revenue.toLocaleString()}</td><td><div style="display: flex; gap: 5px;"><button style="width:auto; padding:5px 8px; background:blue; color:white;" onclick="sellOne(${i})">SELL</button><button style="width:auto; padding:5px 8px; background:#eee; color:white;" onclick="openRestockPanel(${i})">➕</button><button style="width:auto; padding:5px 8px; background:#ff4d4d; color:white;" onclick="deleteStock(${i})">X</button></div></td></tr>`;
+        });
+    }
+
+    function sellOne(idx) {
+        const item = inventory[idx];
+        if (item.qty <= 0) return openModal("OUT OF STOCK", `${item.item} is finished!`, "🚫", "red", `<button onclick="openRestockPanel(${idx})">RESTOCK</button>`);
+        openModal("SELL ITEM", `Selling: ${item.item}`, "💰", "#28a745", `<input id="sellQty" type="number" placeholder="Qty" style="background:#000; color:#fff; border:1px solid #333"><button onclick="confirmSell(${idx})">CONFIRM</button>`);
+    }
+
+    function confirmSell(idx) {
+        const q = Number(document.getElementById("sellQty").value);
+        if (q <= 0 || q > inventory[idx].qty) return showToast("X Invalid quantity", "red");
+        inventory[idx].qty -= q;
+        inventory[idx].totalSold = (inventory[idx].totalSold || 0) + q;
+        inventory[idx].totalRevenue = (inventory[idx].totalRevenue || 0) + (q * inventory[idx].price);
+        localStorage.setItem("akura_stock", JSON.stringify(inventory));
+        renderStockTable(); closeAllModals(); showToast("✓ Sold", "green");
+    }
+
+    function openRestockPanel(idx) {
+        openModal("RESTOCK", `Updating: ${inventory[idx].item}`, "➕", "#00c6ff", `<input id="resQty" type="number" placeholder="Qty to Add" style="background:#000; color:#fff; border:1px solid #333"><button onclick="confirmRestock(${idx})">UPDATE</button>`);
+    }
+
+    function confirmRestock(idx) {
+        const q = Number(document.getElementById("resQty").value);
+        if(q > 0) { inventory[idx].qty += q; localStorage.setItem("akura_stock", JSON.stringify(inventory)); renderStockTable(); closeAllModals(); }
+    }
+
+    function deleteStock(idx) {
+        openModal("Delete Item", `Remove?`, "⚠️", "#ff4d4d", `<button style="background:red; color:white;" onclick="inventory.splice(${idx},1);localStorage.setItem('akura_stock',JSON.stringify(inventory));renderStockTable();closeAllModals();">YES</button>`);
+    }
+
+    // --- RECORD LOGIC ---
     function saveRecord() {
         const total = Number(totalAmt.value), paid = Number(paidAmt.value);
-        records.push({ name: custName.value, product: prodName.value, total: total, paid: paid, debt: total-paid, date: new Date().toLocaleDateString() });
+        records.push({ name: custName.value, product: prodName.value, total: total, paid: paid, debt: total - paid, date: new Date().toLocaleDateString() });
         localStorage.setItem("akura_records", JSON.stringify(records));
+        custName.value = prodName.value = totalAmt.value = paidAmt.value = "";
         showPage('tablePage');
     }
 
     function renderTable() {
         const tbody = document.getElementById("tableBody"); tbody.innerHTML = "";
-        let sp = 0, sd = 0;
+        let sPaid = 0, sDebt = 0;
         records.forEach((r, i) => {
-            sp += r.paid; sd += r.debt;
-            let perc = Math.round((r.paid/r.total)*100);
-            tbody.innerHTML += `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.product}</td><td>₦${r.total}</td><td>₦${r.paid}</td><td style="color:${r.debt>0?'red':'green'}">₦${r.debt}</td><td>${perc}%</td><td>${r.date}</td><td><button style="width:auto; padding:5px;" onclick="records.splice(${i},1);localStorage.setItem('akura_records',JSON.stringify(records));renderTable();">❌</button></td></tr>`;
+            sPaid += r.paid; sDebt += r.debt;
+            let percentage = r.total > 0 ? Math.round((r.paid / r.total) * 100) : 0;
+            tbody.innerHTML += `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.product}</td><td>₦${r.total}</td><td>₦${r.paid}</td><td style="color:${r.debt > 0 ? 'red' : 'green'}">₦${r.debt}</td><td>${percentage}%</td><td>${r.date}</td><td><button style="width:auto; padding:5px;" onclick="openEdit(${i})">✏️</button><button style="width:auto; padding:5px;" onclick="askDelete(${i})">❌</button></td></tr>`;
         });
-        document.getElementById("sumPaid").innerText = "₦"+sp.toLocaleString();
-        document.getElementById("sumDebt").innerText = "₦"+sd.toLocaleString();
+        document.getElementById("sumPaid").innerText = "₦" + sPaid.toLocaleString();
+        document.getElementById("sumDebt").innerText = "₦" + sDebt.toLocaleString();
+        danger();
     }
 
-    function saveDeposit() {
-        const n = document.getElementById("savName").value, a = Number(document.getElementById("savAmount").value), t = document.getElementById("savType").value;
-        const val = t === "Withdrawal" ? -a : a;
-        savings.push({ name: n, amount: val, originalAmount: a, type: t, date: new Date().toLocaleString(), withdrawHistory: [] });
-        localStorage.setItem("akura_savings", JSON.stringify(savings));
-        renderSavingsTable();
+    function openEdit(i) {
+        editIdx = i;
+        openModal("Edit Debt", "Adjust balance.", "✏️", "#ffa500", `<input id="newD" type="number" value="${records[i].debt}" style="background:#000; color:#fff; border:1px solid #333; margin-bottom:10px;"><button onclick="saveEdit()">UPDATE</button>`);
     }
 
-    function renderSavingsTable() {
-        const b = document.getElementById("savingsBody"); b.innerHTML = "";
-        savings.forEach((s, i) => {
-            b.innerHTML += `<tr><td>${s.date}</td><td>${s.name}</td><td>${s.type}</td><td>₦${s.amount}</td><td><button style="width:auto; padding:5px;" onclick="savings.splice(${i},1);localStorage.setItem('akura_savings',JSON.stringify(savings));renderSavingsTable();">🗑️</button></td></tr>`;
-        });
+    function saveEdit() {
+        const nD = Number(document.getElementById("newD").value);
+        records[editIdx].debt = nD;
+        records[editIdx].paid = records[editIdx].total - nD;
+        localStorage.setItem("akura_records", JSON.stringify(records));
+        closeAllModals(); renderTable();
     }
 
-    function addStock() {
-        inventory.push({ item: stkItem.value, qty: Number(stkQty.value), price: Number(stkPrice.value), totalSold:0 });
-        localStorage.setItem("akura_stock", JSON.stringify(inventory));
-        renderStockTable();
+    function askDelete(i) {
+        openModal("Confirm Delete", `Delete record?`, "⚠️", "#ff4d4d", `<button style="background:red; color:white;" onclick="records.splice(${i},1);localStorage.setItem('akura_records',JSON.stringify(records));renderTable();closeAllModals();">YES</button>`);
     }
 
-    function renderStockTable() {
-        const b = document.getElementById("stockBody"); b.innerHTML = "";
-        inventory.forEach((it, i) => {
-            b.innerHTML += `<tr><td>${it.item}</td><td>${it.qty}</td><td>₦${it.price}</td><td>${it.totalSold||0}</td><td><button style="width:auto; padding:5px;" onclick="inventory.splice(${i},1);localStorage.setItem('akura_stock',JSON.stringify(inventory));renderStockTable();">🗑️</button></td></tr>`;
-        });
+    function filterTable() {
+        let val = searchBox.value.toLowerCase();
+        document.querySelectorAll("#tableBody tr").forEach(tr => { tr.style.display = tr.innerText.toLowerCase().includes(val) ? "" : "none"; });
     }
 
     function renderChart() {
         const ctx = document.getElementById('myChart').getContext('2d');
         let p = 0, d = 0; records.forEach(r => { p += r.paid; d += r.debt; });
         if(chartObj) chartObj.destroy();
-        chartObj = new Chart(ctx, { type: 'pie', data: { labels: ['Paid', 'Debt'], datasets: [{ data: [p, d], backgroundColor: ['#00c6ff', '#ff4d4d'] }] } });
+        chartObj = new Chart(ctx, { type: 'pie', data: { labels: ['Paid', 'Debt'], datasets: [{ data: [p, d], backgroundColor: ['#0ae', 'orange'] }] } });
     }
 
     function renderInventoryChart() {
         const ctx = document.getElementById('inventoryChart').getContext('2d');
         if(invChartObj) invChartObj.destroy();
-        invChartObj = new Chart(ctx, { type: 'bar', data: { labels: inventory.map(i=>i.item), datasets: [{ label: 'Stock Level', data: inventory.map(i=>i.qty), backgroundColor: '#00c6ff' }] } });
+        invChartObj = new Chart(ctx, { type: 'bar', data: { labels: inventory.map(item => item.item), datasets: [{ label: 'Units Sold', data: inventory.map(item => item.totalSold || 0), backgroundColor: '#00c6ff' }] } });
+    }
+
+    let invChartObj = null;
+
+    function danger() {
+        let p = document.getElementById("sumPaid"), d = document.getElementById("sumDebt");
+        let paidVal = Number(p.textContent.replace(/[^\d.]/g, '')), debtVal = Number(d.textContent.replace(/[^\d.]/g, ''));
+        p.classList.remove("blink-green"); d.classList.remove("blink-red");
+        if (debtVal > paidVal && debtVal > 0) d.classList.add("blink-red");
+        else if (debtVal === 0 && paidVal > 0) p.classList.add("blink-green");
+    }
+
+    function downloadPDF() {
+        const { jsPDF } = window.jspdf; const doc = new jsPDF();
+        doc.text("AKURA GENERAL ENTERPRISE CASHBOOK", 105, 15, { align: "center" });
+        doc.autoTable({ startY: 25, head: [['SN', 'NAME', 'SERVICE', 'AMOUNT', 'PAID', 'DEBT', 'DATE']], body: records.map((r, i) => [i+1, r.name, r.product, r.total, r.paid, r.debt, r.date]) });
+        doc.save("Akura_Report.pdf");
+    }
+
+    function openWithdrawPanel(idx) {
+        openModal("WITHDRAWAL", `Balance: ₦${savings[idx].amount}`, "💰", "#ffa500", `<input id="drawAmt" type="number" placeholder="Amount" style="background:#000; color:#fff; border:1px solid #333"><button onclick="confirmPartialWithdraw(${idx})">CONFIRM</button>`);
+    }
+
+    function confirmPartialWithdraw(idx) {
+        const amt = Number(document.getElementById("drawAmt").value);
+        if (amt <= 0 || amt > savings[idx].amount) return showToast("X Insufficient", "red");
+        savings[idx].amount -= amt;
+        savings[idx].withdrawHistory.push(`Out: ₦${amt.toLocaleString()} (${new Date().toLocaleString()})`);
+        localStorage.setItem("akura_savings", JSON.stringify(savings));
+        closeAllModals(); renderSavingsTable();
+    }
+
+    function downloadSingleSavingPDF(idx) {
+        const { jsPDF } = window.jspdf; const doc = new jsPDF(); const s = savings[idx];
+        doc.text(`STATEMENT: ${s.name}`, 14, 25);
+        let rows = [[s.date, "Deposit", `+N${(s.originalAmount || s.amount).toLocaleString()}`]];
+        s.withdrawHistory.forEach(log => { rows.push([log.split('(')[1].replace(')',''), "Withdrawal", `-${log.split('₦')[1].split(' ')[0]}`]); });
+        doc.autoTable({ startY: 40, head: [['DATE', 'TYPE', 'AMOUNT']], body: rows });
+        doc.save(`Statement_${s.name}.pdf`);
+    }
+
+    function downloadAllSavingsPDF() {
+        const { jsPDF } = window.jspdf; const doc = new jsPDF();
+        let tableData = [];
+        savings.forEach(s => { tableData.push([s.date, s.name, "IN", `N${(s.originalAmount || s.amount).toLocaleString()}`]); });
+        doc.autoTable({ startY: 25, head: [['DATE', 'CUSTOMER', 'TYPE', 'AMOUNT']], body: tableData });
+        doc.save("All_Savings.pdf");
     }
 </script>
+
+<div id="modalOverlay" class="modal-overlay">
+    <div id="modalPanel" class="modal-panel">
+        <div id="modalIconSquare" class="modal-icon"></div>
+        <h2 id="modalTitleSquare"></h2>
+        <p id="modalMessageSquare"></p>
+        <div id="modalActionSquare"></div>
+    </div>
+</div>
+
 </body>
 </html>
