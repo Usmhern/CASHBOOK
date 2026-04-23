@@ -3,1084 +3,360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AKURA GENERAL ENTERPRISE</title>
+    <title>AKURA GENERAL ENTERPRISE | POS</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
     <style>
-        /* Progress Bar Container */
-.progress-container {
-    width: 100%;
-    background-color: #333;
-    border-radius: 10px;
-    height: 12px;
-    position: relative;
-    overflow: hidden;
-}
-select{
-    outline:none;
-    background:black;
-    color:#eee;
-    text-decoration:none;
-    width:100%;
-    border-top:none;
-    border-left:none;
-    border-right:none;
-    border-bottom:1px solid grey;
-}
-/* The actual moving bar */
-.progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #00c6ff, #0072ff);
-    transition: width 0.5s ease-in-out;
-}
-
-/* Percentage text inside or next to bar */
-.progress-text {
-    font-size: 10px;
-    color: #000;
-    font-weight: bold;
-    position: absolute;
-    width: 100%;
-    text-align: center;
-    line-height: 12px;
-}
-        
-        /* 1. Define the animation keyframes */
-@keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 0.3; } /* Dims the element */
-    100% { opacity: 1; }
-}
-
-/* 2. Create the Green Blink class */
-.blink-green {
-    color: #00ff00 !important; 
-    animation: blink 1.2s linear infinite; /* Loops forever */
-    text-shadow: 0 0 10px rgba(0, 255, 0, 0.6); /* Adds a glowing effect */
-    font-weight: bold;
-}
-
-/* 3. Create the Red Blink class */
-.blink-red {
-    color: #ff0000 !important; 
-    animation: blink 0.8s linear infinite; /* Faster blink for "danger" */
-    text-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
-    font-weight: bold;
-}
-        
-        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background:black; color:#fff; min-height:100vh; overflow-x: hidden; }
-
-        /* HEADER STYLES */
-        header { 
-            position: fixed; top: 60; width: 100%; background: #000; 
-            padding: 10px; text-align: center; z-index: 1000; border-bottom: 2px solid #00c6ff;
-            display: flex; flex-direction: column; align-items: center;
-        }
-        .main-logo { width: 180px; height: 250; margin-bottom: 5px; }
-        .sub-heading { color: #ffffff; font-size: 14px; font-weight: bold; letter-spacing: 3px; }
-
-        /* LOGIN PAGE */
-        #loginPage { display: flex; height: 100vh; justify-content: center; align-items: center; background: #141e30; }
-        .login-box { background:#1c2e4a; padding:30px; border-radius:12px; width:320px; text-align: center; border: 1px solid #333; }
-        
-        /* APP STRUCTURE */
-        #app { display: none; }
-        .page { display: none; padding: 20px; padding-top: 180px; max-width: 900px; margin: auto; }
-        .active-page { display: block; }
-
-        /* SIDEBAR */
-        .menu-btn { position: fixed; top: 80px; left: 15px; z-index: 1100; font-size: 24px; cursor: pointer; background: #00c6ff; padding: 5px 12px; border-radius: 4px; color: #000; }
-        .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: #0a0f18; transition: 0.3s; z-index: 1500; padding-top: 80px; }
-        .sidebar a { display: block; padding: 15px 25px; color: #fff; text-decoration: none; border-bottom: 1px solid #1a1a1a; cursor: pointer; }
-        .sidebar a:hover { background: #00c6ff; color: #000; }
-        .overlay { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 1400; }
-
-        /* UI ELEMENTS */
-        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 5px; border: none; outline: none; }
-        input { background: transparent; color: #fff; border-bottom: 1px solid #333; border-top:none; border-left:none; border-right:none;}
-        button { background: #00c6ff; font-weight: bold; cursor: pointer; color: #000; }
-        
-        /* TABLE & DASHBOARD */
-        .dashboard { display: flex; gap: 10px; margin-bottom: 20px; }
-        .card { flex: 1; background: #fff; color: #000; padding: 15px; border-radius: 8px; text-align: center; }
-        .table-wrap { overflow-x: auto; background: #fff; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; color: #000; min-width: 600px; }
-        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 13px; }
-        th { background: #243b55; color: #fff; }
-
-        /* MODALS (Login & Actions) */
-     /*   .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1c2e4a; padding: 25px; border-radius: 12px; z-index: 2000; display: none; width: 90%; max-width: 320px; text-align: center; border-width: 2px; border-style: solid; }
-        .modal h3 { margin-bottom: 10px; }
-        .modal-icon { font-size: 40px; margin-bottom: 10px; }
-*/
-        /* TOAST */
-        #toast { position: fixed; top: 70px; right: 20px; padding: 15px 25px; border-radius: 5px; display: none; z-index: 3000; font-weight: bold; color: #fff; }
-   
-    /*modalsss*/
-
         :root {
-    --bg-color: #0f172a;
-    --glass: rgba(255, 255, 255, 0.05);
-    --text-main: #ffffff;
-    --text-dim: #94a3b8;
-    --success-border: #00c853;
-    --error-border: #ff4d4d;
-}
+            --bg-dark: #000000;
+            --accent: #00c6ff;
+            --glass: rgba(255, 255, 255, 0.05);
+            --success: #28a745;
+            --error: #dc3545;
+            --sidebar-bg: #0a0f18;
+        }
 
-/*body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at center, #1e293b, #0f172a);
-    font-family: 'Inter', sans-serif;
-    color: var(--text-main);
-}
-*/
-.container {
-    background: var(--glass);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 3rem;
-    border-radius: 24px;
-    width: 320px;
-    text-align: center;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-}
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg-dark); color: #fff; overflow-x: hidden; min-height: 100vh; }
 
-/*input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    background: rgba(0,0,0,0.2);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 8px;
-    color: white;
-    box-sizing: border-box;
-}*/
+        /* --- LOGIN PAGE --- */
+        #loginPage { 
+            height: 100vh; display: flex; align-items: center; justify-content: center; 
+            background: linear-gradient(135deg, #141e30, #243b55);
+            position: fixed; width: 100%; z-index: 5000;
+        }
+        .login-box { 
+            background: #1c2e4a; padding: 40px; border-radius: 20px; width: 350px; 
+            text-align: center; border: 1px solid rgba(255,255,255,0.1); 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
 
-.btn-main {
-    width: 100%;
-    padding: 12px;
-    background: #4f46e5;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 15px;
-}
+        /* --- APP STRUCTURE --- */
+        #app { display: none; }
+        header { 
+            position: fixed; top: 0; width: 100%; background: #000; padding: 15px; 
+            text-align: center; z-index: 1000; border-bottom: 2px solid var(--accent); 
+        }
+        .sub-heading { font-size: 11px; letter-spacing: 4px; color: var(--accent); font-weight: bold; }
 
-/* Modal Overlay */
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    backdrop-filter: blur(5px);
-}
+        .sidebar { 
+            position: fixed; left: -260px; top: 0; width: 260px; height: 100%; 
+            background: var(--sidebar-bg); transition: 0.3s ease-in-out; z-index: 1100; padding-top: 100px; 
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar a { display: block; padding: 15px 25px; color: #eee; text-decoration: none; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .sidebar a:hover { background: var(--accent); color: #000; font-weight: bold; }
 
-/* The Square Transparent Modal */
-.modal-panel {
-    background: rgba(255, 255, 255, 0.03); /* Highly Transparent */
-    backdrop-filter: blur(20px);
-    width: 350px;
-    height: 350px; /* Equal width and height */
-    border-radius: 30px;
-    border: 4px solid transparent; /* Color set by JS */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    text-align: center;
-    box-sizing: border-box;
-    transition: all 0.3s ease;
-}
+        .menu-btn { position: fixed; top: 20px; left: 20px; z-index: 1200; font-size: 24px; background: var(--accent); color: #000; padding: 5px 12px; border-radius: 8px; cursor: pointer; }
+        .overlay { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 1050; backdrop-filter: blur(3px); }
 
-.modal-icon { font-size: 60px; margin-bottom: 10px; }
-.modal-panel h2 { margin: 5px 0; font-size: 1.5rem; }
-.modal-panel p { color: var(--text-dim); margin-bottom: 20px; }
+        /* --- UI ELEMENTS --- */
+        input, select { width: 100%; padding: 12px; margin: 10px 0; background: rgba(0,0,0,0.3); color: #fff; border: 2px solid #333; outline: none; border-radius: 8px; }
+        input:focus { border-color: var(--accent); }
+        button { width: 100%; padding: 12px; background: var(--accent); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        button:hover { transform: scale(1.02); }
 
-.modal-btn {
-    background: white;
-    color: black;
-    border: none;
-    padding: 10px 30px;
-    border-radius: 8px;
-    font-weight: 700;
-    cursor: pointer;
-}
-        
-               
+        .page { display: none; padding: 140px 20px 40px; max-width: 1100px; margin: auto; animation: fadeIn 0.4s; }
+        .active-page { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .glass-card { background: var(--glass); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); margin-bottom: 20px; }
+
+        /* --- TABLES & DASHBOARD --- */
+        .dashboard-stats { display: flex; gap: 15px; margin-bottom: 25px; }
+        .stat-card { flex: 1; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); color: white; }
+        .stat-card b { font-size: 1.4rem; display: block; margin-top: 5px; }
+
+        .table-wrap { overflow-x: auto; background: #fff; border-radius: 12px; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; color: #333; min-width: 800px; }
+        th, td { padding: 15px; border-bottom: 1px solid #eee; text-align: left; font-size: 13px; }
+        th { background: #1c2e4a; color: #fff; text-transform: uppercase; }
+
+        /* --- PROGRESS BAR --- */
+        .progress-container { width: 100%; background: #e0e0e0; height: 12px; border-radius: 6px; overflow: hidden; position: relative; }
+        .progress-bar { background: linear-gradient(90deg, #00c6ff, #0072ff); height: 100%; transition: width 0.6s ease; }
+        .progress-text { font-size: 10px; position: absolute; width: 100%; text-align: center; line-height: 12px; color: #000; font-weight: bold; z-index: 1; }
+
+        /* --- BLINKING --- */
+        @keyframes blink { 50% { opacity: 0.3; } }
+        .blink-red { color: #dc3545 !important; animation: blink 1s infinite; font-weight: bold; }
+        .blink-green { color: #28a745 !important; font-weight: bold; }
+
+        /* --- SQUARE MODAL --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(10px); }
+        .modal-panel { background: rgba(255, 255, 255, 0.03); width: 350px; height: 350px; border-radius: 30px; border: 4px solid transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-icon { font-size: 70px; margin-bottom: 15px; }
+        .modal-btn { background: #fff; color: #000; width: auto; padding: 12px 40px; margin-top: 25px; font-weight: 800; border-radius: 10px; }
+
+        #toast { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; display: none; z-index: 10000; font-weight: bold; color: white; }
     </style>
 </head>
 <body>
 
-<div id="toast"></div>
+    <div id="toast"></div>
 
-<div id="loginPage">
-    <div class="login-box">
-        <img src="akura.png" class="main-logo" style="width: 80px;">
-        <h2 style="margin-bottom:20px;">Admin Login</h2>
-        <input id="user" placeholder="Username">
-        <input id="pass" type="password" placeholder="Password">
-        <button onclick="checkLogin()">LOGIN</button>
-    </div>
-</div>
-<br><br><br>
-<div id="app">
-    <div class="menu-btn" onclick="toggleMenu(true)">☰</div>
-    <div class="overlay" id="overlay" onclick="closeAllModals()"></div>
-
-    <header>
-        <img src="akura.png" class="main-logo">
-        <h3 style="color:#00c6ff">AKURA GENERAL ENTERPRISE</h3>
-        <p class="sub-heading">CASHBOOK</p>
-    </header>
-
-    <div class="sidebar" id="sidebar">
-        <a onclick="showPage('formPage')">➕ Add New Record</a>
-        <a onclick="showPage('tablePage')">📊 View Records</a>
-        <a onclick="showPage('chartPage')">📈 Statistics Chart</a>
-        <a onclick="showPage('savingsPage')">💰 Savings/Deposits</a>
-        <a onclick="showPage('stockPage')">📦 Inventory/Stock</a>
-        <a onclick="downloadPDF()">🧾 Download PDF</a>
-        <a onclick="logout()" style="color: #ff4d4d; margin-top: 20px;">🚪 Logout</a>
-    </div>
-
-    <div id="formPage" class="page">
-        <div style="background:rgba(255,255,255,0.05); padding: 25px; border-radius: 10px;">
-            <h3>REGISTER SALE </h3>
-            <input id="custName" placeholder="Customer Name">
-            <input id="prodName" placeholder="Product">
-            <input id="totalAmt" type="number" placeholder="Total Amount (₦)">
-            <input id="paidAmt" type="number" placeholder="Amount Paid (₦)">
-            <button onclick="saveRecord()">SAVE RECORD</button>
-        </div>
-    </div>
-<br><br>
-    <div id="tablePage" class="page">
-        <div class="dashboard">
-            <div class="card">TOTAL PAID<br><b id="sumPaid" style="color:green">₦0</b></div>
-            <div class="card">TOTAL DEBT<br><b id="sumDebt" style="color:red">₦0</b></div>
-        </div>
-          <input id="searchBox" placeholder="Search by name or product..." onkeyup="filterTable()">
-        <div class="table-wrap">
-            <table>
-                <thead>
-    <tr>
-        <th>SN</th>
-        <th>NAME</th>
-        <th>SERVICE</th>
-        <th>AMOUNT</th>
-        <th>PAID</th>
-        <th>DEBT</th>
-        <th>PROGRESS</th> <th>DATE</th>
-        <th>ACTION</th>
-    </tr>
-</thead>
-
-                <tbody id="tableBody"></tbody>
-            </table>
+    <div id="loginPage">
+        <div class="login-box">
+            <h2 style="margin-bottom:20px;">Admin Login</h2>
+            <input id="user" placeholder="Username">
+            <input id="pass" type="password" placeholder="Password">
+            <button onclick="checkLogin()">AUTHENTICATE</button>
         </div>
     </div>
 
-    <div id="chartPage" class="page">
-    <div style="background:black; padding: 20px; border-radius: 10px; margin-bottom:20px;">
-        <h3>Sales vs Debt (Records)</h3>
-        <canvas id="myChart"></canvas>
+    <div id="app">
+        <div class="menu-btn" onclick="toggleMenu(true)">☰</div>
+        <div class="overlay" id="overlay" onclick="toggleMenu(false)"></div>
+
+        <header>
+            <h3 style="color:#fff;">AKURA GENERAL ENTERPRISE</h3>
+            <p class="sub-heading">SECURE CASHBOOK SYSTEM</p>
+        </header>
+
+        <div class="sidebar" id="sidebar">
+            <a onclick="showPage('formPage')">➕ Register Sale</a>
+            <a onclick="showPage('tablePage')">📊 Sales Records</a>
+            <a onclick="showPage('savingsPage')">💰 Savings / Deposits</a>
+            <a onclick="showPage('stockPage')">📦 Stock / Inventory</a>
+            <a onclick="showPage('chartPage')">📈 Statistics</a>
+            <a onclick="downloadPDF()">🧾 Download PDF</a>
+            <a onclick="logout()" style="color: #ff4d4d; border-top: 1px solid #333;">🚪 Logout</a>
+        </div>
+
+        <div id="formPage" class="page">
+            <div class="glass-card">
+                <h3>REGISTER NEW SALE</h3>
+                <input id="custName" placeholder="Customer Name">
+                <input id="prodName" placeholder="Service / Product">
+                <input id="totalAmt" type="number" placeholder="Total Amount (₦)">
+                <input id="paidAmt" type="number" placeholder="Amount Paid (₦)">
+                <button onclick="saveRecord()">SAVE RECORD</button>
+            </div>
+        </div>
+
+        <div id="tablePage" class="page">
+            <div class="dashboard-stats">
+                <div class="stat-card" style="background-color: #28a745;">TOTAL PAID<br><b id="sumPaid">₦0</b></div>
+                <div class="stat-card" style="background-color: #dc3545;">TOTAL DEBT<br><b id="sumDebt">₦0</b></div>
+            </div>
+            <input id="searchBox" placeholder="Filter by name..." onkeyup="filterTable()" style="background:#fff; color:#000;">
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>SN</th><th>NAME</th><th>ITEM</th><th>TOTAL</th><th>PAID</th><th>DEBT</th><th>PROGRESS</th><th>DATE</th><th>ACTION</th></tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="savingsPage" class="page">
+            <div class="glass-card">
+                <h3>CASH SAVINGS</h3>
+                <input id="savName" placeholder="Customer Name">
+                <input id="savAmount" type="number" placeholder="Amount (₦)">
+                <select id="savType"><option value="Deposit">Deposit (+)</option><option value="Withdrawal">Withdrawal (-)</option></select>
+                <button onclick="saveDeposit()">UPDATE SAVINGS</button>
+                <button onclick="downloadAllSavingsPDF()" style="background:#28a745; margin-top:10px;">📥 Download Master Report</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>DATE & HISTORY</th><th>CUSTOMER</th><th>TYPE</th><th>BALANCE</th><th>ACTION</th></tr></thead>
+                    <tbody id="savingsBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="stockPage" class="page">
+            <div class="glass-card">
+                <h3>INVENTORY & STOCK</h3>
+                <input id="stkItem" placeholder="Product Name">
+                <input id="stkQty" type="number" placeholder="Quantity">
+                <input id="stkPrice" type="number" placeholder="Price per piece">
+                <button onclick="addStock()">ADD TO STOCK</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>ITEM</th><th>QUANTITY</th><th>PRICE</th><th>SALES</th><th>ACTION</th></tr></thead>
+                    <tbody id="stockBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="chartPage" class="page">
+            <div class="glass-card"><h3>Finance Snapshot</h3><canvas id="myChart"></canvas></div>
+            <div class="glass-card"><h3>Inventory Performance</h3><canvas id="inventoryChart"></canvas></div>
+        </div>
     </div>
-    <div style="background:black; padding: 20px; border-radius: 10px;">
-        <h3>Inventory Performance (Total Units Sold)</h3>
-        <canvas id="inventoryChart"></canvas>
-    </div>
-</div>
 
-
-<div id="alertModal" class="modal">
-    <div id="modalIcon" class="modal-icon"></div>
-    <h3 id="modalTitle"></h3>
-    <p id="modalMsg" style="color:#ccc; font-size:14px; margin-bottom:15px;"></p>
-    <div id="modalActionArea"></div>
-
-</div>
-    <div id="savingsPage" class="page">
-    <div style="background:rgba(255,255,255,0.05); padding: 25px; border-radius: 10px;">
-        <h3>CASH SAVINGS / DEPOSITS</h3>
-        <input id="savName" placeholder="Customer Name">
-        <input id="savAmount" type="number" placeholder="Amount (₦)">
-        <select id="savType">
-            <option value="Deposit">Deposit (+)</option>
-            <option value="Withdrawal">Withdrawal (-)</option>
-        </select>
-        <button onclick="saveDeposit()">UPDATE SAVINGS</button>&nbsp; &nbsp;
-             <center> <button onclick="downloadAllSavingsPDF()" style="background: #28a745; color: white; width: auto;">📥 Download All Statements</button></center>
-    </div>
-        
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>DATE</th>
-                    <th>CUSTOMER</th>
-                    <th>TYPE</th>
-                    <th>AMOUNT</th>
-                    <th>ACTION</th>
-                </tr>
-            </thead>
-            <tbody id="savingsBody"></tbody>
-        </table>
-    </div>
-</div>
-
-<div id="stockPage" class="page">
-    <div style="background:rgba(255,255,255,0.05); padding: 25px; border-radius: 10px;">
-        <h3>INVENTORY & STOCK</h3>
-        <input id="stkItem" placeholder="Product Name">
-        <input id="stkQty" type="number" placeholder="Quantity">
-        <input id="stkPrice" type="number" placeholder="Price per piece">
-        <button onclick="addStock()">ADD TO STOCK</button>
-    </div>
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>ITEM</th>
-                    <th>QUANTITY</th>
-                    <th>PRICE</th>
-                    <th>SALES</th>
-                    <th>ACTION</th>
-                </tr>
-            </thead>
-            <tbody id="stockBody"></tbody>
-        </table>
-    </div>
-</div>
-
-    <script>
-    // --- APP DATA ---
-
-    let records = JSON.parse(localStorage.getItem("akura_records")) || [];
-    let savings = JSON.parse(localStorage.getItem("akura_savings")) || [];
-    let inventory = JSON.parse(localStorage.getItem("akura_stock")) || [];
-    let deleteIdx = null, editIdx = null, chartObj = null;
-
-    // --- INITIALIZATION ---
-    window.onload = () => {
-        if(localStorage.getItem("isLoggedIn") === "true") {
-            document.getElementById("loginPage").style.display = "none";
-            document.getElementById("app").style.display = "block";
-            showPage('tablePage');
-        }
-    };
-
-
-
-        //LOGIN--------
-
-const ADMIN_USER = "admin";
-const ADMIN_PASS = "12345";
-
-/**
- * Opens the modal with specific styling
- * @param {string} title - Modal heading
- * @param {string} msg - Subtext
- * @param {string} icon - Emoji or Icon
- * @param {string} borderVar - CSS variable for border color
- * @param {string} btnHtml - Action button HTML
- */
-function openModal2(title, msg, icon, borderVar, btnHtml) {
-    const overlay = document.getElementById("modalOverlay");
-    const panel = document.getElementById("modalPanel");
-    
-    document.getElementById("modalTitle").innerText = title;
-    document.getElementById("modalMessage").innerText = msg;
-    document.getElementById("modalIcon").innerText = icon;
-    document.getElementById("modalAction").innerHTML = btnHtml;
-
-    // Apply the specific border color (Success vs Error)
-    panel.style.borderColor = `var(${borderVar})`;
-    
-    overlay.style.display = "flex";
-}
-
-function closeAllModals2() {
-    document.getElementById("modalOverlay").style.display = "none";
-}
-
-function checkLogin() {
-    const u = document.getElementById("user").value;
-    const p = document.getElementById("pass").value;
-
-    if (u === ADMIN_USER && p === ADMIN_PASS) {
-        // Condition: All Correct (Success)
-        openModal2("✓ Successful", "Identity Verified.", "✅", "--success-border", `<button class="modal-btn" onclick="enterApp()">OK</button>`);
-    } 
-    else if (u === ADMIN_USER && p !== ADMIN_PASS) {
-        // Condition: User Correct, Pass Wrong
-        openModal2("Invalid Password", "Please check your password.", "🔐", "--error-border", `<button class="modal-btn" onclick="closeAllModals2()">RETRY</button>`);
-    } 
-    else if (u !== ADMIN_USER && p === ADMIN_PASS) {
-        // Condition: Pass Correct, User Wrong
-        openModal2("Invalid Username", "Please check your username.", "👤", "--error-border", `<button class="modal-btn" onclick="closeAllModals2()">RETRY</button>`);
-    } 
-    else {
-        // Condition: Both Wrong
-        openModal2("Access Denied", "Both fields are incorrect.", "❌", "--error-border", `<button class="modal-btn" onclick="closeAllModals2()">RETRY</button>`);
-    }
-}
-
-function enterApp() {
-    // Hide Modal and Login, Show Welcome Page
-    closeAllModals2();
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("app").style.display = "block";
-    localStorage.setItem("isLoggedIn", "true");
-            location.reload();
-}
-        
-
-        
-        
-    // --- UTILITY FUNCTIONS ---
-    function showToast(msg, bg) {
-        const t = document.getElementById("toast");
-        t.innerText = msg; t.style.background = bg; t.style.display = "block";
-        setTimeout(() => t.style.display="none", 2500);
-    }
-
-    function openModal(title, msg, icon, borderColor, actionHtml) {
-        document.getElementById("modalTitle").innerText = title;
-        document.getElementById("modalMsg").innerText = msg;
-        document.getElementById("modalIcon").innerText = icon;
-        const modal = document.getElementById("alertModal");
-        modal.style.borderColor = borderColor;
-        modal.style.display = "block";
-        document.getElementById("overlay").style.display = "block";
-        document.getElementById("modalActionArea").innerHTML = actionHtml;
-    }
-
-    function closeAllModals() {
-        document.getElementById("alertModal").style.display = "none";
-        document.getElementById("overlay").style.display = "none";
-        toggleMenu(false);
-    }
-
-    function toggleMenu(open) {
-        document.getElementById("sidebar").style.left = open ? "0" : "-260px";
-        document.getElementById("overlay").style.display = open ? "block" : "none";
-    }
-
-// Update your showPage function to trigger this
-function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-    document.getElementById(id).classList.add('active-page');
-    toggleMenu(false);
-    if(id === 'tablePage') renderTable();
-    if(id === 'chartPage') { renderChart(); renderInventoryChart(); } // Added here
-    if(id === 'stockPage') renderStockTable();
-    if(id === 'savingsPage') renderSavingsTable();
-}
-
-  
-/*  function checkLogin() {
-        const u = document.getElementById("user").value;
-        const p = document.getElementById("pass").value;
-        if (u === ADMIN_USER && p === ADMIN_PASS) {
-            localStorage.setItem("isLoggedIn", "true");
-            location.reload();
-            alert("✓ Logged In", "green");
-        } else {
-            alert("X Invalid Credentials", "red");
-            
-                    
-        }
-    }
-
-// 1. Updated Login Logic
-/*function checkLogin() {
-    const u = document.getElementById("user").value;
-    const p = document.getElementById("pass").value;
-
-    if (u === ADMIN_USER && p === ADMIN_PASS) {
-        // Success: Trigger the modal with a button that calls enterApp()
-        openModal("✓ Successful", "Identity Verified.", "✅", "#00c853", `<button onclick="enterApp()">OK</button>`);
-    } else if (u === ADMIN_USER && p !== ADMIN_PASS) {
-        // Error: Wrong Password
-        openModal("🔐 Password Incorrect", "Please check your password.", "❌", "#ff4d4d", `<button onclick="closeAllModals()">RETRY</button>`);
-    } else if (u !== ADMIN_USER && p === ADMIN_PASS) {
-        // Error: Wrong Username
-        openModal("👤 Username Incorrect", "Please check your username.", "❌", "#ff4d4d", `<button onclick="closeAllModals()">RETRY</button>`);
-    } else {
-        // Error: Both Incorrect
-        openModal("Incorrect Details", "Both fields are wrong.", "❌", "#ff4d4d", `<button onclick="closeAllModals()">RETRY</button>`);
-    }
-}
-
-// 2. Added Missing Transition Function
-function enterApp() {
-    // Save the session to LocalStorage
-    localStorage.setItem("isLoggedIn", "true"); 
-    
-    // Switch the UI from Login to App
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("app").style.display = "block";
-    
-    // Clean up
-    closeAllModals();
-    showPage('tablePage'); // Redirects to the dashboard automatically
-}
-        
-        
-    
-
-        // --- LOGIN SYSTEM (FIXED) ---
-function checkLogin() {
-    const u = document.getElementById("user").value.trim();
-    const p = document.getElementById("pass").value.trim();
-
-    if (!u || !p) {
-        openModal("⚠️ Missing Info", "Enter username and password.", "❌", "#ff9800",
-        `<button onclick="closeAllModals()">OK</button>`);
-        return;
-    }
-
-    if (u === ADMIN_USER && p === ADMIN_PASS) {
-        // Save login immediately
-        localStorage.setItem("isLoggedIn", "true");
-
-        // Show success modal
-        openModal(
-            "✅ Login Successful",
-            "Welcome back!",
-            "✔️",
-            "#00c853",
-            `<button onclick="enterApp()">CONTINUE</button>`
-        );
-    } else {
-        openModal(
-            "❌ Login Failed",
-            "Invalid username or password.",
-            "⚠️",
-            "#ff4d4d",
-            `<button onclick="closeAllModals()">TRY AGAIN</button>`
-        );
-    }
-}
-
-// --- ENTER APP (IMPROVED) ---
-function enterApp() {
-    closeAllModals();
-
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("app").style.display = "block";
-
-    showPage('tablePage');
-}*/
-        
-    function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
-    // --- SAVINGS LOGIC ---
-function saveDeposit() {
-    const n = document.getElementById("savName").value;
-    const a = Number(document.getElementById("savAmount").value);
-    const t = document.getElementById("savType").value;
-    
-    if(!n || a <= 0) return showToast("Enter details", "red");
-    
-    const final = t === "Withdrawal" ? -a : a;
-    savings.push({ 
-        name: n, 
-        amount: final, 
-        originalAmount: Math.abs(final), // Store the starting amount
-        type: t, 
-        date: new Date().toLocaleString(),
-        withdrawHistory: [] 
-    });
-    
-    localStorage.setItem("akura_savings", JSON.stringify(savings));
-    renderSavingsTable();
-    showToast("✓ Savings Updated", "blue");
-
-    document.getElementById("savName").value = "";
-    document.getElementById("savAmount").value = "";
-}
-
-
-function renderSavingsTable() {
-
-    const b = document.getElementById("savingsBody"); 
-    b.innerHTML = "";
-    
-    savings.forEach((s, i) => {
-        let original = s.originalAmount || s.amount;
-        let historyHtml = (s.withdrawHistory || []).map(log => 
-            `<div style="font-size: 11px; color: #ff4d4d; border-top: 1px solid #333; margin-top: 2px;">${log}</div>`
-        ).join("");
-        
-        b.innerHTML += `
-        <tr>
-            <td style="vertical-align: top;">
-                <div style="color: #00c853; font-weight: bold;">In: ₦${original.toLocaleString()}</div>
-                <span style="font-size: 10px; color: #aaa;">Date: ${s.date}</span>
-                ${historyHtml}
-            </td>
-            <td>${s.name}</td>
-            <td>${s.type}</td>
-            <td style="color:#00c6ff"><b>₦${s.amount.toLocaleString()}</b></td>
-            <td>
-                <div style="display:flex; gap:10px;">
-                    ${s.amount > 0 ? `<button style="width:auto; padding:5px 8px; background:#ffa500;" onclick="openWithdrawPanel(${i})">💸 Withdraw</button>` : ''}
-                    <button style="width:auto; padding:5px 8px; background:#17a2b8;" onclick="downloadSingleSavingPDF(${i})">📄 Download</button>
-                    <button style="width:auto; padding:5px 8px; background:#ff4d4d;" onclick="deleteSaving(${i})">🗑️ Delete</button>
-                </div>
-            </td>
-        </tr>`;
-    });
-}
-
-
-    function deleteSaving(idx) {
-        const entry = savings[idx];
-        openModal("Confirm Delete", `Remove record for ${entry.name}?`, "🗑️", "#ff4d4d", 
-        `<button style="background:red; color:white;" onclick="confirmDeleteSaving(${idx})">YES, DELETE</button>
-         <button style="background:#444; color:white;" onclick="closeAllModals()">CANCEL</button>`);
-    }
-
-    function confirmDeleteSaving(idx) {
-        savings.splice(idx, 1);
-        localStorage.setItem("akura_savings", JSON.stringify(savings));
-        renderSavingsTable();
-        closeAllModals();
-        showToast("✓ Entry Removed", "red");
-    }
-
-    // --- STOCK LOGIC ---
-function addStock() {
-    const i = document.getElementById("stkItem").value;
-    const q = Number(document.getElementById("stkQty").value);
-    const p = Number(document.getElementById("stkPrice").value);
-    
-    if(!i || q <= 0) return showToast("Fill all fields", "red");
-    
-    inventory.push({ item: i, qty: q, price: p });
-    localStorage.setItem("akura_stock", JSON.stringify(inventory));
-    renderStockTable();
-    showToast("✓ Stock Added", "green");
-
-    // --- CLEAR INPUTS HERE ---
-    document.getElementById("stkItem").value = "";
-    document.getElementById("stkQty").value = "";
-    document.getElementById("stkPrice").value = "";
-}
-
-
-  /*  function renderStockTable() {
-        const b = document.getElementById("stockBody"); b.innerHTML = "";
-        inventory.forEach((item, i) => {
-            b.innerHTML += `
-            <tr>
-                <td>${item.item}</td>
-                <td style="color:${item.qty === 0 ? 'red' : 'black'}"><b>${item.qty}</b></td>
-                <td>₦${item.price.toLocaleString()}</td>
-                <td>
-                    <div style="display: flex; gap: 5px;">
-                        <button style="width:auto; padding:5px 8px; background:#28a745; color:white;" onclick="sellOne(${i})">SELL</button>
-                        <button style="width:auto; padding:5px 8px; background:#00c6ff; color:white;" onclick="openRestockPanel(${i})">➕</button>
-                        <button style="width:auto; padding:5px 8px; background:#ff4d4d; color:white;" onclick="deleteStock(${i})">X</button>
-                    </div>
-                </td>
-            </tr>`;
-        });
-    }*/
-/*RENDER STOCK*/
-/* RENDER STOCK */
-function renderStockTable() {
-    const b = document.getElementById("stockBody"); 
-    b.innerHTML = "";
-    inventory.forEach((item, i) => {
-        const revenue = item.totalRevenue || 0;
-        b.innerHTML += `
-        <tr>
-            <td>${item.item}</td>
-            <td style="color:${item.qty === 0 ? 'red' : 'black'}"><b>${item.qty}</b></td>
-            <td>₦${item.price.toLocaleString()}</td>
-            <td style="color:green">₦${revenue.toLocaleString()}</td> 
-            <td>
-                <div style="display: flex; gap: 5px;">
-                    <button style="width:auto; padding:5px 8px; background:blue; color:white;" onclick="sellOne(${i})">SELL</button>
-                    <button style="width:auto; padding:5px 8px; background:#eee; color:white;" onclick="openRestockPanel(${i})">➕</button>
-                    <button style="width:auto; padding:5px 8px; background:#ff4d4d; color:white;" onclick="deleteStock(${i})">X</button>
-                </div>
-            </td>
-        </tr>`;
-    });
-}
-
-        
-    // --- UPDATED SELL LOGIC ---
-function sellOne(idx) {
-    const item = inventory[idx];
-    if (item.qty <= 0) {
-        return openModal("OUT OF STOCK", `${item.item} is finished!`, "🚫", "red", 
-        `<button onclick="openRestockPanel(${idx})">RESTOCK NOW</button>`);
-    }
-
-    openModal(
-        "SELL ITEM",
-        `Selling: ${item.item} (Available: ${item.qty})`,
-        "💰",
-        "#28a745",
-        `<input id="sellQty" type="number" placeholder="Enter quantity to sell" style="background:#000; color:#fff; border:1px solid #333">
-         <button onclick="confirmSell(${idx})">CONFIRM SALE</button>`
-    );
-}
-
-function confirmSell(idx) {
-    const qtyInput = document.getElementById("sellQty");
-    const qtyToSell = Number(qtyInput.value);
-    const item = inventory[idx];
-
-    if (qtyToSell <= 0 || qtyToSell > item.qty) {
-        return showToast("X Invalid quantity", "red");
-    }
-
-    // Update Stock
-    item.qty -= qtyToSell;
-    
-    // Track total sales for statistics (Initialize if not exists)
-    item.totalSold = (item.totalSold || 0) + qtyToSell;
-    item.totalRevenue = (item.totalRevenue || 0) + (qtyToSell * item.price);
-
-    localStorage.setItem("akura_stock", JSON.stringify(inventory));
-    renderStockTable();
-    closeAllModals();
-    showToast(`✓ Sold ${qtyToSell} ${item.item}`, "green");
-}
-
-
-    function openRestockPanel(idx) {
-        const item = inventory[idx];
-        openModal("RESTOCK ITEM", `Updating: ${item.item}`, "➕", "#00c6ff", 
-        `<input id="resQty" type="number" placeholder="Qty to Add" style="background:#000; color:#fff; border:1px solid #333">
-         <input id="resPrice" type="number" value="${item.price}" style="background:#000; color:#fff; border:1px solid #333">
-         <button onclick="confirmRestock(${idx})">UPDATE</button>`);
-    }
-
-    function confirmRestock(idx) {
-        const q = Number(document.getElementById("resQty").value);
-        const p = Number(document.getElementById("resPrice").value);
-        if(q > 0) {
-            inventory[idx].qty += q;
-            inventory[idx].price = p;
-            localStorage.setItem("akura_stock", JSON.stringify(inventory));
-            renderStockTable();
-            closeAllModals();
-            showToast("✓ Updated", "green");
-        }
-    }
-// This opens the confirmation modal
-function deleteStock(idx) {
-    const item = inventory[idx];
-    openModal(
-        "Delete Item", 
-        `Are you sure you want to remove ${item.item}?`, 
-        "⚠️", 
-        "#ff4d4d", 
-        `<button style="background:red; color:white;" onclick="confirmDeleteStock(${idx})">YES, REMOVE</button>
-         <button style="background:#444; color:white;" onclick="closeAllModals()">CANCEL</button>`
-    );
-}
-
-// This actually removes the item from the database
-function confirmDeleteStock(idx) {
-    inventory.splice(idx, 1);
-    localStorage.setItem("akura_stock", JSON.stringify(inventory));
-    renderStockTable(); // Refresh the table
-    closeAllModals();   // Close the popup
-    showToast("✓ Item Deleted", "red");
-}
-
-
-
-    // --- RECORD LOGIC ---
-    function saveRecord() {
-        const total = Number(totalAmt.value), paid = Number(paidAmt.value);
-        if(!custName.value || total <= 0) return alert("Fill fields correctly");
-        records.push({ name: custName.value, product: prodName.value, total: total, paid: paid, debt: total - paid, date: new Date().toLocaleDateString() });
-        localStorage.setItem("akura_records", JSON.stringify(records));
-        custName.value = prodName.value = totalAmt.value = paidAmt.value = "";
-        showToast("✓ Saved", "green");
-        showPage('tablePage');
-    }
-
-    function renderTable() {
-        const tbody = document.getElementById("tableBody");
-        tbody.innerHTML = "";
-        let sPaid = 0, sDebt = 0;
-        records.forEach((r, i) => {
-            sPaid += r.paid; sDebt += r.debt;
-            let percentage = r.total > 0 ? Math.round((r.paid / r.total) * 100) : 0;
-            let barColor = percentage === 100 ? "#00c853" : "#00c6ff";
-            tbody.innerHTML += `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.product}</td><td>₦${r.total.toLocaleString()}</td><td>₦${r.paid.toLocaleString()}</td><td style="color:${r.debt > 0 ? 'red' : 'green'}">₦${r.debt.toLocaleString()}</td><td><div class="progress-container"><div class="progress-bar" style="width:${percentage}%; background:${barColor};"><span class="progress-text">${percentage}%</span></div></div></td><td>${r.date}</td><td><button style="width:auto; background:#eee; padding:5px 8px" onclick="openEdit(${i})">✏️</button><button style="width:auto; background:#eee; padding:5px 8px" onclick="askDelete(${i})">❌</button></td></tr>`;
-        });
-        document.getElementById("sumPaid").innerText = "₦" + sPaid.toLocaleString();
-        document.getElementById("sumDebt").innerText = "₦" + sDebt.toLocaleString();
-        danger();
-    }
-
-    function openEdit(i) {
-        editIdx = i;
-        openModal("Edit Debt", "Adjust balance.", "✏️", "#ffa500", `<input id="newD" type="number" value="${records[i].debt}" style="background:#000; color:#fff; border:1px solid #333; margin-bottom:10px;"><button onclick="saveEdit()">UPDATE</button>`);
-    }
-
-    function saveEdit() {
-        const nD = Number(document.getElementById("newD").value);
-        records[editIdx].debt = nD;
-        records[editIdx].paid = records[editIdx].total - nD;
-        localStorage.setItem("akura_records", JSON.stringify(records));
-        closeAllModals(); renderTable();
-        showToast("✓ Updated", "orange");
-    }
-
-    function askDelete(i) {
-        deleteIdx = i;
-        openModal("Confirm Delete", `Delete record for ${records[i].name}?`, "⚠️", "#ff4d4d", `<button style="background:red; color:white;" onclick="confirmDelete()">YES, DELETE</button>`);
-    }
-
-    function confirmDelete() {
-        records.splice(deleteIdx, 1);
-        localStorage.setItem("akura_records", JSON.stringify(records));
-        closeAllModals(); renderTable();
-        showToast("✓ Deleted", "red");
-    }
-
-    function filterTable() {
-        let val = searchBox.value.toLowerCase();
-        document.querySelectorAll("#tableBody tr").forEach(tr => {
-            tr.style.display = tr.innerText.toLowerCase().includes(val) ? "" : "none";
-        });
-    }
-
-    function renderChart() {
-        const ctx = document.getElementById('myChart').getContext('2d');
-        let p = 0, d = 0;
-        records.forEach(r => { p += r.paid; d += r.debt; });
-        if(chartObj) chartObj.destroy();
-        chartObj = new Chart(ctx, { type: 'pie', data: { labels: ['Paid', 'Debt'], datasets: [{ data: [p, d], backgroundColor: ['#0ae', 'orange'] }] } });
-    }
-
-    function danger() {
-        let p = document.getElementById("sumPaid"), d = document.getElementById("sumDebt");
-        let paidVal = Number(p.textContent.replace(/[^\d.]/g, '')), debtVal = Number(d.textContent.replace(/[^\d.]/g, ''));
-        p.classList.remove("blink-green"); d.classList.remove("blink-red");
-        if (debtVal > paidVal && debtVal > 0) d.classList.add("blink-red");
-        else if (debtVal === 0 && paidVal > 0) p.classList.add("blink-green");
-    }
-
-    function downloadPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.text("AKURA GENERAL ENTERPRISE CASHBOOK", 105, 15, { align: "center" });
-        const data = records.map((r, i) => [i+1, r.name, r.product, r.total, r.paid, r.debt, r.date]);
-        doc.autoTable({ startY: 25, head: [['SN', 'NAME', 'SERVICE', 'AMOUNT', 'PAID', 'DEBT', 'DATE']], body: data });
-        doc.save("Akura_Report.pdf");
-    }
-function openWithdrawPanel(idx) {
-    const entry = savings[idx];
-    openModal(
-        "WITHDRAWAL",
-        `Current Balance for ${entry.name}: ₦${entry.amount.toLocaleString()}`,
-        "💰",
-        "#ffa500",
-        `<input id="drawAmt" type="number" placeholder="Amount to withdraw" style="background:#000; color:#fff; border:1px solid #333">
-         <button onclick="confirmPartialWithdraw(${idx})">CONFIRM WITHDRAWAL</button>
-         <button style="background:#444; color:white" onclick="closeAllModals()">CANCEL</button>`
-    );
-}
-
-function confirmPartialWithdraw(idx) {
-    const amtInput = document.getElementById("drawAmt");
-    const amt = Number(amtInput.value);
-    
-    if (amt <= 0 || amt > savings[idx].amount) {
-        return showToast("X Insufficient balance", "red");
-    }
-
-    const timestamp = new Date().toLocaleString();
-    
-    // Track original amount if not already set
-    if (!savings[idx].originalAmount) {
-        savings[idx].originalAmount = savings[idx].amount;
-    }
-
-    // Update balance and history
-    savings[idx].amount -= amt;
-    if (!savings[idx].withdrawHistory) savings[idx].withdrawHistory = [];
-    savings[idx].withdrawHistory.push(`Out: ₦${amt.toLocaleString()} (${timestamp})`);
-
-    localStorage.setItem("akura_savings", JSON.stringify(savings));
-    amtInput.value = "";
-    closeAllModals();
-    renderSavingsTable();
-    showToast(`✓ Withdrawn: ₦${amt.toLocaleString()}`, "orange");
-}
-    
-
-    
-function downloadSingleSavingPDF(idx) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const s = savings[idx];
-
-    // Show initial toast to let user know it's processing
-    showToast("Preparing Statement...", "#00c6ff");
-
-    // 1. PDF Header & Branding
-    doc.setFontSize(18);
-    doc.setTextColor(0, 198, 255); // Akura Blue
-    doc.text("AKURA GENERAL ENTERPRISE", 105, 15, { align: "center" });
-    
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    doc.text(`CUSTOMER STATEMENT: ${s.name.toUpperCase()}`, 14, 25);
-    doc.text(`Date Generated: ${new Date().toLocaleString()}`, 14, 32);
-
-    // 2. Prepare Table Data
-    const rows = [];
-    let initialAmt = s.originalAmount || Math.abs(s.amount);
-    let runningBalance = initialAmt;
-
-    // Add the starting Deposit
-    rows.push([
-        s.date, 
-        "Initial Deposit", 
-        `+N${initialAmt.toLocaleString()}`, 
-        `N${initialAmt.toLocaleString()}`
-    ]);
-    
-    // Add each Withdrawal from the history array
-    if (s.withdrawHistory && s.withdrawHistory.length > 0) {
-        s.withdrawHistory.forEach(log => {
-            // Extract numerical amount from string like "Out: ₦1,000 (Date)"
-            let amtStr = log.split('₦')[1].split(' ')[0].replace(/,/g, '');
-            let amt = parseFloat(amtStr);
-            
-            runningBalance -= amt;
-            
-            // Extract date from inside the parentheses
-            let datePart = log.includes('(') ? log.split('(')[1].replace(')', '') : "N/A";
-            
-            rows.push([
-                datePart, 
-                "Withdrawal", 
-                `-N${amt.toLocaleString()}`, 
-                `N${runningBalance.toLocaleString()}`
-            ]);
-        });
-    }
-
-    // 3. Generate the Table
-    doc.autoTable({
-        startY: 40,
-        head: [['DATE & TIME', 'DESCRIPTION', 'AMOUNT', 'BALANCE']],
-        body: rows,
-        headStyles: { fillColor: [0, 198, 255], textColor: [255, 255, 255] },
-        bodyStyles: { textColor: [0, 0, 0] },
-        alternateRowStyles: { fillColor: [240, 248, 255] },
-        margin: { top: 40 }
-    });
-
-    // 4. Final Total Summary
-    let finalY = doc.lastAutoTable.finalY + 10;
-    doc.setFont("helvetica", "bold");
-    doc.text(`Current Remaining Balance: N${s.amount.toLocaleString()}`, 14, finalY);
-
-    // 5. Save the File
-    doc.save(`Statement_${s.name.replace(/\s+/g, '_')}.pdf`);
-    
-    // Success Toast
-    showToast("Statement Downloaded!", "#28a745");
-}
-
-
-// --- DOWNLOAD ALL SAVINGS AS ONE MERGED STATEMENT ---
-function downloadAllSavingsPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    doc.setFontSize(18);
-    doc.setTextColor(0, 198, 255);
-    doc.text("AKURA GENERAL ENTERPRISE", 105, 15, { align: "center" });
-    doc.text("COMPLETE SAVINGS  REPORT", 105, 25, { align: "center" });
-
-    const tableData = [];
-    savings.forEach(s => {
-        // Main Deposit Row
-        tableData.push([s.date, s.name, "DEPOSIT", `+N${(s.originalAmount || s.amount).toLocaleString()}`, `N${s.amount.toLocaleString()}`]);
-        
-        // Followed by its withdrawals
-        if (s.withdrawHistory) {
-            s.withdrawHistory.forEach(log => {
-                tableData.push(["-", s.name, "OUT", log.split(' ')[1], "---"]);
-            });
-        }
-    });
-
-    doc.autoTable({
-        startY: 35,
-        head: [['DATE', 'CUSTOMER', 'TYPE', 'AMOUNT', 'FINAL BALANCE']],
-        body: tableData,
-        headStyles: { fillColor: [40, 167, 69] }, // Green for Savings Master
-        styles: { fontSize: 9 }
-    });
-
-    doc.save("Akura_Complete_Savings.pdf");
-    showToast("✓ Master Report Generated", "green");
-             }
-
-    
-
-           let invChartObj = null;
-
-function renderInventoryChart() {
-    const ctx = document.getElementById('inventoryChart').getContext('2d');
-    const labels = inventory.map(item => item.item);
-    const salesData = inventory.map(item => item.totalSold || 0);
-
-    if(invChartObj) invChartObj.destroy();
-    
-    invChartObj = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Units Sold',
-                data: salesData,
-                backgroundColor: '#00c6ff'
-            }]
-        },
-        options: {
-            scales: { y: { beginAtZero: true } }
-        }
-    });
-}  
-</script>
-
-        <div id="modalOverlay" class="modal-overlay">
+    <div id="modalOverlay" class="modal-overlay">
         <div id="modalPanel" class="modal-panel">
             <div id="modalIcon" class="modal-icon"></div>
             <h2 id="modalTitle"></h2>
             <p id="modalMessage"></p>
             <div id="modalAction"></div>
         </div>
+    </div>
+
+    <script>
+        const ADMIN_USER = "admin", ADMIN_PASS = "12345";
+        let records = JSON.parse(localStorage.getItem("akura_records")) || [];
+        let savings = JSON.parse(localStorage.getItem("akura_savings")) || [];
+        let inventory = JSON.parse(localStorage.getItem("akura_stock")) || [];
+        let chartObj = null, invChartObj = null;
+
+        // AUTH & NAV
+        window.onload = () => { if (localStorage.getItem("isLoggedIn") === "true") { document.getElementById("loginPage").style.display = "none"; document.getElementById("app").style.display = "block"; showPage('tablePage'); } };
+        function checkLogin() { const u = document.getElementById("user").value, p = document.getElementById("pass").value; if (u === ADMIN_USER && p === ADMIN_PASS) { openModal("Success", "Identity Verified", "✅", "--success", `<button class="modal-btn" onclick="enterApp()">OK</button>`); } else { openModal("Failed", "Invalid Credentials", "❌", "--error", `<button class="modal-btn" onclick="closeModal()">RETRY</button>`); } }
+        function enterApp() { localStorage.setItem("isLoggedIn", "true"); location.reload(); }
+        function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
+        function toggleMenu(open) { document.getElementById("sidebar").style.left = open ? "0" : "-260px"; document.getElementById("overlay").style.display = open ? "block" : "none"; }
+        function showPage(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page')); document.getElementById(id).classList.add('active-page'); toggleMenu(false); if(id === 'tablePage') renderTable(); if(id === 'savingsPage') renderSavingsTable(); if(id === 'stockPage') renderStockTable(); if(id === 'chartPage') { renderChart(); renderInventoryChart(); } }
+        function openModal(title, msg, icon, borderVar, btnHtml) { const overlay = document.getElementById("modalOverlay"); document.getElementById("modalTitle").innerText = title; document.getElementById("modalMessage").innerText = msg; document.getElementById("modalIcon").innerText = icon; document.getElementById("modalAction").innerHTML = btnHtml; document.getElementById("modalPanel").style.borderColor = `var(${borderVar})`; overlay.style.display = "flex"; }
+        function closeModal() { document.getElementById("modalOverlay").style.display = "none"; }
+
+        // --- SALES LOGIC ---
+        function saveRecord() {
+            const name = document.getElementById("custName").value, total = Number(document.getElementById("totalAmt").value), paid = Number(document.getElementById("paidAmt").value);
+            if(!name || total <= 0) return showToast("Fill fields", "red");
+            records.push({ name, product: document.getElementById("prodName").value, total, paid, debt: total - paid, date: new Date().toLocaleDateString() });
+            localStorage.setItem("akura_records", JSON.stringify(records));
+            showToast("Saved!", "green"); showPage('tablePage');
+        }
+
+        function renderTable() {
+            const b = document.getElementById("tableBody"); b.innerHTML = "";
+            let sp = 0, sd = 0;
+            records.forEach((r, i) => {
+                sp += r.paid; sd += r.debt;
+                const perc = Math.round((r.paid / r.total) * 100);
+                b.innerHTML += `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.product}</td><td>₦${r.total.toLocaleString()}</td><td>₦${r.paid.toLocaleString()}</td><td class="${r.debt > 0 ? 'blink-red' : 'blink-green'}">₦${r.debt.toLocaleString()}</td><td><div class="progress-container"><div class="progress-bar" style="width:${perc}%"></div><span class="progress-text">${perc}%</span></div></td><td>${r.date}</td><td><div style="display:flex;gap:5px;"><button onclick="openEditDebt(${i})" style="background:orange; width:auto; padding:5px; color:#000;">Edit</button><button onclick="deleteRecord(${i})" style="background:red; width:auto; padding:5px; color:#fff;">Delete</button></div></td></tr>`;
+            });
+            document.getElementById("sumPaid").innerText = "₦" + sp.toLocaleString();
+            document.getElementById("sumDebt").innerText = "₦" + sd.toLocaleString();
+        }
+
+        function openEditDebt(idx) {
+            openModal("UPDATE PAYMENT", `Customer: ${records[idx].name}\nTotal: ₦${records[idx].total}\nCurrent Paid: ₦${records[idx].paid}`, "📝", "--accent", `<input id="newPay" type="number" placeholder="Enter payment addition"><button onclick="confirmDebtUpdate(${idx})">UPDATE</button>`);
+        }
+
+        function confirmDebtUpdate(idx) {
+            const add = Number(document.getElementById("newPay").value);
+            if(add <= 0) return showToast("Invalid amount", "red");
+            records[idx].paid += add;
+            records[idx].debt = records[idx].total - records[idx].paid;
+            localStorage.setItem("akura_records", JSON.stringify(records));
+            closeModal(); renderTable(); showToast("Payment Updated", "green");
+        }
+
+        function deleteRecord(i) { if(confirm("Delete?")) { records.splice(i, 1); localStorage.setItem("akura_records", JSON.stringify(records)); renderTable(); } }
+
+        // --- SAVINGS LOGIC ---
+        function saveDeposit() { const n = document.getElementById("savName").value, a = Number(document.getElementById("savAmount").value), t = document.getElementById("savType").value; if(!n || a <= 0) return showToast("Enter details", "red"); const final = t === "Withdrawal" ? -a : a; savings.push({ name: n, amount: final, originalAmount: Math.abs(final), type: t, date: new Date().toLocaleString(), withdrawHistory: [] }); localStorage.setItem("akura_savings", JSON.stringify(savings)); renderSavingsTable(); showToast("Savings Updated", "blue"); }
+        function renderSavingsTable() { const b = document.getElementById("savingsBody"); b.innerHTML = ""; savings.forEach((s, i) => { let original = s.originalAmount || s.amount; let historyHtml = (s.withdrawHistory || []).map(log => `<div style="font-size: 11px; color: #ff4d4d; border-top: 1px solid #333;">${log}</div>`).join(""); b.innerHTML += `<tr><td><div>In: ₦${original.toLocaleString()}</div>${historyHtml}</td><td>${s.name}</td><td>${s.type}</td><td><b>₦${s.amount.toLocaleString()}</b></td><td><div style="display:flex;gap:5px;">${s.amount > 0 ? `<button onclick="openWithdrawPanel(${i})" style="background:orange;width:auto;padding:5px;">💸</button>` : ''}<button onclick="downloadSingleSavingPDF(${i})" style="background:blue;width:auto;padding:5px;">📄</button><button onclick="deleteSaving(${i})" style="background:red;width:auto;padding:5px;">🗑️</button></div></td></tr>`; }); }
+        function openWithdrawPanel(i) { openModal("WITHDRAW", `Bal: ₦${savings[i].amount}`, "💰", "--success", `<input id="drawAmt" type="number"><button onclick="confirmWithdraw(${i})">OK</button>`); }
+        function confirmWithdraw(i) { const a = Number(document.getElementById("drawAmt").value); if(a <= 0 || a > savings[i].amount) return showToast("Error", "red"); savings[i].amount -= a; savings[i].withdrawHistory.push(`Out: ₦${a.toLocaleString()} (${new Date().toLocaleString()})`); localStorage.setItem("akura_savings", JSON.stringify(savings)); closeModal(); renderSavingsTable(); }
+        function deleteSaving(i) { if(confirm("Remove?")) { savings.splice(i, 1); localStorage.setItem("akura_savings", JSON.stringify(savings)); renderSavingsTable(); } }
+
+        // --- STOCK LOGIC ---
+        function addStock() { const i = document.getElementById("stkItem").value, q = Number(document.getElementById("stkQty").value), p = Number(document.getElementById("stkPrice").value); if(!i || q <= 0) return; inventory.push({ item: i, qty: q, price: p, totalSold: 0, totalRevenue: 0 }); localStorage.setItem("akura_stock", JSON.stringify(inventory)); renderStockTable(); }
+        function renderStockTable() { const b = document.getElementById("stockBody"); b.innerHTML = ""; inventory.forEach((it, i) => { b.innerHTML += `<tr><td>${it.item}</td><td>${it.qty}</td><td>₦${it.price}</td><td style="color:green">₦${(it.totalRevenue || 0).toLocaleString()}</td><td><div style="display:flex;gap:5px;"><button onclick="sellOne(${i})" style="background:blue;width:auto;padding:5px;color:white">SELL</button><button onclick="openRestockPanel(${i})" style="background:#eee;width:auto;padding:5px;color:black">➕</button><button onclick="deleteStock(${i})" style="background:red;width:auto;padding:5px;color:white">X</button></div></td></tr>`; }); }
+        function sellOne(idx) { const item = inventory[idx]; if (item.qty <= 0) return showToast("Out of stock", "red"); openModal("SELL", `Selling: ${item.item}`, "💰", "--success", `<input id="sellQty" type="number" placeholder="Qty"><button onclick="confirmSell(${idx})">SELL</button>`); }
+        function confirmSell(idx) { const q = Number(document.getElementById("sellQty").value); if (q <= 0 || q > inventory[idx].qty) return; inventory[idx].qty -= q; inventory[idx].totalSold = (inventory[idx].totalSold || 0) + q; inventory[idx].totalRevenue = (inventory[idx].totalRevenue || 0) + (q * inventory[idx].price); localStorage.setItem("akura_stock", JSON.stringify(inventory)); closeModal(); renderStockTable(); }
+        function openRestockPanel(idx) { openModal("RESTOCK", inventory[idx].item, "➕", "--accent", `<input id="resQty" type="number" placeholder="Qty"><button onclick="confirmRestock(${idx})">ADD</button>`); }
+        function confirmRestock(idx) { const q = Number(document.getElementById("resQty").value); if(q > 0) { inventory[idx].qty += q; localStorage.setItem("akura_stock", JSON.stringify(inventory)); renderStockTable(); closeModal(); } }
+        function deleteStock(i) { inventory.splice(i, 1); localStorage.setItem("akura_stock", JSON.stringify(inventory)); renderStockTable(); }
+
+        // --- EXACT PDF LOGIC FROM YOUR ORIGINAL FILE ---
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(18);
+            doc.setTextColor(0, 102, 204);
+            doc.text(\"AKURA GENERAL ENTERPRISE CASHBOOK\", 105, 15, { align: \"center\" });
+            
+            const tableData = records.map((r, i) => [i + 1, r.name, r.product, `N${r.total.toLocaleString()}`, `N${r.paid.toLocaleString()}`, `N${r.debt.toLocaleString()}`, r.date]);
+            
+            doc.autoTable({
+                startY: 25,
+                head: [['SN', 'NAME', 'SERVICE', 'AMOUNT', 'PAID', 'DEBT', 'DATE']],
+                body: tableData,
+                headStyles: { fillColor: [0, 102, 204] },
+                styles: { fontSize: 9 }
+            });
+            doc.save(\"Akura_Sales_Report.pdf\");
+            showToast(\"✓ Sales PDF Downloaded\", \"green\");
+        }
+
+        function downloadSingleSavingPDF(idx) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const s = savings[idx];
+            
+            doc.setFontSize(16);
+            doc.setTextColor(220, 53, 69);
+            doc.text(\"AKURA GENERAL ENTERPRISE\", 105, 15, { align: \"center\" });
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(12);
+            doc.text(`CUSTOMER STATEMENT: ${s.name.toUpperCase()}`, 14, 25);
+            doc.text(`Current Balance: N${s.amount.toLocaleString()}`, 14, 32);
+
+            let bal = s.originalAmount || s.amount;
+            const rows = [[s.date, \"Initial Deposit\", `+N${bal.toLocaleString()}`, `N${bal.toLocaleString()}`]];
+
+            (s.withdrawHistory || []).forEach(log => {
+                let amtStr = log.split('₦')[1].split(' ')[0].replace(/,/g, '');
+                let amt = parseFloat(amtStr);
+                bal -= amt;
+                rows.push([log.split('(')[1].replace(')', ''), \"Withdrawal\", `-N${amt.toLocaleString()}`, `N${bal.toLocaleString()}`]);
+            });
+
+            doc.autoTable({
+                startY: 40,
+                head: [['DATE', 'DESCRIPTION', 'AMOUNT', 'BALANCE']],
+                body: rows,
+                headStyles: { fillColor: [220, 53, 69] }
+            });
+
+            doc.save(`${s.name}_Statement.pdf`);
+            showToast(\"✓ Individual Statement Saved\", \"green\");
+        }
+
+        function downloadAllSavingsPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(16);
+            doc.setTextColor(40, 167, 69);
+            doc.text(\"COMPLETE SAVINGS MASTER REPORT\", 105, 15, { align: \"center\" });
+            
+            const tableData = [];
+            savings.forEach(s => {
+                tableData.push([s.date, s.name, \"DEPOSIT\", `+N${(s.originalAmount || s.amount).toLocaleString()}`, `N${s.amount.toLocaleString()}`]);
+                (s.withdrawHistory || []).forEach(log => {
+                    tableData.push([\"-\", s.name, \"OUT\", log.split(' ')[1], \"---\"]);
+                });
+            });
+
+            doc.autoTable({
+                startY: 25,
+                head: [['DATE', 'CUSTOMER', 'TYPE', 'AMOUNT', 'FINAL BALANCE']],
+                body: tableData,
+                headStyles: { fillColor: [40, 167, 69] },
+                styles: { fontSize: 9 }
+            });
+
+            doc.save(\"Akura_Master_Savings.pdf\");
+            showToast(\"✓ Master Report Generated\", \"green\");
+        }
+
+        // CHARTS & UTILS
+        function renderChart() { const ctx = document.getElementById('myChart'); let p = records.reduce((s,r)=>s+r.paid,0), d = records.reduce((s,r)=>s+r.debt,0); if(chartObj) chartObj.destroy(); chartObj = new Chart(ctx, { type:'pie', data:{ labels:['Paid','Debt'], datasets:[{ data:[p,d], backgroundColor:['#28a745','#dc3545'] }] } }); }
+        function renderInventoryChart() { const ctx = document.getElementById('inventoryChart'); if(invChartObj) invChartObj.destroy(); invChartObj = new Chart(ctx, { type:'bar', data:{ labels:inventory.map(i=>i.item), datasets:[{ label:'Units Sold', data:inventory.map(i=>i.totalSold||0), backgroundColor:'#00c6ff' }] } }); }
+        function showToast(m, c) { const t = document.getElementById("toast"); t.innerText = m; t.style.background = c; t.style.display = "block"; setTimeout(()=>t.style.display="none", 2500); }
+        function filterTable() { let v = document.getElementById("searchBox").value.toLowerCase(); document.querySelectorAll("#tableBody tr").forEach(tr => tr.style.display = tr.innerText.toLowerCase().includes(v) ? "" : "none"); }
+    </script>
 </body>
 </html>
