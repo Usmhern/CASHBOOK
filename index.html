@@ -428,7 +428,7 @@ select{
         else if (u ==="" && p ==="") {
             openModal("Access Denied", "Please username and password", "⚠️", "--error-border", `<button class="modal-btn" onclick="closeAllModals()">RETRY</button>`);
      
-        else {
+        }  else {
             openModal("Access Denied", "Both fields are incorrect.", "❌", "--error-border", `<button class="modal-btn" onclick="closeAllModals()">RETRY</button>`);
         }
     }
