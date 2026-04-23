@@ -64,14 +64,6 @@ select{
         background-position: 100% 50%;
     }
     }
-    h2, #app header h3 {
-    background: linear-gradient(90deg, #00bbff, navy, #000000, #00bbff);
-    background-size: 300% auto;
-    -webkit-background-clip: text; /* Clips background to the text letters */
-    -webkit-text-fill-color: transparent; /* Makes original text color invisible */
-    animation: moveGradient 4s linear infinite;
-    font-weight: bold;
-    }
         
         /* 1. Define the animation keyframes */
 @keyframes blink {
@@ -132,7 +124,7 @@ header::after {
     animation: moveGradient 3s linear infinite;
 }
 
-        @keyframes titleGradient {
+        @keyframes moveGradient {
     0% { color: #000000; }   /* #0bf Blue */
     15% { color: navy; } 
     25% { color: #00bbff; }
