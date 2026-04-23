@@ -249,7 +249,7 @@ select{
 <div id="loginPage">
     <div class="login-box">
         <img src="akura.png" class="main-logo" style="width: 80px;">
-        <h2 style="margin-bottom:20px;">AKURA GENERAL ENTERPRISE</h2>
+        <h3 style="margin-bottom:20px;">AKURA GENERAL ENTERPRISE</h3>
         <input id="user" placeholder="Username">
         <input id="pass" type="password" placeholder="Password">
         <button onclick="checkLogin()">LOGIN</button>
@@ -262,7 +262,7 @@ select{
 
     <header>
         <img src="akura.png" class="main-logo">
-        <h3 style="color:#00c6ff">AKURA GENERAL ENTERPRISE</h3>
+        <h1 style="color:#00c6ff">AKURA GENERAL ENTERPRISE</h1>
         <p class="sub-heading">INVENTORY MANAGEMENT SYSTEM</p>
     </header>
 
@@ -278,7 +278,7 @@ select{
 
     <div id="formPage" class="page">
         <div style="background:rgba(255,255,255,0.05); padding: 25px; border-radius: 10px;">
-            <h3>REGISTER SALE </h3>
+          <center>  <h3>REGISTER SALE </h3></center>
             <input id="custName" placeholder="Customer Name">
             <input id="prodName" placeholder="Product">
             <input id="totalAmt" type="number" placeholder="Total Amount (₦)">
@@ -288,7 +288,7 @@ select{
     </div>
 <br><br>
     <div id="tablePage" class="page">
-        <h3>CASHBOOK RECORDS</h3>
+       <center> <h3>CASHBOOK RECORDS</h3></center><br><br>
         <div class="dashboard">
             <div class="card">TOTAL PAID<br><b id="sumPaid" style="color:green">₦0</b></div>
             <div class="card">TOTAL DEBT<br><b id="sumDebt" style="color:red">₦0</b></div>
@@ -316,11 +316,11 @@ select{
 
     <div id="chartPage" class="page">
     <div style="background:black; padding: 20px; border-radius: 10px; margin-bottom:20px;">
-        <h3>Sales vs Debt (Records)</h3>
+      <center><h3>SALES VS DEBT (Records)</h3></center>
         <canvas id="myChart"></canvas>
     </div>
     <div style="background:black; padding: 20px; border-radius: 10px;">
-        <h3>Inventory Performance (Total Units Sold)</h3>
+      <center>  <h3>INVENTORY PERFORMANCE (Total Units Sold)</h3></center>
         <canvas id="inventoryChart"></canvas>
     </div>
 </div>
@@ -335,7 +335,7 @@ select{
 </div>
     <div id="savingsPage" class="page">
     <div style="background:rgba(255,255,255,0.05); padding: 25px; border-radius: 10px;">
-        <h3>CASH SAVINGS / WITHRAWALS</h3>
+      <center>  <h3>CASH SAVINGS / WITHRAWALS</h3></center>
         <input id="savName" placeholder="Customer Name">
         <input id="savAmount" type="number" placeholder="Amount (₦)">
         <select id="savType">
@@ -364,7 +364,7 @@ select{
 
 <div id="stockPage" class="page">
     <div style="background:rgba(255,255,255,0.05); padding: 25px; border-radius: 10px;">
-        <h3>INVENTORY & STOCK</h3>
+       <center> <h3>INVENTORY & STOCK</h3></center>
         <input id="stkItem" placeholder="Product Name">
         <input id="stkQty" type="number" placeholder="Quantity">
         <input id="stkPrice" type="number" placeholder="Price per piece">
@@ -675,7 +675,7 @@ function closeAllModals() {
 
     function openRestockPanel(idx) {
         const item = inventory[idx];
-        openModal("RESTOCK ITEM", `Updating: ${item.item}`, "➕", "#00c6ff", `<input id="resQty" type="number" placeholder="Qty to Add" style="background:#000; color:#fff; border:1px solid #333"><button onclick="confirmRestock(${idx})">UPDATE</button>&nbsp; &nbsp;<button style="background:red; color:white;" onclick="closeAllModals()">CANCEL</button>`);
+        openModal("RESTOCK ITEM",`` `Updating: ${item.item}`, "♻️", "#00c6ff", `<input id="resQty" type="number" placeholder="Qty to Add" style="background:#000; color:#fff; border:1px solid #333"><button onclick="confirmRestock(${idx})">UPDATE</button>&nbsp; &nbsp;<button style="background:red; color:white;" onclick="closeAllModals()">CANCEL</button>`);
     }
 
     function confirmRestock(idx) {
@@ -722,7 +722,7 @@ function closeAllModals() {
     openModal(
         "Edit Debt", 
         `Adjust balance for ${records[i].name}`, 
-        "✏️", 
+        "📝", 
         "--success-border", 
         `<input id="newD" type="number" value="${records[i].debt}" style="background:#000; color:#fff; border:1px solid #333; margin-bottom:10px;">
          <div style="display:flex; gap:10px;">
@@ -842,7 +842,7 @@ function confirmPartialWithdraw(idx) {
     if (amt <= 0 || amt > savings[idx].amount) {
         closeAllModals(); // Corrected typo here
         setTimeout(() => {
-            openModal("Insufficient Balance", `Amount: ₦${amt}`, "💰", "--error-border", `<button style="background:red; color:white;" onclick="closeAllModals()">OK</button>`);
+            openModal("Insufficient Balance", `Amount: ₦${amt}`, "🚫", "red", `<button style="background:red; color:white;" onclick="closeAllModals()">OK</button>`);
         }, 100); // Corrected syntax here
         return;
     }
