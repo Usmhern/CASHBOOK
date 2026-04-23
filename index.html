@@ -574,8 +574,8 @@ function closeAllModals() {
 
     function sellOne(idx) {
         const item = inventory[idx];
-        if (item.qty <= 0) return openModal("OUT OF STOCK", `${item.item} is finished!`, "🚫", "red", `<button onclick="openRestockPanel(${idx})">RESTOCK NOW</button>`);
-        openModal("SELL ITEM", `Selling: ${item.item}`, "💰", "#28a745", `<input id="sellQty" type="number" placeholder="Qty to sell" style="background:#000; color:#fff; border:1px solid #333"><button onclick="confirmSell(${idx})">CONFIRM SALE</button>`);
+        if (item.qty <= 0) return openModal("OUT OF STOCK", `${item.item} is finished!`, "🚫", "red", `<button onclick="openRestockPanel(${idx})">RESTOCK NOW</button>&nbsp; &nbsp;<button style="background:red; color:white;" onclick="closeAllModals()">CANCEL</button>`);
+        openModal("SELL ITEM", `Selling: ${item.item}`, "💰", "#28a745", `<input id="sellQty" type="number" placeholder="Qty to sell" style="background:#000; color:#fff; border:1px solid #333"><button onclick="confirmSell(${idx})">CONFIRM SALE</button>&nbsp; &nbsp;<button style="background:red; color:white;" onclick="closeAllModals()">NO</button>`);
     }
 
     function confirmSell(idx) {
@@ -635,7 +635,9 @@ function closeAllModals() {
 
     function openEdit(i) {
         editIdx = i;
-        openModal("Edit Debt", "Adjust balance.", "✏️", "#ffa500", `<input id="newD" type="number" value="${records[i].debt}" style="background:#000; color:#fff; border:1px solid #333; margin-bottom:10px;"><button onclick="saveEdit()">UPDATE</button>`);
+   let d = document.getElementById("sumDebt").innerText = "₦" + sDebt.toLocaleString();
+        
+        openModal("Edit Debt", "balance:",${d}, "✏️", "#ffa500", `<input id="newD" type="number" value="${records[i].debt}" style="background:#000; color:#fff; border:1px solid #333; margin-bottom:10px;"><button onclick="saveEdit()">UPDATE</button>`);
     }
 
     function saveEdit() {
@@ -649,7 +651,7 @@ function closeAllModals() {
 
     function askDelete(i) {
         deleteIdx = i;
-        openModal("Confirm Delete", `Delete record?`, "⚠️", "#ff4d4d", `<button style="background:grey; color:white;" onclick="confirmDelete()">YES</button>&nbsp; &nbsp;<button style="background:red; color:white;" onclick="closeAllModals()">NO</button>`);
+        openModal("Confirm Delete", `Delete record?`, "⚠️", "#ff4d4d", `<button style="background:red; color:white;" onclick="confirmDelete()">YES</button>&nbsp; &nbsp;<button style="background:grey; color:white;" onclick="closeAllModals()">NO</button>`);
     }
 
     function confirmDelete() {
