@@ -549,12 +549,14 @@ function closeAllModals() {
     savings.forEach((s, i) => {
         let original = s.originalAmount || Math.abs(s.amount);
         
-        // This part styles the "Out" text red specifically
+        // Check if the log is a withdrawal to apply the red color
         let historyHtml = (s.withdrawHistory || []).map(log => {
-            const isOut = log.includes("Out:");
+            const isWithdrawal = log.toLowerCase().includes("out:");
+            const displayLog = isWithdrawal ? log.replace(/Out:/i, "OUT:") : log;
+            
             return `<div style="font-size: 11px; border-top: 1px solid #333; margin-top: 2px;" 
-                         class="${isOut ? 'history-out' : ''}">
-                        ${log}
+                         class="${isWithdrawal ? 'history-out' : ''}">
+                        ${displayLog}
                     </div>`;
         }).join("");
         
@@ -577,8 +579,8 @@ function closeAllModals() {
             </td>
         </tr>`;
     });
-    }
-    
+}
+
 
     function deleteSaving(idx) {
         openModal("Confirm Delete", `Remove record?`, "🗑️", "#ff4d4d", `<button style="background:red; color:white;" onclick="confirmDeleteSaving(${idx})">YES, DELETE</button><button style="background:#444; color:white;" onclick="closeAllModals()">CANCEL</button>`);
