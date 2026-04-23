@@ -827,7 +827,7 @@ function saveEdit() {
     const amt = Number(amtInput.value);
     
     if (amt <= 0 || amt > savings[idx].amount) {
-        clodeAllModals();
+        closeAllModals();
            setTimeout(() => {
               return  openModal("Insufficient Balance", `₦${amt}`, "💰","--error-border" , `<button style="background:red; color:white;" onclick="closeAllModals()">OK</button>`);
     }300);
